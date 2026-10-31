@@ -218,8 +218,21 @@ export const PRESET_VISION_PROJECTS: VisionStudioProject[] = [
   BATHROOM_VISION_PROJECT
 ];
 
+function readStoredVisionProject(): VisionStudioProject {
+  try {
+    const raw = window.localStorage.getItem('casa-co:vision-project');
+    if (!raw) return INITIAL_VISION_PROJECT;
+    const saved = JSON.parse(raw) as VisionStudioProject;
+    return saved && typeof saved.id === 'string' && Array.isArray(saved.photoDiary) && Array.isArray(saved.chatHistory)
+      ? saved
+      : INITIAL_VISION_PROJECT;
+  } catch {
+    return INITIAL_VISION_PROJECT;
+  }
+}
+
 class ProjectService {
-  private currentProject: VisionStudioProject = INITIAL_VISION_PROJECT;
+  private currentProject: VisionStudioProject = readStoredVisionProject();
   private listeners: ((p: VisionStudioProject) => void)[] = [];
 
   getProject(): VisionStudioProject {
@@ -368,6 +381,11 @@ class ProjectService {
   }
 
   private notify(): void {
+    try {
+      window.localStorage.setItem('casa-co:vision-project', JSON.stringify(this.currentProject));
+    } catch (error) {
+      console.warn('Casa&Co: impossibile salvare il progetto Vision in questo browser.', error);
+    }
     for (const listener of this.listeners) {
       listener(this.currentProject);
     }
