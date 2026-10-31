@@ -43,15 +43,37 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
   );
   const [isGenerating, setIsGenerating] = useState(false);
   const [savedSuccessToast, setSavedSuccessToast] = useState(false);
+  const [serviceError, setServiceError] = useState('');
+  const [sourceImageData, setSourceImageData] = useState<string | null>(null);
 
-  // File upload simulation
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const readImage = (file: File) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Impossibile leggere la fotografia.'));
+    reader.readAsDataURL(file);
+  });
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setActiveBeforeImage(url);
-      onUpdateProject({ beforeImage: url });
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setServiceError('Formato non supportato. Usa JPG, PNG o WebP.');
+      return;
     }
+    if (file.size > 3 * 1024 * 1024) {
+      setServiceError('La fotografia supera 3 MB. Riduci la dimensione e riprova.');
+      return;
+    }
+    try {
+      const dataUrl = await readImage(file);
+      setSourceImageData(dataUrl);
+      setActiveBeforeImage(dataUrl);
+      setServiceError('');
+      onUpdateProject({ beforeImage: dataUrl });
+    } catch {
+      setServiceError('Non è stato possibile caricare la fotografia.');
+    }
+    e.target.value = '';
   };
 
   const handleSelectDemoImage = (imgUrl: string, room: string) => {
@@ -70,18 +92,43 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
     setTimeout(() => setSavedSuccessToast(false), 2500);
   };
 
-  const handleGenerateNew = () => {
+  const handleGenerateNew = async (styleId = selectedStyleId) => {
     setIsGenerating(true);
-    setTimeout(() => {
-      const newProposals = aiVisionService.generateProposalsForStyle(selectedStyleId, selectedRoomType);
+    setServiceError('');
+    try {
+      const selectedStyle = styles.find((style) => style.id === styleId) || styles[0];
+      const response = await fetch('/api/vision', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          style: selectedStyle.name[language],
+          roomType: selectedRoomType,
+          customizations: Object.entries(project.customizations).filter(([, enabled]) => enabled).map(([key]) => key),
+          image: sourceImageData ? {
+            mimeType: sourceImageData.slice(5, sourceImageData.indexOf(';')),
+            data: sourceImageData.split(',')[1]
+          } : undefined
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Generazione non riuscita.');
+      const generated = aiVisionService.generateProposalsForStyle(styleId, selectedRoomType);
+      const realProposal = { ...generated[0], id: `ai-${Date.now()}`, image: result.image, title: `Rendering AI — ${selectedStyle.name[language]}` };
+      const newProposals = [realProposal, ...project.proposals.slice(1, 3)];
       onUpdateProject({
         proposals: newProposals,
-        activeProposalId: newProposals[0].id,
-        mainImage: newProposals[0].image,
+        activeProposalId: realProposal.id,
+        mainImage: realProposal.image,
+        beforeImage: activeBeforeImage,
       });
-      setActiveProposal(newProposals[0]);
+      setActiveProposal(realProposal);
+      setSavedSuccessToast(true);
+      window.setTimeout(() => setSavedSuccessToast(false), 2500);
+    } catch (error) {
+      setServiceError(error instanceof Error ? error.message : 'Errore durante la generazione AI.');
+    } finally {
       setIsGenerating(false);
-    }, 1200);
+    }
   };
 
   return (
@@ -176,6 +223,8 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
         </div>
       </div>
 
+      {serviceError && <div role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-xs text-red-800">{serviceError}</div>}
+
       {/* Step 2: Style Preset Selector */}
       <div className="bg-white p-5 sm:p-7 rounded-3xl border border-[#E5DFD5] shadow-xs space-y-5">
         <div className="flex items-center justify-between pb-3 border-b border-[#F0EBE1]">
@@ -201,7 +250,7 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
                 key={style.id}
                 onClick={() => {
                   setSelectedStyleId(style.id);
-                  handleGenerateNew();
+                  handleGenerateNew(style.id);
                 }}
                 className={`cursor-pointer rounded-2xl overflow-hidden border transition-all flex flex-col justify-between ${
                   isSelected
