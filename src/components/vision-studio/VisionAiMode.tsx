@@ -88,7 +88,7 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
     <div className="space-y-8 pb-12">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end sm:gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B79B76]/15 text-[#8F7451] text-xs font-bold uppercase tracking-wider mb-2">
             <Sparkles className="w-3.5 h-3.5 text-[#B79B76]" />
@@ -113,7 +113,7 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
 
       {/* Step 1: Photo Acquisition & Ambient Selection */}
       <div className="bg-white p-5 sm:p-7 rounded-3xl border border-[#E5DFD5] shadow-xs space-y-5">
-        <div className="flex items-center justify-between pb-3 border-b border-[#F0EBE1]">
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#F0EBE1]">
           <h2 className="font-serif text-lg font-bold text-[#26343B] flex items-center gap-2">
             <Camera className="w-5 h-5 text-[#B79B76]" />
             <span>1. Fotografia della Stanza & Ambiente</span>
@@ -127,7 +127,7 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
           
           {/* Upload Area */}
           <div className="md:col-span-6">
-            <label className="relative flex flex-col items-center justify-center p-6 border-2 border-dashed border-[#B79B76]/40 hover:border-[#B79B76] rounded-2xl bg-[#FAF8F5] cursor-pointer transition-colors group text-center">
+            <label className="relative flex min-h-[220px] min-w-0 flex-col items-center justify-center p-5 sm:p-6 border-2 border-dashed border-[#B79B76]/40 hover:border-[#B79B76] rounded-2xl bg-[#FAF8F5] cursor-pointer transition-colors group text-center">
               <input
                 type="file"
                 accept="image/*"
