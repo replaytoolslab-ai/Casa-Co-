@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavTab, BottomNav } from './components/BottomNav';
 import { Header } from './components/Header';
 import { HomeScreen } from './views/HomeScreen';
@@ -20,9 +20,18 @@ import { Language } from './i18n/translations';
 import { projectService } from './services/projectService';
 import { Search, X, Sparkles, Smartphone, Monitor } from 'lucide-react';
 
+function readStored<T>(key: string, fallback: T): T {
+  try {
+    const raw = window.localStorage.getItem('casa-co:' + key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
-  const [language, setLanguage] = useState<Language>('it');
+  const [language, setLanguage] = useState<Language>(() => readStored<Language>('language', 'it'));
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | null>(null);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -31,8 +40,18 @@ export default function App() {
   const [isMobileDeviceView, setIsMobileDeviceView] = useState(false);
 
   // User State
-  const [userProjects, setUserProjects] = useState<UserProject[]>(INITIAL_USER_PROJECTS);
-  const [savedProjectIds, setSavedProjectIds] = useState<string[]>(['proj-01', 'proj-03', 'proj-05']);
+  const [userProjects, setUserProjects] = useState<UserProject[]>(() => readStored<UserProject[]>('user-projects', INITIAL_USER_PROJECTS));
+  const [savedProjectIds, setSavedProjectIds] = useState<string[]>(() => readStored<string[]>('saved-project-ids', ['proj-01', 'proj-03', 'proj-05']));
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('casa-co:language', JSON.stringify(language));
+      window.localStorage.setItem('casa-co:user-projects', JSON.stringify(userProjects));
+      window.localStorage.setItem('casa-co:saved-project-ids', JSON.stringify(savedProjectIds));
+    } catch (error) {
+      console.warn('Casa&Co: impossibile salvare le preferenze in questo browser.', error);
+    }
+  }, [language, userProjects, savedProjectIds]);
 
   // Handle Bookmarks Toggle
   const handleToggleSave = (projectId: string, e?: React.MouseEvent) => {
