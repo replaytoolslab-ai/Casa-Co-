@@ -58,7 +58,7 @@ export const VisionStudioScreen: React.FC<VisionStudioScreenProps> = ({
             </>
           )}
         </div>
-        <nav aria-label="Sezioni Vision Studio" className="flex w-full min-w-0 max-w-full items-center gap-1 overflow-x-auto overscroll-x-contain rounded-2xl border border-[#E5DFD5] bg-white p-1 no-scrollbar">
+        <nav aria-label="Sezioni Vision Studio" className="grid w-full min-w-0 max-w-full grid-cols-4 gap-1 rounded-2xl border border-[#E5DFD5] bg-white p-1">
           {modes.map(({ id, label, icon: Icon }) => {
             const active = activeMode === id;
             return (
@@ -68,7 +68,7 @@ export const VisionStudioScreen: React.FC<VisionStudioScreenProps> = ({
                 aria-current={active ? 'page' : undefined}
                 aria-label={label}
                 onClick={() => setActiveMode(id)}
-                className={`flex min-h-10 shrink-0 items-center justify-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B79B76] ${
+                className={`flex min-h-10 min-w-0 w-full items-center justify-center gap-1 whitespace-nowrap rounded-xl px-1 py-2 text-[11px] font-bold transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#B79B76] ${
                   active ? 'bg-[#26343B] text-[#F5F1E9] shadow-xs' : 'text-[#26343B]/70 hover:bg-[#FAF8F5] hover:text-[#26343B]'
                 }`}
               >
