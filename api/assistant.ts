@@ -1,3 +1,5 @@
+import { CloudflareAIError, runCloudflareModel } from './_lib/cloudflare-ai.ts';
+
 type VercelRequest = { method?: string; body?: any; headers?: Record<string, string | string[] | undefined> };
 type VercelResponse = {
   status(code: number): VercelResponse;
@@ -5,9 +7,9 @@ type VercelResponse = {
   setHeader(name: string, value: string): void;
 };
 
-const MODEL = process.env.GEMINI_CHAT_MODEL || 'gemini-3.8-flash';
-
+const MODEL = '@cf/google/gemma-4-26b-a4b-it';
 const requestBuckets = new Map<string, number[]>();
+
 function rateLimited(req: VercelRequest): boolean {
   const forwarded = req.headers?.['x-forwarded-for'];
   const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0]?.trim() || 'unknown';
@@ -23,6 +25,15 @@ function sendError(res: VercelResponse, status: number, message: string) {
   return res.status(status).json({ error: message });
 }
 
+function parseBody(req: VercelRequest): any {
+  if (typeof req.body !== 'string') return req.body ?? {};
+  try {
+    return JSON.parse(req.body);
+  } catch {
+    return null;
+  }
+}
+
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
@@ -31,72 +42,72 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   if (rateLimited(req)) return sendError(res, 429, 'Troppe richieste. Attendi qualche minuto prima di riprovare.');
 
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) return sendError(res, 503, 'Assistant AI non configurato: manca GEMINI_API_KEY sul server.');
+  const body = parseBody(req);
+  if (!body || typeof body !== 'object') return sendError(res, 400, 'Richiesta non valida.');
+  const message = typeof body.message === 'string' ? body.message.trim().slice(0, 4000) : '';
+  const image = body.image;
+  if (!message && !image?.data) return sendError(res, 400, 'Scrivi una domanda o allega una fotografia.');
 
-  const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
-  const message = typeof body?.message === 'string' ? body.message.trim().slice(0, 4000) : '';
-  if (!message && !body?.image?.data) return sendError(res, 400, 'Scrivi una domanda o allega una fotografia.');
-
-  const project = body?.project ?? {};
-  const history = Array.isArray(body?.history) ? body.history.slice(-12) : [];
-  const parts: Array<Record<string, unknown>> = [{
-    text: [
-      'Sei Mastro, l’assistente tecnico di Casa&Co. Rispondi in italiano, in modo pratico, chiaro e contestuale al progetto.',
-      'Usa i dati del progetto forniti sotto. Non inventare misure, materiali o certificazioni.',
-      'Per lavori elettrici, strutturali, gas, impermeabilizzazioni critiche e lavori in quota, evidenzia quando serve un professionista abilitato e non dare istruzioni che possano mettere a rischio persone.',
-      'Se è allegata una foto, descrivi solo ciò che è realmente visibile e distingui osservazioni da ipotesi.',
-      'Progetto: ' + JSON.stringify({
-        name: project.name, roomType: project.roomType, progress: project.progress,
-        scanData: project.scanData, budget: project.budget, materials: project.materials,
-        checklist: project.checklist, customizations: project.customizations
-      }),
-      'Domanda dell’utente: ' + message
-    ].join('\n\n')
-  }];
-
-  if (body?.image?.data && typeof body.image.data === 'string') {
-    const mimeType = ['image/jpeg', 'image/png', 'image/webp'].includes(body.image.mimeType) ? body.image.mimeType : 'image/jpeg';
-    if (body.image.data.length > 5_000_000) return sendError(res, 413, 'Immagine troppo grande. Riduci la foto e riprova.');
-    parts.push({ inline_data: { mime_type: mimeType, data: body.image.data } });
+  if (image?.data !== undefined) {
+    if (typeof image.data !== 'string' || image.data.length > 5_000_000) {
+      return sendError(res, image.data?.length > 5_000_000 ? 413 : 400, 'Immagine non valida o troppo grande.');
+    }
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.mimeType)) {
+      return sendError(res, 400, 'Formato immagine non supportato. Usa JPG, PNG o WebP.');
+    }
   }
 
-  const contents = [
-    ...history.filter((item: any) => ['user', 'model'].includes(item?.role) && typeof item?.text === 'string')
-      .map((item: any) => ({ role: item.role, parts: [{ text: item.text.slice(0, 3000) }] })),
-    { role: 'user', parts }
+  const project = body.project ?? {};
+  const history = Array.isArray(body.history) ? body.history.slice(-12) : [];
+  const systemPrompt = [
+    'Sei Mastro, l’assistente tecnico di Casa&Co. Rispondi in italiano, in modo pratico, chiaro e contestuale al progetto.',
+    'Usa i dati del progetto forniti sotto. Non inventare misure, materiali o certificazioni.',
+    'Per lavori elettrici, strutturali, gas, impermeabilizzazioni critiche e lavori in quota, evidenzia quando serve un professionista abilitato e non dare istruzioni che possano mettere a rischio persone.',
+    'Se è allegata una foto, descrivi solo ciò che è realmente visibile e distingui osservazioni da ipotesi.',
+    'Progetto: ' + JSON.stringify({
+      name: project.name, roomType: project.roomType, progress: project.progress,
+      scanData: project.scanData, budget: project.budget, materials: project.materials,
+      checklist: project.checklist, customizations: project.customizations
+    }),
+    'Domanda dell’utente: ' + message
+  ].join('\n\n');
+
+  const messages: Array<{ role: string; content: string | Array<Record<string, unknown>> }> = [
+    { role: 'system', content: systemPrompt },
+    ...history
+      .filter((item: any) => ['user', 'assistant', 'model'].includes(item?.role) && typeof item?.text === 'string')
+      .map((item: any) => ({
+        role: item.role === 'model' ? 'assistant' : item.role,
+        content: item.text.slice(0, 3000)
+      }))
   ];
 
-  try {
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${MODEL}:generateContent`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify({
-        contents,
-        generationConfig: { temperature: 0.55, maxOutputTokens: 1200 },
-        safetySettings: [
-          { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-          { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-          { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' },
-          { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_MEDIUM_AND_ABOVE' }
-        ]
-      })
+  if (image?.data) {
+    const mimeType = image.mimeType as string;
+    messages.push({
+      role: 'user',
+      content: [
+        { type: 'text', text: message || 'Analizza la fotografia allegata e descrivi ciò che è visibile.' },
+        { type: 'image_url', image_url: { url: `data:${mimeType};base64,${image.data}` } }
+      ]
     });
+  } else {
+    messages.push({ role: 'user', content: message });
+  }
 
-    const data = await response.json();
-    if (!response.ok) {
-      console.error('Gemini assistant error', response.status, data?.error?.message);
-      return sendError(res, response.status === 429 ? 429 : 502, response.status === 429
-        ? 'Limite temporaneo del servizio AI raggiunto. Riprova tra poco.'
-        : 'Il servizio AI non è riuscito a elaborare la richiesta.');
-    }
+  try {
+    const result = await runCloudflareModel(MODEL, {
+      messages,
+      max_tokens: 1200,
+      temperature: 0.55,
+      chat_template_kwargs: { enable_thinking: false }
+    }) as { response?: unknown };
 
-    const text = data?.candidates?.[0]?.content?.parts
-      ?.map((part: any) => part.text || '')
-      .join('\n').trim();
-    if (!text) return sendError(res, 502, 'La risposta AI è vuota. Riprova con una domanda più specifica.');
-    return res.status(200).json({ text, model: MODEL });
+    const answer = typeof result?.response === 'string' ? result.response.trim() : '';
+    if (!answer) return sendError(res, 502, 'La risposta AI è vuota. Riprova con una domanda più specifica.');
+    return res.status(200).json({ text: answer, model: MODEL });
   } catch (error) {
+    if (error instanceof CloudflareAIError) return sendError(res, error.statusCode, error.message);
     console.error('Assistant endpoint error', error);
     return sendError(res, 500, 'Errore temporaneo durante la richiesta AI.');
   }
