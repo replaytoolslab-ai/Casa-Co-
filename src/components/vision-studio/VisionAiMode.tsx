@@ -237,7 +237,7 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
             <span>2. Selezione dell’Identità di Stile</span>
           </h2>
           <button
-            onClick={handleGenerateNew}
+            onClick={() => handleGenerateNew()}
             disabled={isGenerating}
             className="flex items-center gap-1.5 px-3 py-1.5 bg-[#26343B] text-[#F5F1E9] rounded-xl text-xs font-semibold hover:bg-[#1A242A] transition-colors disabled:opacity-50"
           >
