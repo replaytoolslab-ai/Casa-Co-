@@ -1,4 +1,4 @@
-type VercelRequest = { method?: string; body?: any };
+type VercelRequest = { method?: string; body?: any; headers?: Record<string, string | string[] | undefined> };
 type VercelResponse = {
   status(code: number): VercelResponse;
   json(body: unknown): VercelResponse;
@@ -6,6 +6,18 @@ type VercelResponse = {
 };
 
 const MODEL = process.env.GEMINI_CHAT_MODEL || 'gemini-3.8-flash';
+
+const requestBuckets = new Map<string, number[]>();
+function rateLimited(req: VercelRequest): boolean {
+  const forwarded = req.headers?.['x-forwarded-for'];
+  const ip = (Array.isArray(forwarded) ? forwarded[0] : forwarded)?.split(',')[0]?.trim() || 'unknown';
+  const now = Date.now();
+  const recent = (requestBuckets.get(ip) || []).filter((time) => now - time < 10 * 60 * 1000);
+  if (recent.length >= 10) return true;
+  recent.push(now);
+  requestBuckets.set(ip, recent);
+  return false;
+}
 
 function sendError(res: VercelResponse, status: number, message: string) {
   return res.status(status).json({ error: message });
@@ -16,6 +28,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     res.setHeader('Allow', 'POST');
     return sendError(res, 405, 'Metodo non consentito.');
   }
+
+  if (rateLimited(req)) return sendError(res, 429, 'Troppe richieste. Attendi qualche minuto prima di riprovare.');
 
   const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) return sendError(res, 503, 'Assistant AI non configurato: manca GEMINI_API_KEY sul server.');
