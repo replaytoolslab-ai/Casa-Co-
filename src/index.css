@@ -19,6 +19,7 @@
   *, ::before, ::after { box-sizing: border-box; }
 
   html, body {
+    height: 100%;
     overflow-x: hidden;
     max-width: 100%;
     width: 100%;
@@ -33,6 +34,7 @@
   }
 
   #root {
+    height: 100%;
     overflow-x: clip;
     max-width: 100%;
     width: 100%;
@@ -40,7 +42,7 @@
     min-width: 0;
   }
 
-  #root > * { min-width: 0; max-width: 100%; }
+  #root > * { min-width: 0; max-width: 100%; min-height: 0; }
   main, section, article, header, footer, nav { min-width: 0; }
   img, video, canvas, svg { max-width: 100%; }
   button, a { touch-action: manipulation; }
@@ -65,4 +67,15 @@
   h1, h2, h3, h4, p, label { min-width: 0; overflow-wrap: anywhere; }
   button, a { max-width: 100%; }
   img, video, canvas { max-width: 100%; }
+}
+
+/* Keep the application shell fixed to the visible viewport; the main panel is the scroll container. */
+@supports (height: 100dvh) {
+  html, body, #root { height: 100dvh; }
+}
+
+main {
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+  touch-action: pan-y;
 }
