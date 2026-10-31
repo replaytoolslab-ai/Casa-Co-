@@ -36,15 +36,15 @@
 **Interfaces:**
 - Produces verified model IDs, request schemas, response formats, free-plan eligibility, and image-input capabilities for Tasks 2–4.
 
-- [ ] **Step 1: Inspect official model pages**
+- [x] **Step 1: Inspect official model pages**
   - Verify at least one text model for Mastro, one image-understanding model for assistant photo attachments, one text-to-image model for Vision Studio, and one image-to-image model for reference-photo editing if available.
   - For every candidate, record the exact model ID, Free-plan eligibility, accepted JSON input fields, output shape, limits, and whether a billing method is required.
-- [ ] **Step 2: Verify API invocation format**
+- [x] **Step 2: Verify API invocation format**
   - Confirm the account-scoped REST URL, Bearer token header, JSON request body, and binary/base64 image response handling from Cloudflare's current documentation.
-- [ ] **Step 3: Record safe selections**
+- [x] **Step 3: Record safe selections**
   - Select only candidates that are explicitly free-tier eligible.
   - If no free image-to-image model supports the current reference-photo workflow, document the limitation and design a clear unsupported response; do not simulate photo editing with text-to-image.
-- [ ] **Step 4: Review compatibility note**
+- [x] **Step 4: Review compatibility note**
   - Ensure the note contains official source URLs and enough detail to implement each request without guessing.
 
 ### Task 2: Add a shared Cloudflare Workers AI client
@@ -58,19 +58,19 @@
 - Produces normalized helpers for provider errors and quota exhaustion.
 - Consumes server environment `CLOUDFLARE_ACCOUNT_ID` and `CLOUDFLARE_API_TOKEN`.
 
-- [ ] **Step 1: Write failing tests**
+- [x] **Step 1: Write failing tests**
   - Test missing account ID and token.
   - Test exact URL and Bearer authorization header.
   - Test successful JSON response.
   - Test Cloudflare 429/quota error normalization.
   - Test paid-only-model 403 is not retried.
   - Test malformed provider JSON and network failure.
-- [ ] **Step 2: Run tests and confirm they fail**
-- [ ] **Step 3: Implement the shared client**
+- [x] **Step 2: Run tests and confirm they fail**
+- [x] **Step 3: Implement the shared client**
   - Use `https://api.cloudflare.com/client/v4/accounts/{account_id}/ai/run/{model}`.
   - Set a bounded timeout and parse Cloudflare's `success`, `result`, and `errors` envelope according to the verified API contract.
   - Never log credentials or full user images.
-- [ ] **Step 4: Run focused tests and confirm they pass**
+- [x] **Step 4: Run focused tests and confirm they pass**
 
 ### Task 3: Migrate Mastro chat and photo understanding
 
@@ -91,12 +91,12 @@
   - Quota exhaustion returns 429.
   - Empty or malformed model output returns 502.
 - [ ] **Step 2: Run tests and confirm they fail**
-- [ ] **Step 3: Implement Cloudflare chat**
+- [x] **Step 3: Implement Cloudflare chat**
   - Preserve the existing safety wording for electrical, structural, gas, waterproofing, and work-at-height hazards.
   - Bound prompt/history lengths and output tokens.
   - Remove Gemini calls and Gemini env dependencies from this route.
-- [ ] **Step 4: Update `.env.example` with server-only Cloudflare variables and verified chat/vision model IDs**
-- [ ] **Step 5: Run focused tests and confirm they pass**
+- [x] **Step 4: Update `.env.example` with server-only Cloudflare variables and verified chat/vision model IDs**
+- [x] **Step 5: Run focused tests and confirm they pass**
 
 ### Task 4: Migrate Vision Studio generation and reference-photo workflow
 
@@ -115,11 +115,11 @@
   - Unsupported reference-photo editing returns a clear limitation error and never silently ignores the input photo.
   - Missing secrets, quota exhaustion, malformed output, and oversized image input return controlled errors.
 - [ ] **Step 2: Run tests and confirm they fail**
-- [ ] **Step 3: Implement Vision Studio**
+- [x] **Step 3: Implement Vision Studio text-to-image; reference-photo edits return an explicit unsupported response until a free image-to-image model is verified**
   - Keep prompt constraints about perspective, room geometry, doors, windows, and realistic materials.
   - Use only verified Free model IDs and bounded output dimensions.
   - Remove Gemini interactions API calls.
-- [ ] **Step 4: Run focused tests and confirm they pass**
+- [x] **Step 4: Run focused tests and confirm they pass**
 
 ### Task 5: Repository cleanup and full verification
 
@@ -129,9 +129,9 @@
 
 - [ ] **Step 1: Search all source files for Gemini references and Google SDK imports**
 - [ ] **Step 2: Remove obsolete Gemini dependency/config only when safe**
-- [ ] **Step 3: Run `npm run lint`**
-- [ ] **Step 4: Run `npm run build`**
-- [ ] **Step 5: Run all focused API tests**
+- [x] **Step 3: Run `bun run lint`**
+- [x] **Step 4: Run `bun run build`**
+- [x] **Step 5: Run all focused API tests**
 - [ ] **Step 6: Inspect the final diff for accidental frontend/API contract changes**
 - [ ] **Step 7: Commit the completed migration to the feature branch and update PR #1 description; do not merge**
 
