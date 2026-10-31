@@ -250,14 +250,14 @@ export default function App() {
       <div
         className={
           isMobileDeviceView
-            ? 'py-8 px-4 flex flex-col items-center justify-center min-h-screen bg-[#E5DFD5]'
+            ? 'h-full min-h-0 py-4 px-4 flex flex-col items-center justify-start overflow-y-auto bg-[#E5DFD5]'
             : 'w-full flex-1 min-h-0 flex flex-col'
         }
       >
         <div
           className={
             isMobileDeviceView
-              ? 'w-full max-w-[400px] h-[860px] bg-[#F5F1E9] rounded-[48px] border-[10px] border-[#26343B] shadow-2xl overflow-hidden flex flex-col relative'
+              ? 'w-full max-w-[400px] min-h-[760px] h-[860px] shrink-0 bg-[#F5F1E9] rounded-[48px] border-[10px] border-[#26343B] shadow-2xl overflow-hidden flex flex-col relative'
               : 'w-full h-full min-h-0 flex flex-col flex-1'
           }
         >
@@ -330,7 +330,7 @@ export default function App() {
           )}
 
           {/* Main App Content Area */}
-          <main className="flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-8 pb-6 overflow-y-auto overscroll-y-contain overflow-x-hidden">
+          <main className="flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-8 pb-32 sm:pb-36 overflow-y-auto overscroll-y-contain overflow-x-hidden">
             {renderScreen()}
           </main>
 
