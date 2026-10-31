@@ -34,6 +34,7 @@ export const VisionStudioScreen: React.FC<VisionStudioScreenProps> = ({
   const handleSendMessage = (msg: Parameters<typeof projectService.addChatMessage>[0]) => projectService.addChatMessage(msg);
   const handleToggleChecklist = (itemId: string) => projectService.toggleChecklistItem(itemId);
   const handleAddPhotoDiary = (entry: Parameters<typeof projectService.addPhotoDiaryEntry>[0]) => projectService.addPhotoDiaryEntry(entry);
+  const handleDeletePhotoDiary = (entryId: string) => projectService.deletePhotoDiaryEntry(entryId);
 
   const modes: { id: VisionStudioMode; label: string; icon: React.ElementType }[] = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -84,7 +85,7 @@ export const VisionStudioScreen: React.FC<VisionStudioScreenProps> = ({
         {activeMode === 'dashboard' && <VisionStudioDashboard project={project} language={language} onSelectMode={setActiveMode} />}
         {activeMode === 'vision-ai' && <VisionAiMode project={project} language={language} onUpdateProject={handleUpdateProject} onUpdateCustomizations={handleUpdateCustomizations} onNavigateScan3D={() => setActiveMode('scan-3d')} />}
         {activeMode === 'scan-3d' && <Scan3dMode project={project} language={language} onUpdateDimensions={handleUpdateDimensions} onAddOpening={handleAddOpening} onRemoveOpening={handleRemoveOpening} onNavigateAssistant={() => setActiveMode('assistant-ai')} />}
-        {activeMode === 'assistant-ai' && <AssistantAiMode project={project} language={language} onSendMessage={handleSendMessage} onToggleChecklist={handleToggleChecklist} onAddPhotoDiary={handleAddPhotoDiary} onNavigateVisionAi={() => setActiveMode('vision-ai')} />}
+        {activeMode === 'assistant-ai' && <AssistantAiMode project={project} language={language} onSendMessage={handleSendMessage} onToggleChecklist={handleToggleChecklist} onAddPhotoDiary={handleAddPhotoDiary} onDeletePhotoDiary={handleDeletePhotoDiary} onNavigateVisionAi={() => setActiveMode('vision-ai')} />}
       </div>
     </div>
   );
