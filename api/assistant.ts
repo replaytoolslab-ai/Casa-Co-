@@ -101,9 +101,16 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       max_tokens: 1200,
       temperature: 0.55,
       chat_template_kwargs: { enable_thinking: false }
-    }) as { response?: unknown };
+    }) as {
+      response?: unknown;
+      choices?: Array<{ message?: { content?: unknown } }>;
+    };
 
-    const answer = typeof result?.response === 'string' ? result.response.trim() : '';
+    // Workers AI can return either the legacy { response } shape or the
+    // chat-completions { choices[0].message.content } shape for message input.
+    const choiceContent = result?.choices?.[0]?.message?.content;
+    const rawAnswer = typeof result?.response === 'string' ? result.response : choiceContent;
+    const answer = typeof rawAnswer === 'string' ? rawAnswer.trim() : '';
     if (!answer) return sendError(res, 502, 'La risposta AI è vuota. Riprova con una domanda più specifica.');
     return res.status(200).json({ text: answer, model: MODEL });
   } catch (error) {
