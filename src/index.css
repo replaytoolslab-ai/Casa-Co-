@@ -56,3 +56,13 @@
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+
+/* Mobile layout safeguards: keep editorial copy readable without hiding content. */
+@media (max-width: 640px) {
+  html, body, #root { width: 100%; min-width: 320px; overflow-x: clip; }
+  #root, #root > *, main, main > *, section, article { min-width: 0; max-width: 100%; }
+  h1, h2, h3, h4, p, label { min-width: 0; overflow-wrap: anywhere; }
+  button, a { max-width: 100%; }
+  img, video, canvas { max-width: 100%; }
+}
