@@ -16,6 +16,7 @@ import {
   Check,
   X,
   Clock,
+  Trash2,
 } from 'lucide-react';
 import {
   VisionStudioProject,
@@ -23,7 +24,7 @@ import {
   SafetyWarning,
   PhotoDiaryEntry,
 } from '../../types';
-import { assistantService, SAFETY_PRESETS } from '../../services/assistantService';
+import { SAFETY_PRESETS } from '../../services/assistantService';
 import { Language, translations } from '../../i18n/translations';
 import { InteractiveToolTutorials } from './InteractiveToolTutorials';
 
@@ -33,6 +34,7 @@ interface AssistantAiModeProps {
   onSendMessage: (msg: Omit<AssistantChatMessage, 'id'>) => void;
   onToggleChecklist: (itemId: string) => void;
   onAddPhotoDiary: (entry: Omit<PhotoDiaryEntry, 'id'>) => void;
+  onDeletePhotoDiary: (entryId: string) => void;
   onNavigateVisionAi: () => void;
 }
 
@@ -42,6 +44,7 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
   onSendMessage,
   onToggleChecklist,
   onAddPhotoDiary,
+  onDeletePhotoDiary,
   onNavigateVisionAi,
 }) => {
   const t = translations[language];
@@ -51,6 +54,7 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
   const [attachedPhoto, setAttachedPhoto] = useState<string | null>(null);
   const [attachedPhotoName, setAttachedPhotoName] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
+  const [serviceError, setServiceError] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Photo Diary modal state
@@ -71,44 +75,82 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
     scrollToBottom();
   }, [project.chatHistory, isTyping]);
 
-  const handleSend = (e?: React.FormEvent) => {
-    if (e) e.preventDefault();
-    if (!inputText.trim() && !attachedPhoto) return;
+  const readImage = (file: File) => new Promise<string>((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(new Error('Impossibile leggere la fotografia.'));
+    reader.readAsDataURL(file);
+  });
 
+  const handleSend = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    if ((!inputText.trim() && !attachedPhoto) || isTyping) return;
+
+    const sentText = inputText.trim();
+    const sentPhoto = attachedPhoto;
     const userMessage: Omit<AssistantChatMessage, 'id'> = {
       sender: 'user',
-      text: inputText.trim() || 'Ho caricato questa foto del cantiere.',
+      text: sentText || 'Ho caricato questa foto del cantiere.',
       timestamp: 'Adesso',
-      attachedImageUrl: attachedPhoto || undefined,
+      attachedImageUrl: sentPhoto || undefined,
     };
-
     onSendMessage(userMessage);
-    const sentText = inputText;
-    const sentPhotoName = attachedPhotoName;
     setInputText('');
     setAttachedPhoto(null);
     setAttachedPhotoName(null);
-
-    // Simulate AI thinking and expert reply
+    setServiceError('');
     setIsTyping(true);
-    setTimeout(() => {
-      const reply = assistantService.generateReply(
-        sentText,
-        project,
-        sentPhotoName || undefined
-      );
-      onSendMessage(reply);
+
+    try {
+      const response = await fetch('/api/assistant', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: sentText,
+          project,
+          history: project.chatHistory.map((item) => ({
+            role: item.sender === 'assistant' ? 'model' : 'user',
+            text: item.text
+          })),
+          image: sentPhoto ? {
+            mimeType: sentPhoto.slice(5, sentPhoto.indexOf(';')),
+            data: sentPhoto.split(',')[1]
+          } : undefined
+        })
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'Il servizio AI non è disponibile.');
+      onSendMessage({
+        sender: 'assistant',
+        text: result.text,
+        timestamp: 'Adesso'
+      });
+    } catch (error) {
+      setServiceError(error instanceof Error ? error.message : 'Errore durante la richiesta all’assistente.');
+    } finally {
       setIsTyping(false);
-    }, 900);
+    }
   };
 
-  const handleAttachFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAttachFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setAttachedPhoto(url);
-      setAttachedPhotoName(file.name);
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+      setServiceError('Formato non supportato. Usa JPG, PNG o WebP.');
+      return;
     }
+    if (file.size > 3 * 1024 * 1024) {
+      setServiceError('Foto troppo grande: il limite è 3 MB.');
+      return;
+    }
+    try {
+      setAttachedPhoto(await readImage(file));
+      setAttachedPhotoName(file.name);
+      setServiceError('');
+    } catch {
+      setServiceError('Non è stato possibile leggere la fotografia.');
+    }
+    e.target.value = '';
   };
 
   const handleAddDiarySubmit = (e: React.FormEvent) => {
@@ -308,6 +350,8 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
             <div ref={messagesEndRef} />
           </div>
 
+          {serviceError && <div role="alert" className="border-t border-red-200 bg-red-50 px-4 py-2 text-xs text-red-800">{serviceError}</div>}
+
           {/* Quick Prompt Pills */}
           <div className="p-2.5 bg-white border-t border-[#F0EBE1] flex items-center gap-2 overflow-x-auto no-scrollbar">
             {quickQuestions.map((q, i) => (
@@ -491,6 +535,9 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
                       {entry.notes}
                     </p>
                   </div>
+                  <button type="button" onClick={() => onDeletePhotoDiary(entry.id)} aria-label={`Elimina ${entry.title}`} title="Elimina voce" className="shrink-0 rounded-lg p-2 text-[#8F7451] hover:bg-red-50 hover:text-red-700">
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               ))}
             </div>
