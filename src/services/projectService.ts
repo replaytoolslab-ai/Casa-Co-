@@ -333,6 +333,15 @@ class ProjectService {
     this.notify();
   }
 
+  deletePhotoDiaryEntry(entryId: string): void {
+    this.currentProject = {
+      ...this.currentProject,
+      photoDiary: this.currentProject.photoDiary.filter((entry) => entry.id !== entryId),
+      lastModified: 'Adesso'
+    };
+    this.notify();
+  }
+
   addChatMessage(message: Omit<VisionStudioProject['chatHistory'][0], 'id'>): void {
     const newMsg = {
       ...message,
