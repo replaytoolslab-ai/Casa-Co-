@@ -322,15 +322,15 @@ export const Room3DCanvas: React.FC<Room3DCanvasProps> = ({
       </div>
 
       {/* Dimension Readout Badge on Canvas */}
-      <div className="absolute bottom-3 left-3 bg-[#26343B]/90 backdrop-blur-md text-white px-3 py-1.5 rounded-xl text-xs font-mono flex items-center gap-2 shadow-xs">
+      <div className="absolute bottom-3 left-3 right-3 sm:right-auto sm:max-w-[calc(100%-1.5rem)] bg-[#26343B]/95 backdrop-blur-md text-white px-3 py-2 rounded-xl text-xs font-mono flex items-start gap-2 shadow-xs">
         <span className="w-2 h-2 rounded-full bg-[#B79B76] animate-pulse" />
-        <span>
-          {(scanData.width / 100).toFixed(2)}m × {(scanData.length / 100).toFixed(2)}m · H {(scanData.height / 100).toFixed(2)}m ({scanData.squareMeters} m²)
+        <span className="min-w-0 flex-1 whitespace-normal break-words leading-snug tabular-nums">
+          {(scanData.width / 100).toFixed(2)}m × {(scanData.length / 100).toFixed(2)}m · H {(scanData.height / 100).toFixed(2)}m · {Number(scanData.squareMeters).toFixed(2)} m²
         </span>
       </div>
 
       {/* Interaction tip overlay */}
-      <div className="absolute bottom-3 right-3 text-[10px] text-[#26343B]/50 font-medium hidden sm:block">
+      <div className="absolute top-3 left-3 text-[10px] text-[#26343B]/65 font-medium hidden lg:block">
         Trascina per ruotare 360° · Zoom fluido
       </div>
 
