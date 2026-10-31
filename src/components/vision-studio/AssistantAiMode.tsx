@@ -402,7 +402,7 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
               </div>
             </div>
 
-            <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+            <div className="space-y-2 pr-1">
               {project.checklist.map((item) => (
                 <div
                   key={item.id}
