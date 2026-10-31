@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   User,
   Award,
@@ -23,17 +23,26 @@ interface ProfileScreenProps {
   completedCount: number;
 }
 
+function readProfileSetting<T>(key: string, fallback: T): T {
+  try {
+    const raw = window.localStorage.getItem('casa-co:profile:' + key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   language,
   onLanguageChange,
   completedCount,
 }) => {
   const t = translations[language];
-  const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>('metric');
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>(() => readProfileSetting('unit-system', 'metric'));
+  const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(() => readProfileSetting('notifications-enabled', true));
 
   // Workshop Tools Inventory State
-  const [toolsInventory, setToolsInventory] = useState([
+  const [toolsInventory, setToolsInventory] = useState(() => readProfileSetting('tools-inventory', [
     { name: 'Sega ad affondamento con binario guida', owned: true },
     { name: 'Fresatrice verticale da 1400W', owned: true },
     { name: 'Levigatrice rotorbitale 150mm', owned: true },
@@ -44,7 +53,17 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
     { name: 'Pialletto a filo e spessore da banco', owned: false },
     { name: 'Saldatrice TIG per telai ferro', owned: false },
     { name: 'Frattone veneziano in acciaio inox', owned: true },
-  ]);
+  ]));
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem('casa-co:profile:unit-system', JSON.stringify(unitSystem));
+      window.localStorage.setItem('casa-co:profile:notifications-enabled', JSON.stringify(notificationsEnabled));
+      window.localStorage.setItem('casa-co:profile:tools-inventory', JSON.stringify(toolsInventory));
+    } catch (error) {
+      console.warn('Casa&Co: impossibile salvare le impostazioni del profilo.', error);
+    }
+  }, [unitSystem, notificationsEnabled, toolsInventory]);
 
   const toggleTool = (index: number) => {
     setToolsInventory((prev) =>
@@ -74,9 +93,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           {/* User Bio */}
           <div className="flex-1">
             <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#26343B]">
-                Matteo Vianello
-              </h1>
+              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#26343B]">Matteo Vianello</h1>
               <span className="text-xs bg-[#B79B76]/15 text-[#8F7451] font-bold px-2.5 py-0.5 rounded-full">
                 PRO MAKER
               </span>
@@ -194,27 +211,23 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           <span>{t.profile.settingsTitle}</span>
         </h2>
 
-        {/* Language setting readout (single source of truth in Header) */}
-        <div className="flex items-center justify-between py-2">
-          <div className="flex items-center gap-3">
-            <Globe className="w-5 h-5 text-[#26343B]/70" />
-            <div>
-              <span className="text-sm font-semibold text-[#26343B] block">
-                {t.profile.languageLabel}
-              </span>
-              <span className="text-xs text-[#26343B]/60">
-                {language === 'it' ? 'Italiano (selettore attivo nella barra in alto)' : 'English (active in top header)'}
-              </span>
+        {/* Language preference */}
+        <div className="flex flex-wrap items-center justify-between gap-3 py-2">
+          <div className="flex items-center gap-3 min-w-0">
+            <Globe className="w-5 h-5 shrink-0 text-[#26343B]/70" />
+            <div className="min-w-0">
+              <span className="text-sm font-semibold text-[#26343B] block">{t.profile.languageLabel}</span>
+              <span className="text-xs text-[#26343B]/60">{language === 'it' ? 'Lingua attiva dell’app' : 'App display language'}</span>
             </div>
           </div>
-
-          <span className="text-xs font-bold text-[#26343B] bg-[#FAF8F5] px-3.5 py-1.5 rounded-xl border border-[#E5DFD5]">
-            {language === 'it' ? '🇮🇹 Italiano' : '🇬🇧 English'}
-          </span>
+          <div className="flex shrink-0 items-center gap-1 rounded-xl border border-[#E5DFD5] bg-[#FAF8F5] p-1">
+            <button type="button" aria-pressed={language === 'it'} onClick={() => onLanguageChange('it')} className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${language === 'it' ? 'bg-[#26343B] text-[#F5F1E9]' : 'text-[#26343B]/60'}`}>IT</button>
+            <button type="button" aria-pressed={language === 'en'} onClick={() => onLanguageChange('en')} className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${language === 'en' ? 'bg-[#26343B] text-[#F5F1E9]' : 'text-[#26343B]/60'}`}>EN</button>
+          </div>
         </div>
 
         {/* Units of Measure */}
-        <div className="flex items-center justify-between py-2 border-t border-[#F0EBE1]">
+        <div className="flex flex-wrap items-center justify-between gap-3 py-2 border-t border-[#F0EBE1]">
           <div className="flex items-center gap-3">
             <Ruler className="w-5 h-5 text-[#26343B]/70" />
             <div>
@@ -227,7 +240,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center bg-[#FAF8F5] border border-[#E5DFD5] rounded-xl p-1">
+          <div className="flex max-w-full items-center bg-[#FAF8F5] border border-[#E5DFD5] rounded-xl p-1">
             <button
               onClick={() => setUnitSystem('metric')}
               className={`px-3 py-1 text-xs font-semibold rounded-lg transition-all ${
@@ -260,14 +273,18 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 {t.profile.notifications}
               </span>
               <span className="text-xs text-[#26343B]/60">
-                Ricevi avvisi per nuove schede e aggiornamenti di cantiere
+                Preferenza locale dell’app; le notifiche push richiedono un servizio di notifica configurato
               </span>
             </div>
           </div>
 
           <button
-            onClick={() => setNotificationsEnabled(!notificationsEnabled)}
-            className={`w-12 h-6 rounded-full transition-colors relative p-0.5 ${
+            onClick={() => setNotificationsEnabled((enabled) => !enabled)}
+            type="button"
+            role="switch"
+            aria-checked={notificationsEnabled}
+            aria-label={t.profile.notifications}
+            className={`w-12 h-6 shrink-0 rounded-full transition-colors relative p-0.5 ${
               notificationsEnabled ? 'bg-[#26343B]' : 'bg-[#E5DFD5]'
             }`}
           >
