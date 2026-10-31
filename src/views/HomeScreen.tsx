@@ -72,7 +72,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   ];
 
   return (
-    <div className="space-y-10 sm:space-y-16 pb-16">
+    <div className="w-full min-w-0 max-w-full space-y-10 overflow-x-clip pb-16 sm:space-y-16">
       
       {/* Search active results notification banner */}
       {searchQuery && (
@@ -93,7 +93,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       {!searchQuery && (
         <section className="relative rounded-3xl sm:rounded-4xl overflow-hidden border border-[#E5DFD5] bg-[#26343B] text-[#F5F1E9] shadow-xl">
           {/* Background Image: Emotional modern home in renovation */}
-          <div className="relative aspect-4/3 sm:aspect-21/9 lg:aspect-24/9 w-full">
+          <div className="relative min-h-[540px] w-full sm:min-h-0 sm:aspect-[21/9] lg:aspect-[24/9]">
             <img
               src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85"
               alt="Casa moderna in ristrutturazione con architettura pulita e legno caldo"
@@ -103,7 +103,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <div className="absolute inset-0 bg-gradient-to-r from-[#26343B]/90 via-[#26343B]/40 to-transparent" />
 
             {/* Content Overlay */}
-            <div className="absolute inset-0 p-6 sm:p-10 lg:p-14 flex flex-col justify-end max-w-2xl">
+            <div className="absolute inset-0 flex min-w-0 max-w-2xl flex-col justify-end p-5 sm:p-10 lg:p-14">
               <div className="inline-flex items-center gap-2 mb-3">
                 <span className="w-2 h-2 rounded-full bg-[#B79B76] animate-pulse" />
                 <span className="text-xs uppercase tracking-widest text-[#B79B76] font-semibold">
@@ -111,11 +111,11 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
                 </span>
               </div>
 
-              <h2 className="font-serif text-2xl sm:text-4xl lg:text-5xl font-bold leading-tight tracking-tight mb-3 sm:mb-4 text-[#F5F1E9]">
+              <h2 className="mb-3 break-words font-serif text-[clamp(1.55rem,6vw,2.25rem)] font-bold leading-[1.12] tracking-tight text-[#F5F1E9] sm:mb-4 sm:text-4xl lg:text-5xl">
                 {t.home.heroTitle}
               </h2>
 
-              <p className="text-xs sm:text-base text-[#F5F1E9]/80 leading-relaxed max-w-xl mb-6 font-normal">
+              <p className="mb-5 max-w-xl break-words text-sm font-normal leading-relaxed text-[#F5F1E9]/90 sm:mb-6 sm:text-base">
                 {t.home.heroSubtitle}
               </p>
 
@@ -165,12 +165,12 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* Main Categories Section */}
       <section>
-        <div className="flex items-end justify-between mb-5 sm:mb-6">
+        <div className="mb-5 flex min-w-0 flex-wrap items-end justify-between gap-3 sm:mb-6">
           <div>
             <span className="text-xs uppercase tracking-wider text-[#8F7451] font-bold block mb-1">
               Esplorazione
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#26343B]">
+            <h2 className="break-words font-serif text-2xl font-bold leading-tight text-[#26343B] sm:text-3xl">
               {t.home.categoriesTitle}
             </h2>
             <p className="text-xs sm:text-sm text-[#26343B]/70 mt-1">
@@ -204,7 +204,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
       {/* Featured / Recommended Projects (Progetti Consigliati) */}
       <section>
-        <div className="flex items-end justify-between mb-5 sm:mb-6">
+        <div className="mb-5 flex min-w-0 flex-wrap items-end justify-between gap-3 sm:mb-6">
           <div>
             <span className="text-xs uppercase tracking-wider text-[#8F7451] font-bold block mb-1">
               Selezione della Redazione
