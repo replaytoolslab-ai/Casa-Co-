@@ -79,7 +79,7 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
     <div className="space-y-8 pb-12">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end sm:gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B79B76]/15 text-[#8F7451] text-xs font-bold uppercase tracking-wider mb-2">
             <Box className="w-3.5 h-3.5 text-[#B79B76]" />
@@ -124,7 +124,7 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
 
       {/* Step 1: Guided Scan Sequence Cards */}
       <div className="bg-white p-5 sm:p-7 rounded-3xl border border-[#E5DFD5] shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[#F0EBE1]">
+        <div className="flex min-w-0 flex-wrap items-center justify-between gap-3 pb-3 border-b border-[#F0EBE1]">
           <h2 className="font-serif text-lg font-bold text-[#26343B] flex items-center gap-2">
             <Compass className="w-5 h-5 text-[#B79B76]" />
             <span>Fasi della Scansione Spaziale Guidata</span>
@@ -207,7 +207,7 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
             </h3>
           </div>
 
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 min-[380px]:grid-cols-3 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-[#26343B]/70 uppercase tracking-wider mb-1">
                 Larghezza (cm)
