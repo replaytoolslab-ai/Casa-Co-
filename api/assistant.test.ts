@@ -25,7 +25,7 @@ test('Mastro preserves chat response contract and sends project context to Cloud
   let requestBody: any;
   globalThis.fetch = (async (_url: RequestInfo | URL, init?: RequestInit) => {
     requestBody = JSON.parse(String(init?.body));
-    return new Response(JSON.stringify({ success: true, result: { response: 'Controlla prima il supporto.' } }), { status: 200 });
+    return new Response(JSON.stringify({ success: true, result: { choices: [{ message: { role: 'assistant', content: 'Controlla prima il supporto.' } }] } }), { status: 200 });
   }) as typeof fetch;
 
   const res = mockResponse();
