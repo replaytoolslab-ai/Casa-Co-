@@ -108,7 +108,7 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
           <Smartphone className="w-5 h-5" />
         </div>
         <div className="text-xs sm:text-sm leading-relaxed text-[#26343B]">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="font-bold text-[#26343B]">
               MODALITÀ DIMOSTRATIVA RILIEVO 3D
             </span>
@@ -169,9 +169,9 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
 
       {/* Step 2: Interactive Three.js 3D Viewport */}
       <div className="bg-white p-5 sm:p-7 rounded-3xl border border-[#E5DFD5] shadow-xs space-y-4">
-        <div className="flex items-center justify-between pb-3 border-b border-[#F0EBE1]">
+        <div className="flex flex-wrap items-start justify-between gap-2 pb-3 border-b border-[#F0EBE1]">
           <div>
-            <h2 className="font-serif text-xl font-bold text-[#26343B] flex items-center gap-2">
+            <h2 className="min-w-0 font-serif text-xl font-bold text-[#26343B] flex items-center gap-2">
               <Box className="w-5 h-5 text-[#B79B76]" />
               <span>Anteprima Tridimensionale Interattiva</span>
             </h2>
