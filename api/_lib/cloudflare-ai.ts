@@ -31,7 +31,7 @@ export async function runCloudflareModel(
     );
   }
 
-  if (!/^@[a-z0-9-]+\/[a-z0-9._-]+$/i.test(model)) {
+  if (!/^@[a-z0-9._-]+(?:\/[a-z0-9._-]+){2}$/i.test(model)) {
     throw new CloudflareAIError('Modello AI non valido.', 500);
   }
 
