@@ -187,7 +187,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
 
         {/* Scrollable / Responsive categories row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4 min-w-0">
           {popularCategoryKeys.map((catKey) => {
             const cat = CATEGORIES_DATA[catKey];
             return (
