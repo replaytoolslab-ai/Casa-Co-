@@ -376,7 +376,7 @@ export const InteractiveToolTutorials: React.FC<InteractiveToolTutorialsProps> =
       
       {/* Header section with brand accent */}
       <div className="p-5 sm:p-7 border-b border-[#F0EBE1] bg-[#FAF8F5]">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div className="flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-center">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#26343B] text-[#B79B76] text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1.5 shadow-xs">
               <Zap className="w-3.5 h-3.5 text-[#B79B76]" />
@@ -414,7 +414,7 @@ export const InteractiveToolTutorials: React.FC<InteractiveToolTutorialsProps> =
         </div>
 
         {/* Horizontal Tool Selector Carousel */}
-        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pt-4 w-full">
+        <div className="flex w-full flex-wrap items-center gap-2 pt-4">
           {TUTORIALS_DATA.map((t) => {
             const isSelected = t.id === selectedTutorialId;
             return (
