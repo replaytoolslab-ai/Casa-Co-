@@ -77,6 +77,7 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
   };
 
   const handleSelectDemoImage = (imgUrl: string, room: string) => {
+    setSourceImageData(null);
     setActiveBeforeImage(imgUrl);
     setSelectedRoomType(room);
     onUpdateProject({ beforeImage: imgUrl, roomType: room });
@@ -188,7 +189,10 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
                 Carica o scatta foto della stanza
               </span>
               <span className="text-[11px] text-[#26343B]/60">
-                Supporta JPG, PNG, HEIC da fotocamera o rullino
+                Supporta JPG, PNG o WebP fino a 3 MB
+              </span>
+              <span className="mt-2 max-w-xs text-[10px] leading-relaxed text-[#8F7451]">
+                La foto viene inviata a Google Gemini per analisi e generazione del rendering.
               </span>
             </label>
           </div>
