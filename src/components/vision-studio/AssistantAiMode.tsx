@@ -28,6 +28,75 @@ import { SAFETY_PRESETS } from '../../services/assistantService';
 import { Language, translations } from '../../i18n/translations';
 import { InteractiveToolTutorials } from './InteractiveToolTutorials';
 
+const renderAssistantInline = (text: string): React.ReactNode[] => {
+  const parts = text.split(/(\\*\\*[^*]+\\*\\*|`[^`]+`|\\*[^*]+\\*)/g).filter(Boolean);
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <strong key={index} className="font-semibold">{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith('`') && part.endsWith('`')) {
+      return <code key={index} className="rounded bg-[#F2ECE1] px-1 py-0.5 text-[0.92em]">{part.slice(1, -1)}</code>;
+    }
+    if (part.startsWith('*') && part.endsWith('*')) {
+      return <em key={index}>{part.slice(1, -1)}</em>;
+    }
+    return part;
+  });
+};
+
+const AssistantFormattedText: React.FC<{ text: string }> = ({ text }) => {
+  const lines = text.replace(/\\r/g, '').split('\\n');
+  const blocks: React.ReactNode[] = [];
+  let paragraph: string[] = [];
+  let listItems: string[] = [];
+  let listType: 'ul' | 'ol' | null = null;
+
+  const flushParagraph = () => {
+    if (!paragraph.length) return;
+    blocks.push(<p key={`p-${blocks.length}`}>{renderAssistantInline(paragraph.join(' '))}</p>);
+    paragraph = [];
+  };
+  const flushList = () => {
+    if (!listItems.length || !listType) return;
+    const items = listItems.map((item, index) => <li key={index}>{renderAssistantInline(item)}</li>);
+    blocks.push(listType === 'ol'
+      ? <ol key={`ol-${blocks.length}`} className="my-2 list-decimal space-y-1 pl-5">{items}</ol>
+      : <ul key={`ul-${blocks.length}`} className="my-2 list-disc space-y-1 pl-5">{items}</ul>);
+    listItems = [];
+    listType = null;
+  };
+
+  lines.forEach((rawLine) => {
+    const line = rawLine.trim();
+    if (!line) {
+      flushParagraph();
+      flushList();
+      return;
+    }
+    const unordered = line.match(/^(?:[-•*])\\s+(.+)$/);
+    const ordered = line.match(/^\\d+[.)]\\s+(.+)$/);
+    if (unordered || ordered) {
+      flushParagraph();
+      const nextType = unordered ? 'ul' : 'ol';
+      if (listType && listType !== nextType) flushList();
+      listType = nextType;
+      listItems.push((unordered || ordered)![1]);
+      return;
+    }
+    flushList();
+    const heading = line.match(/^#{1,3}\\s+(.+)$/);
+    if (heading) {
+      flushParagraph();
+      blocks.push(<h4 key={`h-${blocks.length}`} className="mt-2 font-semibold text-[#26343B]">{renderAssistantInline(heading[1])}</h4>);
+      return;
+    }
+    paragraph.push(line);
+  });
+  flushParagraph();
+  flushList();
+  return <div className="space-y-2 [&>p]:whitespace-pre-wrap">{blocks}</div>;
+};
+
 interface AssistantAiModeProps {
   project: VisionStudioProject;
   language: Language;
@@ -363,7 +432,7 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
                       </div>
                     )}
 
-                    <p>{msg.text}</p>
+                    {isAssistant ? <AssistantFormattedText text={msg.text} /> : <p className="whitespace-pre-wrap">{msg.text}</p>}
 
                     {/* Illustrated Step Card if present */}
                     {msg.illustratedStep && (
