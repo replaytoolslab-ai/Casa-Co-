@@ -138,7 +138,7 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
     <div className="space-y-8 pb-12">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="flex min-w-0 flex-col justify-between gap-3 sm:flex-row sm:items-end sm:gap-4">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#B79B76]/15 text-[#8F7451] text-xs font-bold uppercase tracking-wider mb-2">
             <MessageSquare className="w-3.5 h-3.5 text-[#B79B76]" />
@@ -198,10 +198,10 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
         {/* Left Column: Contextual Chat (7 cols on lg) */}
-        <div className="lg:col-span-7 bg-white rounded-3xl border border-[#E5DFD5] shadow-xs flex flex-col h-[650px] overflow-hidden">
+        <div className="lg:col-span-7 min-w-0 bg-white rounded-3xl border border-[#E5DFD5] shadow-xs flex flex-col h-[min(650px,75vh)] min-h-[480px] overflow-hidden">
           
           {/* Chat Header */}
-          <div className="p-4 sm:p-5 border-b border-[#F0EBE1] bg-[#FAF8F5] flex items-center justify-between">
+          <div className="min-w-0 flex flex-wrap items-center justify-between gap-3 p-4 sm:p-5 border-b border-[#F0EBE1] bg-[#FAF8F5]">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-[#26343B] text-[#B79B76] flex items-center justify-center font-serif font-bold text-base shadow-xs">
                 AI
