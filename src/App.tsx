@@ -244,7 +244,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F1E9] text-[#26343B] flex flex-col font-sans selection:bg-[#B79B76]/20 selection:text-[#26343B]">
+    <div className="h-[100dvh] min-h-0 overflow-hidden bg-[#F5F1E9] text-[#26343B] flex flex-col font-sans selection:bg-[#B79B76]/20 selection:text-[#26343B]">
       
       {/* Device frame container logic for testing */}
       <div
@@ -258,7 +258,7 @@ export default function App() {
           className={
             isMobileDeviceView
               ? 'w-full max-w-[400px] h-[860px] bg-[#F5F1E9] rounded-[48px] border-[10px] border-[#26343B] shadow-2xl overflow-hidden flex flex-col relative'
-              : 'w-full flex flex-col flex-1'
+              : 'w-full h-full min-h-0 flex flex-col flex-1'
           }
         >
           {/* Simulated smartphone status notch in device mode */}
@@ -330,7 +330,7 @@ export default function App() {
           )}
 
           {/* Main App Content Area */}
-          <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-8 pb-28 sm:pb-10 overflow-y-auto overflow-x-hidden">
+          <main className="flex-1 max-w-6xl w-full min-h-0 mx-auto px-3 sm:px-6 pt-4 sm:pt-8 pb-6 overflow-y-auto overscroll-contain overflow-x-hidden">
             {renderScreen()}
           </main>
 
