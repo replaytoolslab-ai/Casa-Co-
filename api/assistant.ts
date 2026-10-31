@@ -1,4 +1,9 @@
-import type { VercelRequest, VercelResponse } from '@vercel/node';
+type VercelRequest = { method?: string; body?: any };
+type VercelResponse = {
+  status(code: number): VercelResponse;
+  json(body: unknown): VercelResponse;
+  setHeader(name: string, value: string): void;
+};
 
 const MODEL = process.env.GEMINI_CHAT_MODEL || 'gemini-3.8-flash';
 
