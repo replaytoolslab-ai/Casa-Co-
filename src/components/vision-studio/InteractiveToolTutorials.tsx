@@ -583,13 +583,13 @@ export const InteractiveToolTutorials: React.FC<InteractiveToolTutorialsProps> =
 
             {/* Bottom Overlay Label */}
             {showOverlays && (
-              <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-                <div className="bg-black/75 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/10 text-white text-[11px] font-medium flex items-center gap-1.5 shadow-md">
+              <div className="absolute bottom-3 left-3 right-3 flex flex-col items-start gap-2 pointer-events-none sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex w-fit max-w-full flex-wrap items-center gap-1.5 rounded-xl border border-white/10 bg-black/80 px-3 py-2 text-left text-[11px] font-medium leading-snug text-white shadow-md backdrop-blur-md">
                   <Compass className="w-3.5 h-3.5 text-[#B79B76]" />
                   <span>{step.overlayVector.label}</span>
                 </div>
                 {step.angleGuide && (
-                  <div className="bg-[#26343B]/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-[#B79B76]/30 text-[#B79B76] text-[11px] font-mono font-bold">
+                  <div className="w-fit max-w-full whitespace-normal break-words rounded-lg border border-[#B79B76]/30 bg-[#26343B]/95 px-2.5 py-1.5 text-[11px] font-mono font-bold leading-snug text-[#B79B76] backdrop-blur-md">
                     {step.angleGuide}
                   </div>
                 )}
