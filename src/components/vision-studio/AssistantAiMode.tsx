@@ -83,6 +83,55 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
     reader.readAsDataURL(file);
   });
 
+  // Compress phone photos locally before upload so the AI request stays within
+  // the serverless request-body limit while retaining enough detail for analysis.
+  const compressChatPhoto = async (file: File): Promise<File> => {
+    const imageBitmap = await createImageBitmap(file);
+    try {
+      const maxDimension = 2048;
+      const scale = Math.min(1, maxDimension / Math.max(imageBitmap.width, imageBitmap.height));
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.max(1, Math.round(imageBitmap.width * scale));
+      canvas.height = Math.max(1, Math.round(imageBitmap.height * scale));
+      const context = canvas.getContext('2d');
+      if (!context) throw new Error('Impossibile preparare la fotografia.');
+      context.drawImage(imageBitmap, 0, 0, canvas.width, canvas.height);
+
+      const toBlob = (quality: number) => new Promise<Blob | null>((resolve) => {
+        canvas.toBlob(resolve, 'image/jpeg', quality);
+      });
+
+      let quality = 0.86;
+      let blob = await toBlob(quality);
+      while (blob && blob.size > 2.5 * 1024 * 1024 && quality > 0.5) {
+        quality = Math.max(0.5, quality - 0.1);
+        blob = await toBlob(quality);
+      }
+
+      let currentCanvas = canvas;
+      while (blob && blob.size > 2.5 * 1024 * 1024 && currentCanvas.width > 900) {
+        const smaller = document.createElement('canvas');
+        smaller.width = Math.round(currentCanvas.width * 0.8);
+        smaller.height = Math.round(currentCanvas.height * 0.8);
+        const smallerContext = smaller.getContext('2d');
+        if (!smallerContext) break;
+        smallerContext.drawImage(currentCanvas, 0, 0, smaller.width, smaller.height);
+        currentCanvas = smaller;
+        blob = await new Promise<Blob | null>((resolve) => smaller.toBlob(resolve, 'image/jpeg', 0.72));
+      }
+
+      if (!blob || blob.size > 2.5 * 1024 * 1024) {
+        throw new Error('Non riesco a comprimere questa foto abbastanza. Prova con un’immagine più piccola.');
+      }
+      return new File([blob], file.name.replace(/\\.[^.]+$/, '') + '.jpg', {
+        type: 'image/jpeg',
+        lastModified: Date.now(),
+      });
+    } finally {
+      imageBitmap.close();
+    }
+  };
+
   const handleSend = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if ((!inputText.trim() && !attachedPhoto) || isTyping) return;
@@ -138,18 +187,16 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
     if (!file) return;
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
       setServiceError('Formato non supportato. Usa JPG, PNG o WebP.');
-      return;
-    }
-    if (file.size > 3 * 1024 * 1024) {
-      setServiceError('Foto troppo grande: il limite è 3 MB.');
+      e.target.value = '';
       return;
     }
     try {
-      setAttachedPhoto(await readImage(file));
-      setAttachedPhotoName(file.name);
+      const compressedPhoto = await compressChatPhoto(file);
+      setAttachedPhoto(await readImage(compressedPhoto));
+      setAttachedPhotoName(compressedPhoto.name);
       setServiceError('');
-    } catch {
-      setServiceError('Non è stato possibile leggere la fotografia.');
+    } catch (error) {
+      setServiceError(error instanceof Error ? error.message : 'Non è stato possibile preparare la fotografia.');
     }
     e.target.value = '';
   };
