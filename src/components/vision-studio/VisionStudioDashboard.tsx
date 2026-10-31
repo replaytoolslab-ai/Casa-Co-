@@ -65,7 +65,7 @@ export const VisionStudioDashboard: React.FC<VisionStudioDashboardProps> = ({
               <span className="text-[10px] text-[#26343B]/60 uppercase font-bold block leading-none">
                 Progetto Attivo
               </span>
-              <span className="font-bold text-xs text-[#26343B] truncate max-w-[150px] block">
+              <span className="block max-w-[min(62vw,260px)] whitespace-normal break-words text-xs font-bold leading-snug text-[#26343B] sm:max-w-[220px]">
                 {project.name}
               </span>
             </div>
