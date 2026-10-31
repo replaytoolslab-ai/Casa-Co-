@@ -134,7 +134,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   elettricita: {
     id: 'elettricita',
     iconName: 'Zap',
-    coverImage: 'https://images.unsplash.com/photo-1565814636199-ae8133055c1c?auto=format&fit=crop&w=1200&q=80',
+    coverImage: 'https://miculelectrician.ro/img/cms/instalatii%20electrice%20moderne%202025/1.png',
     tagline: {
       it: 'Linee LED architetturali a 24V, dimmerazione discreta e canalizzazioni invisibili',
       en: 'Architectural 24V LED profiles, discrete dimming, and seamless recessed cabling'
@@ -1009,9 +1009,9 @@ export const MOCK_PROJECTS: Project[] = [
       max: 260,
       currency: '€'
     },
-    coverImage: 'https://images.unsplash.com/photo-1565814636199-ae8133055c1c?auto=format&fit=crop&w=1200&q=80',
+    coverImage: 'https://miculelectrician.ro/img/cms/instalatii%20electrice%20moderne%202025/1.png',
     gallery: [
-      'https://images.unsplash.com/photo-1565814636199-ae8133055c1c?auto=format&fit=crop&w=1200&q=80'
+      'https://miculelectrician.ro/img/cms/instalatii%20electrice%20moderne%202025/1.png'
     ],
     dimensions: '6 metri lineari sviluppo',
     room: 'Corridoio / Zona Living',
