@@ -65,6 +65,7 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
   const [diaryPhotoUrl, setDiaryPhotoUrl] = useState(
     'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80'
   );
+  const [diaryPhotoName, setDiaryPhotoName] = useState('');
 
   // Auto-scroll chat to bottom
   const scrollToBottom = () => {
@@ -153,6 +154,23 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
     e.target.value = '';
   };
 
+  const handleDiaryPhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type) || file.size > 2 * 1024 * 1024) {
+      setServiceError('Per il diario usa una foto JPG, PNG o WebP fino a 2 MB.');
+      return;
+    }
+    try {
+      setDiaryPhotoUrl(await readImage(file));
+      setDiaryPhotoName(file.name);
+      setServiceError('');
+    } catch {
+      setServiceError('Impossibile leggere la foto selezionata.');
+    }
+    e.target.value = '';
+  };
+
   const handleAddDiarySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!diaryTitle.trim()) return;
@@ -168,6 +186,7 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
     setShowAddDiaryModal(false);
     setDiaryTitle('');
     setDiaryNotes('');
+    setDiaryPhotoName('');
   };
 
   const quickQuestions = [
@@ -584,6 +603,13 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
                   <option value="Impianti & Illuminazione">Impianti & Illuminazione</option>
                   <option value="Collaudo Finale">Collaudo Finale</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold mb-1">Fotografia del cantiere</label>
+                <input type="file" accept="image/jpeg,image/png,image/webp" onChange={handleDiaryPhotoSelect} className="block w-full text-xs text-[#26343B]/70 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[#26343B]" />
+                {diaryPhotoName && <p className="mt-1 text-[11px] text-[#8F7451]">{diaryPhotoName}</p>}
+                {diaryPhotoUrl.startsWith('data:') && <img src={diaryPhotoUrl} alt="Anteprima foto diario" className="mt-2 h-24 w-24 rounded-xl object-cover" />}
               </div>
 
               <div>
