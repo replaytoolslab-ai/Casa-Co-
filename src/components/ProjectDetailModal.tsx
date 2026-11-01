@@ -20,6 +20,7 @@ import { Project } from '../types';
 import { Language, translations } from '../i18n/translations';
 import { CategoryIcon } from './CategoryIcon';
 import { getProjectCostComparison } from '../data/mockData';
+import { ProjectCostCalculator } from './ProjectCostCalculator';
 import { TrendingDown, HelpCircle, ShieldCheck as ShieldIcon, ExternalLink } from 'lucide-react';
 
 interface ProjectDetailModalProps {
@@ -245,6 +246,11 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Editable quantity and cost estimate */}
+          <ProjectCostCalculator
+            initialArea={Number(project.dimensions.match(/[0-9]+(?:[.,][0-9]+)?/)?.[0]?.replace(',', '.') || 0)}
+          />
 
           {/* Quanto risparmi con il fai-da-te? (Cost Comparison & Ethical Disclaimer) */}
           {(() => {
