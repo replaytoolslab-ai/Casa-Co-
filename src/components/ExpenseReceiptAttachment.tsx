@@ -15,6 +15,18 @@ function openReceiptDatabase(): Promise<IDBDatabase> {
   });
 }
 
+
+export async function deleteExpenseReceiptAttachment(projectId: string, expenseId: number): Promise<void> {
+  const db = await openReceiptDatabase();
+  await new Promise<void>((resolve, reject) => {
+    const transaction = db.transaction(storeName, 'readwrite');
+    transaction.objectStore(storeName).delete(projectId + ':' + expenseId);
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+  db.close();
+}
+
 export const ExpenseReceiptAttachment: React.FC<Props> = ({ projectId, expenseId }) => {
   const key = projectId + ':' + expenseId;
   const [fileUrl, setFileUrl] = useState('');
