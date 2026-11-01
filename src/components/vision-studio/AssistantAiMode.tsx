@@ -117,6 +117,12 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
   onNavigateVisionAi,
 }) => {
   const t = translations[language];
+  const [displayName] = useState<string>(() => {
+    try {
+      const saved = window.localStorage.getItem('casa-co:profile:display-name');
+      return saved ? (JSON.parse(saved) as string).trim() : 'Carlo';
+    } catch { return 'Carlo'; }
+  });
 
   // Chat input state
   const [inputText, setInputText] = useState('');
@@ -389,18 +395,28 @@ export const AssistantAiMode: React.FC<AssistantAiModeProps> = ({
                   <span className="w-2 h-2 rounded-full bg-emerald-500" />
                 </h3>
                 <p className="text-[11px] text-[#26343B]/60">
-                  Sincronizzato sul cantiere: {project.roomType} ({project.scanData.squareMeters} mq)
+                  {project.name ? `Progetto: ${project.name}` : (language === 'it' ? 'Pronto a rispondere alle tue domande' : 'Ready to answer your questions')}
                 </p>
               </div>
             </div>
 
             <span className="text-[11px] font-mono font-semibold text-[#8F7451] bg-white px-2.5 py-1 rounded-full border border-[#E5DFD5]">
-              Avanzamento {project.progress}%
+              Mastro AI
             </span>
           </div>
 
           {/* Messages Scroll Area */}
           <div className="flex-1 p-4 sm:p-5 overflow-y-auto space-y-4 bg-[#FAF8F5]/50">
+            {project.chatHistory.length === 0 && (
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#26343B] text-[#B79B76] flex items-center justify-center text-xs font-bold flex-shrink-0">C&</div>
+                <div className="max-w-[90%] rounded-2xl p-4 text-xs sm:text-sm leading-relaxed bg-white text-[#26343B] border border-[#E5DFD5] shadow-xs">
+                  <p className="whitespace-pre-wrap">{language === 'it'
+                    ? `Ciao ${displayName || 'Carlo'}! 👋 Sono Mastro, l’assistente di Casa&Co. Hai bisogno di un’informazione, di un consiglio o vuoi costruire o rinnovare qualcosa? Posso aiutarti a scegliere materiali e attrezzi, spiegarti le lavorazioni e guidarti passo dopo passo. Da dove iniziamo?`
+                    : `Hi ${displayName || 'Carlo'}! 👋 I’m Mastro, your Casa&Co assistant. Do you need information, advice, or would you like to build or renovate something? I can help you choose materials and tools, explain techniques, and guide you step by step. Where shall we start?`}</p>
+                </div>
+              </div>
+            )}
             {project.chatHistory.map((msg) => {
               const isAssistant = msg.sender === 'assistant';
               return (
