@@ -77,11 +77,12 @@ jobs:
           pwd
           get .htaccess -o root-backup-wordpress-htaccess.bak
           get index.php -o root-backup-wordpress-index.php.bak
+          mv index.php index-wordpress-backup.php
           mirror --reverse --transfer-all --verbose dist/ ./
           bye
           LFTP
           mv root-backup-wordpress-htaccess.bak root-backup/wordpress-htaccess.bak
-          mv root-backup-wordpress-index.php.bak root-backup/wordpress-index.php.bak
+          mv root-backup-wordpress-index.php.bak root-backup/wordpress-index.php.bak 2>/dev/null || true
       - uses: actions/upload-artifact@v4
         if: always()
         with:
