@@ -9,7 +9,15 @@ export type CategoryId =
   | 'falegnameria'
   | 'muratura'
   | 'idraulica'
-  | 'elettricita';
+  | 'elettricita'
+  | 'verniciatura'
+  | 'cartongesso'
+  | 'isolamento'
+  | 'serramenti'
+  | 'illuminazione'
+  | 'restauro'
+  | 'impermeabilizzazione'
+  | 'terrazzi';
 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
 
