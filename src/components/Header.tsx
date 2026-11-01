@@ -1,6 +1,7 @@
 import React from 'react';
-import { Search, Globe, Smartphone, Monitor, Bookmark, Sparkles } from 'lucide-react';
+import { Search, Bell, Heart, UserRound, House, BookOpen, LayoutGrid, Layers3, Sparkles, UsersRound, Crown } from 'lucide-react';
 import { Language, translations } from '../i18n/translations';
+import { NavTab } from './BottomNav';
 
 interface HeaderProps {
   language: Language;
@@ -12,154 +13,55 @@ interface HeaderProps {
   onToggleDeviceView: () => void;
   onNavigateAi: () => void;
   onNavigateVision: () => void;
+  onNavigateHome: () => void;
+  onNavigateCategories: () => void;
+  onNavigateProjects: () => void;
+  onNavigateProfile: () => void;
+  currentTab: NavTab;
   currentSearchQuery: string;
   onSearchChange: (q: string) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
-  language,
-  onLanguageChange,
-  savedCount,
-  onOpenSaved,
-  onOpenSearch,
-  isMobileDeviceView,
-  onToggleDeviceView,
-  onNavigateAi,
-  onNavigateVision,
-  currentSearchQuery,
-  onSearchChange,
+  language, onLanguageChange, savedCount, onOpenSaved, onOpenSearch, onNavigateAi, onNavigateVision,
+  onNavigateHome, onNavigateCategories, onNavigateProjects, onNavigateProfile, currentTab,
+  currentSearchQuery, onSearchChange,
 }) => {
   const t = translations[language];
-
-  return (
-    <header className="sticky top-0 z-30 bg-[#F5F1E9]/95 backdrop-blur-md border-b border-[#E5DFD5] transition-all">
-      <div className="max-w-screen-2xl mx-auto px-3 sm:px-8 lg:px-10 h-15 sm:h-20 flex items-center justify-between gap-1.5 sm:gap-4">
-        {/* Brand identity */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#26343B] text-[#F5F1E9] flex items-center justify-center shadow-xs flex-shrink-0">
-            <span className="font-serif font-bold text-base sm:text-lg tracking-tight">F</span>
-          </div>
-          <div>
-            <div className="flex items-center gap-1">
-              <h1 className="font-serif text-base sm:text-xl lg:text-2xl font-bold tracking-tight text-[#26343B] leading-none whitespace-nowrap">
-                FaiDaTeCasa<span className="text-[#B79B76]">.</span>
-              </h1>
-            </div>
-            <p className="text-[10px] sm:text-xs text-[#26343B]/60 tracking-wider uppercase font-medium mt-0.5 hidden md:block">
-              {t.common.tagline}
-            </p>
-          </div>
-        </div>
-
-        {/* Search Bar for wider mobile/desktop */}
-        <div className="hidden md:flex flex-1 max-w-md mx-4">
-          <div className="relative w-full">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#26343B]/40 pointer-events-none" />
-            <input
-              type="text"
-              value={currentSearchQuery}
-              onChange={(e) => onSearchChange(e.target.value)}
-              placeholder={t.common.searchPlaceholder}
-              className="w-full pl-10 pr-4 py-2 text-xs sm:text-sm bg-white/70 hover:bg-white focus:bg-white border border-[#E5DFD5] focus:border-[#B79B76] rounded-full text-[#26343B] placeholder-[#26343B]/40 outline-none transition-all shadow-xs"
-            />
-            {currentSearchQuery && (
-              <button
-                onClick={() => onSearchChange('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#26343B]/50 hover:text-[#26343B]"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-        </div>
-
-        {/* Right action controls */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          {/* Mobile search icon button */}
-          <button
-            onClick={onOpenSearch}
-            aria-label="Cerca"
-            className="md:hidden p-1.5 sm:p-2 text-[#26343B] hover:bg-[#EAE4D8] rounded-full transition-colors"
-          >
-            <Search className="w-4 h-4 sm:w-5 sm:h-5 text-[#26343B]" />
-          </button>
-
-          {/* Vision Studio CTA Button */}
-          <button
-            onClick={onNavigateVision}
-            className="flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-full bg-[#B79B76] text-[#26343B] text-[11px] sm:text-xs font-bold hover:bg-[#c4a985] transition-all shadow-xs active:scale-95 whitespace-nowrap cursor-pointer"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-[#26343B] shrink-0" />
-            <span className="hidden sm:inline">Vision Studio</span>
-            <span className="sm:hidden">Vision</span>
-          </button>
-
-          {/* Quick AI Progetta Button */}
-          <button
-            onClick={onNavigateAi}
-            className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#26343B] text-[#F5F1E9] text-xs font-medium hover:bg-[#1A242A] transition-colors shadow-xs"
-          >
-            <span>{t.nav.aiDesign}</span>
-          </button>
-
-          {/* Device viewport frame toggle (desktop only) */}
-          <button
-            onClick={onToggleDeviceView}
-            title={isMobileDeviceView ? "Passa a vista desktop fluida" : "Simula smartphone (mobile-first)"}
-            className="hidden xl:flex items-center gap-1 px-2.5 py-1.5 text-xs text-[#26343B]/80 hover:text-[#26343B] hover:bg-[#EAE4D8] rounded-full transition-colors border border-[#E5DFD5]"
-          >
-            {isMobileDeviceView ? (
-              <>
-                <Monitor className="w-3.5 h-3.5" />
-                <span className="text-[11px] font-medium">Desktop</span>
-              </>
-            ) : (
-              <>
-                <Smartphone className="w-3.5 h-3.5 text-[#B79B76]" />
-                <span className="text-[11px] font-medium">Mobile 390px</span>
-              </>
-            )}
-          </button>
-
-          {/* Saved projects counter */}
-          <button
-            onClick={onOpenSaved}
-            aria-label="Progetti salvati"
-            className="relative p-1.5 sm:p-2 text-[#26343B] hover:bg-[#EAE4D8] rounded-full transition-colors"
-          >
-            <Bookmark className="w-4 h-4 sm:w-5 sm:h-5" />
-            {savedCount > 0 && (
-              <span className="absolute top-0.5 right-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-[#B79B76] text-white text-[9px] sm:text-[10px] font-bold rounded-full flex items-center justify-center">
-                {savedCount}
-              </span>
-            )}
-          </button>
-
-          {/* Language Switcher */}
-          <div className="flex items-center bg-white/80 border border-[#E5DFD5] rounded-full p-0.5 shadow-2xs">
-            <button
-              onClick={() => onLanguageChange('it')}
-              className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold rounded-full transition-all cursor-pointer ${
-                language === 'it'
-                  ? 'bg-[#26343B] text-[#F5F1E9] shadow-xs'
-                  : 'text-[#26343B]/60 hover:text-[#26343B]'
-              }`}
-            >
-              IT
-            </button>
-            <button
-              onClick={() => onLanguageChange('en')}
-              className={`px-1.5 sm:px-2 py-0.5 sm:py-1 text-[10px] sm:text-[11px] font-bold rounded-full transition-all cursor-pointer ${
-                language === 'en'
-                  ? 'bg-[#26343B] text-[#F5F1E9] shadow-xs'
-                  : 'text-[#26343B]/60 hover:text-[#26343B]'
-              }`}
-            >
-              EN
-            </button>
-          </div>
-        </div>
+  const nav = [
+    { label: 'Home', icon: House, action: onNavigateHome, active: currentTab === 'home' },
+    { label: 'Guide e Tutorial', icon: BookOpen, action: onNavigateCategories, active: false },
+    { label: 'Categorie', icon: LayoutGrid, action: onNavigateCategories, active: currentTab === 'categories' },
+    { label: 'Progetti', icon: Layers3, action: onNavigateProjects, active: currentTab === 'projects' },
+    { label: 'Assistente AI', icon: Sparkles, action: onNavigateAi, active: currentTab === 'ai' || currentTab === 'vision' },
+    { label: 'Abbonamenti', icon: Crown, action: onNavigateProfile, active: currentTab === 'profile' },
+  ];
+  return <header className="sticky top-0 z-40 bg-[#101820] text-white shadow-lg">
+    <div className="mx-auto flex max-w-screen-2xl flex-wrap items-center gap-3 px-4 py-3 sm:px-7 lg:flex-nowrap lg:gap-6 lg:px-10">
+      <button onClick={onNavigateHome} className="flex shrink-0 items-center gap-2.5 text-left" aria-label="FaiDaTeCasa home">
+        <svg viewBox="0 0 64 54" className="h-11 w-12 shrink-0" role="img" aria-label="Logo FaiDaTeCasa">
+          <path d="M5 29 31 5l12 11V8h9v16l8 7" fill="none" stroke="#ff8500" strokeWidth="6" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="m15 31 16-15 17 15" fill="none" stroke="#ff8500" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d="m21 39 18-18m-9 21 18-18" stroke="white" strokeWidth="5" strokeLinecap="round"/>
+          <path d="m17 35 8 8m14-19 8 8" stroke="white" strokeWidth="4" strokeLinecap="round"/>
+        </svg>
+        <span className="block"><span className="block whitespace-nowrap text-[21px] font-black leading-none tracking-tight sm:text-[25px]">FaiDaTe<span className="text-orange-500">Casa</span></span><span className="mt-1 hidden text-[10px] font-medium text-white/75 sm:block">Rinnova, Ripara, Crea: la tua casa, con le tue mani!</span></span>
+      </button>
+      <div className="order-3 w-full flex-1 lg:order-none lg:max-w-[420px]">
+        <div className="relative"><Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-orange-500"/><input value={currentSearchQuery} onChange={e=>onSearchChange(e.target.value)} placeholder="Cerca guide, progetti, prodotti..." className="w-full rounded-xl border border-white/35 bg-white/10 py-3 pl-11 pr-4 text-sm text-white outline-none placeholder:text-white/65 focus:border-orange-500 focus:bg-white/15"/></div>
       </div>
-    </header>
-  );
+      <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
+        <button onClick={onOpenSearch} className="rounded-full p-2 text-white hover:bg-white/10 md:hidden" aria-label="Apri ricerca"><Search size={19}/></button>
+        <button className="hidden rounded-full p-2 text-white hover:bg-white/10 sm:block" aria-label="Notifiche"><Bell size={19}/></button>
+        <button onClick={onOpenSaved} className="relative rounded-full p-2 text-white hover:bg-white/10" aria-label="Preferiti"><Heart size={20}/>{savedCount>0&&<span className="absolute right-0 top-0 flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold">{savedCount}</span>}</button>
+        <button onClick={onNavigateProfile} className="hidden items-center gap-2 rounded-xl border border-white/55 px-3 py-2 text-sm font-semibold hover:bg-white/10 sm:flex"><UserRound size={16}/> Accedi</button>
+        <button onClick={onNavigateProfile} className="rounded-xl bg-orange-500 px-3 py-2 text-xs font-extrabold text-white hover:bg-orange-600 sm:px-4 sm:text-sm">Registrati</button>
+      </div>
+    </div>
+    <nav className="border-t border-white/10 bg-[#0c1319]">
+      <div className="mx-auto flex max-w-screen-2xl items-center gap-1 overflow-x-auto px-3 sm:justify-center sm:gap-5 sm:px-6">
+        {nav.map(({label,icon:Icon,action,active})=><button key={label} onClick={action} className={`relative flex shrink-0 items-center gap-2 px-3 py-3 text-xs font-bold transition sm:px-4 sm:text-sm ${active?'text-orange-400':'text-white/90 hover:text-orange-300'}`}><Icon size={17}/>{label}{active&&<span className="absolute bottom-0 left-3 right-3 h-[3px] rounded-full bg-orange-500"/>}</button>)}
+      </div>
+    </nav>
+  </header>;
 };
