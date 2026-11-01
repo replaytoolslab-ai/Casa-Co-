@@ -68,8 +68,8 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 <div
                   className={`w-12 h-12 rounded-full flex items-center justify-center transition-all transform active:scale-95 shadow-lg relative ${
                     isActive
-                      ? 'bg-[#26343B] text-[#B79B76] ring-3 ring-[#B79B76]/50 scale-105'
-                      : 'bg-[#26343B] text-[#F5F1E9] hover:bg-[#1A242A]'
+                      ? 'bg-orange-500 text-white ring-3 ring-orange-300/40 scale-105'
+                      : 'bg-orange-500 text-white hover:bg-orange-600'
                   }`}
                 >
                   <Icon className="w-5 h-5 animate-pulse text-[#B79B76]" />
@@ -77,7 +77,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                 </div>
                 <span
                   className={`text-[10px] sm:text-[11px] font-bold tracking-tight mt-1 transition-colors leading-none truncate max-w-full ${
-                    isActive ? 'text-[#26343B]' : 'text-[#26343B]/80'
+                    isActive ? 'text-orange-300' : 'text-white/80'
                   }`}
                 >
                   {item.label}
@@ -95,7 +95,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               <div className="relative flex items-center justify-center">
                 <Icon
                   className={`w-5 h-5 transition-transform duration-200 ${
-                    isActive ? 'text-[#26343B] scale-105 stroke-[2.2]' : 'text-[#26343B]/50 stroke-[1.7]'
+                    isActive ? 'text-orange-400 scale-105 stroke-[2.2]' : 'text-white/55 stroke-[1.7]'
                   }`}
                 />
                 {item.badge !== undefined && item.badge > 0 && (
@@ -106,13 +106,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({
               </div>
               <span
                 className={`text-[10px] tracking-tight mt-1 transition-colors leading-none truncate max-w-full px-0.5 ${
-                  isActive ? 'text-[#26343B] font-bold' : 'text-[#26343B]/60 font-medium'
+                  isActive ? 'text-orange-300 font-bold' : 'text-white/65 font-medium'
                 }`}
               >
                 {item.label}
               </span>
               {isActive && (
-                <span className="w-1 h-1 bg-[#B79B76] rounded-full mt-1" />
+                <span className="w-1 h-1 bg-orange-500 rounded-full mt-1" />
               )}
             </button>
           );
