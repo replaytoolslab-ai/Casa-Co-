@@ -120,7 +120,7 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ pr
               Voce
               <input value={row.description} onChange={(event) => updateRow(row.id, { description: event.target.value })} placeholder="Es. primer, posa..." className="mt-1 w-full min-w-0 rounded-lg border border-[#E5DFD5] bg-white px-2.5 py-2 text-xs text-[#26343B] outline-none focus:border-[#B79B76]" />
             </label>
-            <label className="col-span-2 sm:col-span-3 text-[10px] font-semibold text-[#26343B]/65">
+            <label className="col-span-2 sm:col-span-2 text-[10px] font-semibold text-[#26343B]/65">
               Categoria
               <select value={row.kind} onChange={(event) => updateRow(row.id, { kind: event.target.value as CostKind, unit: event.target.value === 'labor' ? 'ore' : row.unit })} className="mt-1 w-full rounded-lg border border-[#E5DFD5] bg-white px-2 py-2 text-xs text-[#26343B]">
                 <option value="material">Materiale</option>
@@ -145,7 +145,7 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ pr
               <input type="number" min="0" step="0.01" placeholder="Da registrare" value={row.actualUnitPrice ?? ''} onChange={(event) => updateRow(row.id, { actualUnitPrice: event.target.value === '' ? null : Number(event.target.value) })} className="mt-1 w-full min-w-0 rounded-lg border border-[#E5DFD5] bg-white px-2 py-2 text-xs text-[#26343B]" />
             </label>
             <div className="col-span-1 sm:col-span-1 flex items-end justify-between sm:justify-end gap-2">
-              <span className="text-xs font-bold text-[#26343B] pb-2">{currency(Math.max(0, row.quantity || 0) * Math.max(0, row.unitPrice || 0))}</span>
+              <div className="pb-1 text-right"><span className="block text-[10px] text-[#26343B]/55">Prev. {currency(Math.max(0, row.quantity || 0) * Math.max(0, row.unitPrice || 0))}</span>{row.actualUnitPrice !== null && row.actualUnitPrice !== undefined && <span className="block text-[10px] font-bold text-[#26343B]">Reale {currency(Math.max(0, row.quantity || 0) * Math.max(0, row.actualUnitPrice || 0))}</span>}</div>
               <button type="button" aria-label="Rimuovi voce" onClick={() => setRows((current) => current.filter((item) => item.id !== row.id))} className="p-2 rounded-lg text-[#8F7451] hover:bg-[#EAE4D8]"><Trash2 className="w-4 h-4" /></button>
             </div>
           </div>
