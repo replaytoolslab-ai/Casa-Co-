@@ -39,10 +39,10 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
     'muratura',
     'idraulica',
     'elettricita',
-    'verniciatura', 'cartongesso', 'isolamento', 'serramenti', 'illuminazione', 'restauro', 'impermeabilizzazione', 'terrazzi',
+    'verniciatura', 'cartongesso', 'isolamento', 'serramenti', 'illuminazione', 'restauro', 'impermeabilizzazione', 'terrazzi', 'attrezzi',
   ];
 
-  // Grouped area categories for filtering all 19 items
+  // Grouped area categories for filtering all 20 items
   const areaGroups: Record<string, CategoryId[]> = {
     all: allCategoryKeys,
     arredo: ['mobili', 'falegnameria', 'cucina'],
@@ -79,7 +79,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
               className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#8F7451] hover:text-[#26343B] transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>{t.common.back} a tutte le 19 categorie</span>
+              <span>{t.common.back} a tutte le 20 categorie</span>
             </button>
           </div>
 
