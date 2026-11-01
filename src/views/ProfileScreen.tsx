@@ -40,6 +40,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
   const [subscriptionLoading, setSubscriptionLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState('');
+  const [checkoutBusy, setCheckoutBusy] = useState(false);
 
   useEffect(() => {
     if (!session) {
@@ -95,6 +96,18 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
       setError(err instanceof Error ? err.message : 'Si è verificato un errore.');
     } finally {
       setBusy(false);
+    }
+  };
+
+  const startCheckout = async (interval: 'month' | 'year') => {
+    if (!session || checkoutBusy) return;
+    setCheckoutBusy(true);
+    setSubscriptionError('');
+    try {
+      await subscriptionService.checkout(session, interval);
+    } catch (err) {
+      setSubscriptionError(err instanceof Error ? err.message : 'Impossibile avviare il pagamento.');
+      setCheckoutBusy(false);
     }
   };
 
@@ -257,8 +270,9 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           <section className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E5DFD5] shadow-xs space-y-4">
             <div className="pb-3 border-b border-[#F0EBE1]">
               <h2 className="font-serif text-xl font-bold flex items-center gap-2"><Crown className="w-5 h-5 text-[#B79B76]" /> Scegli il tuo piano</h2>
-              <p className="text-xs text-[#26343B]/60 mt-1">Prezzi ufficiali FaiDaTeCasa. L’attivazione dei pagamenti online sarà disponibile dopo il collegamento dei provider.</p>
+              <p className="text-xs text-[#26343B]/60 mt-1">Prezzi ufficiali FaiDaTeCasa. Puoi scegliere il rinnovo mensile o annuale.</p>
             </div>
+            {subscriptionError && <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-xl p-3">{subscriptionError}</p>}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div className="rounded-2xl border border-[#E5DFD5] bg-[#FAF8F5] p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-[#26343B]/60">Base</p>
@@ -271,12 +285,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 <p className="font-serif text-2xl font-bold mt-2">9,90 €</p>
                 <p className="text-xs text-[#26343B]/60 mt-1">Al mese</p>
                 <p className="text-xs mt-4 font-semibold">Rinnovo mensile</p>
+                <button type="button" disabled={checkoutBusy || subscription?.plan === 'premium'} onClick={() => startCheckout('month')} className="mt-4 w-full rounded-xl bg-[#26343B] text-white py-2.5 text-sm font-semibold disabled:opacity-50">{checkoutBusy ? 'Apertura pagamento...' : 'Scegli mensile'}</button>
               </div>
               <div className="rounded-2xl border border-[#26343B] bg-[#26343B] text-white p-4">
                 <p className="text-xs font-bold uppercase tracking-wide text-[#D8BD96]">Premium annuale</p>
                 <p className="font-serif text-2xl font-bold mt-2">99 €</p>
                 <p className="text-xs text-white/65 mt-1">All’anno</p>
                 <p className="text-xs mt-4 font-semibold text-[#D8BD96]">Risparmi 19,80 €</p>
+                <button type="button" disabled={checkoutBusy || subscription?.plan === 'premium'} onClick={() => startCheckout('year')} className="mt-4 w-full rounded-xl bg-[#D8BD96] text-[#26343B] py-2.5 text-sm font-semibold disabled:opacity-50">{checkoutBusy ? 'Apertura pagamento...' : 'Scegli annuale'}</button>
               </div>
             </div>
           </section>
