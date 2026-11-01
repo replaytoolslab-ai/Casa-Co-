@@ -47,7 +47,10 @@ export const ProjectDocumentArchive: React.FC<{ projectId: string }> = ({ projec
       request.onerror = () => reject(request.error);
       transaction.oncomplete = () => db.close();
     });
-    urlsRef.current.forEach((url) => URL.revokeObjectURL(url));\n    const next = records.map(({ blob, ...item }) => ({ ...item, url: URL.createObjectURL(blob) }));\n    urlsRef.current = next.map((item) => item.url);\n    setDocuments(next);
+    urlsRef.current.forEach((url) => URL.revokeObjectURL(url));
+    const next = records.map(({ blob, ...item }) => ({ ...item, url: URL.createObjectURL(blob) }));
+    urlsRef.current = next.map((item) => item.url);
+    setDocuments(next);
   }, [projectId]);
 
   useEffect(() => {
