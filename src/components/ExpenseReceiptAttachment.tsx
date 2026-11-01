@@ -25,14 +25,14 @@ export const ExpenseReceiptAttachment: React.FC<Props> = ({ projectId, expenseId
     let active = true;
     let currentUrl = '';
     openReceiptDatabase().then(async (db) => {
-      const blob = await new Promise<Blob | undefined>((resolve, reject) => {
+      const record = await new Promise<{ blob: Blob; name: string } | undefined>((resolve, reject) => {
         const transaction = db.transaction(storeName, 'readonly');
         const request = transaction.objectStore(storeName).get(key);
-        request.onsuccess = () => resolve(request.result as Blob | undefined);
+        request.onsuccess = () => resolve(request.result as { blob: Blob; name: string } | undefined);
         request.onerror = () => reject(request.error);
         transaction.oncomplete = () => db.close();
       });
-      return blob;
+      return record;
     }).then((blob) => {
       if (active && blob) {
         currentUrl = URL.createObjectURL(blob);
@@ -53,7 +53,7 @@ export const ExpenseReceiptAttachment: React.FC<Props> = ({ projectId, expenseId
       Object.defineProperty(stored, 'name', { value: file.name });
       await new Promise<void>((resolve, reject) => {
         const transaction = db.transaction(storeName, 'readwrite');
-        transaction.objectStore(storeName).put(stored, key);
+        transaction.objectStore(storeName).put({ blob: stored, name: file.name }, key);
         transaction.oncomplete = () => resolve();
         transaction.onerror = () => reject(transaction.error);
         transaction.onabort = () => reject(transaction.error);
