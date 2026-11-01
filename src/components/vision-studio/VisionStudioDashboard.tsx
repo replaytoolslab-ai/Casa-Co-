@@ -209,7 +209,7 @@ export const VisionStudioDashboard: React.FC<VisionStudioDashboardProps> = ({
             Le Tre Modalità Esecutive di Vision Studio
           </h2>
           <p className="text-xs sm:text-sm text-[#26343B]/70 mt-1">
-            Tutte le modifiche apportate in qualsiasi modalità sono sincronizzate istantaneamente nel progetto.
+            Scegli da dove iniziare: ogni strumento ha una funzione precisa.
           </p>
         </div>
 
@@ -246,7 +246,7 @@ export const VisionStudioDashboard: React.FC<VisionStudioDashboardProps> = ({
 
               <div className="p-5">
                 <p className="text-xs sm:text-sm text-[#26343B]/80 leading-relaxed mb-4">
-                  Riprogettazione visiva a partire dalla fotografia dello stato grezzo, selezione stili d'arredo, slider interattivo prima/dopo e personalizzazione materiali.
+                  Carica una foto, prova uno stile e confronta il prima e il dopo.
                 </p>
 
                 <div className="space-y-1.5 text-xs text-[#26343B]/70">
@@ -304,7 +304,7 @@ export const VisionStudioDashboard: React.FC<VisionStudioDashboardProps> = ({
 
               <div className="p-5">
                 <p className="text-xs sm:text-sm text-[#26343B]/80 leading-relaxed mb-4">
-                  Rilievo volumetrico parametrico: anteprima tridimensionale 360°, inserimento e correzione manuale quote, pareti, porte e finestre (ARKit/ARCore ready).
+                  Visualizza il locale in 3D e modifica manualmente misure, pareti, porte e finestre. La scansione AR automatica non è disponibile nella versione web.
                 </p>
 
                 <div className="space-y-1.5 text-xs text-[#26343B]/70">
@@ -314,7 +314,7 @@ export const VisionStudioDashboard: React.FC<VisionStudioDashboardProps> = ({
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="w-3.5 h-3.5 text-[#B79B76]" />
-                    <span>Quote millimetriche manuali certificate</span>
+                    <span>Misure inserite e modificabili manualmente</span>
                   </div>
                 </div>
               </div>
@@ -362,7 +362,7 @@ export const VisionStudioDashboard: React.FC<VisionStudioDashboardProps> = ({
 
               <div className="p-5">
                 <p className="text-xs sm:text-sm text-[#26343B]/80 leading-relaxed mb-4">
-                  Assistente contestuale esperto: caricamento foto cantiere con diagnosi visiva, passaggi illustrati, checklist collegata e avvisi di sicurezza DPI.
+                  Chiedi aiuto sui lavori, consulta le istruzioni, aggiorna la checklist e verifica gli avvisi di sicurezza.
                 </p>
 
                 <div className="space-y-1.5 text-xs text-[#26343B]/70">
