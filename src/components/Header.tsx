@@ -33,7 +33,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-30 bg-[#F5F1E9]/95 backdrop-blur-md border-b border-[#E5DFD5] transition-all">
-      <div className="max-w-6xl mx-auto px-2.5 sm:px-6 h-15 sm:h-20 flex items-center justify-between gap-1.5 sm:gap-4">
+      <div className="max-w-screen-2xl mx-auto px-3 sm:px-8 lg:px-10 h-15 sm:h-20 flex items-center justify-between gap-1.5 sm:gap-4">
         {/* Brand identity */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#26343B] text-[#F5F1E9] flex items-center justify-center shadow-xs flex-shrink-0">
