@@ -1,0 +1,32 @@
+name: Build Register.it static site
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - deploy/registerit-php
+    paths:
+      - 'src/**'
+      - 'index.html'
+      - 'package.json'
+      - 'vite.config.ts'
+      - '.github/workflows/registerit-build.yml'
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Build for preview subdirectory
+        run: npm run build -- --base=/preview/
+      - name: Package static site
+        run: cd dist && zip -r ../faidatecasa-registerit-preview.zip .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: faidatecasa-registerit-preview
+          path: faidatecasa-registerit-preview.zip
+          retention-days: 7
