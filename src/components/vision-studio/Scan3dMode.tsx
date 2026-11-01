@@ -89,7 +89,7 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
             Scan 3D — Rilievo Parametrico del Locale
           </h1>
           <p className="text-xs sm:text-sm text-[#26343B]/70 mt-1 max-w-2xl leading-relaxed">
-            Esplora l'anteprima volumetrica in Three.js, visualizza quote millimetriche e correggi manualmente pareti, porte e finestre.
+            Esplora il modello 3D del locale e inserisci o correggi manualmente le misure di pareti, porte e finestre.
           </p>
         </div>
 
@@ -110,14 +110,14 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
         <div className="text-xs sm:text-sm leading-relaxed text-[#26343B]">
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <span className="font-bold text-[#26343B]">
-              MODALITÀ DIMOSTRATIVA RILIEVO 3D
+              ANTEPRIMA 3D E MISURE MANUALI
             </span>
             <span className="text-[10px] bg-[#26343B] text-white px-2 py-0.5 rounded-md font-mono">
-              ARKit & ARCore Ready
+              Anteprima 3D · quote manuali
             </span>
           </div>
           <p className="text-[#26343B]/80">
-            {arStatus.notice}
+            L'anteprima 3D è parametrica: le misure sono modificabili manualmente. La scansione automatica tramite fotocamera o sensori AR non è attiva in questa versione web.
           </p>
         </div>
       </div>
@@ -130,7 +130,7 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
             <span>Fasi della Scansione Spaziale Guidata</span>
           </h2>
           <span className="text-xs text-[#8F7451] font-semibold">
-            Calibrazione completata: 94%
+            Modello dimostrativo
           </span>
         </div>
 
