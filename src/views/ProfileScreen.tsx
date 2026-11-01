@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import {
   User, Hammer, Settings, Globe, Ruler, Check, ShieldCheck,
-  Mail, Lock, LogOut, Save, KeyRound, LoaderCircle
+  Mail, Lock, LogOut, Save, KeyRound, LoaderCircle, Crown, CalendarClock, CreditCard
 } from 'lucide-react';
 import { Language } from '../i18n/translations';
 import { AuthSession, authService } from '../services/authService';
+import { SubscriptionInfo, subscriptionService } from '../services/subscriptionService';
 
 interface ProfileScreenProps {
   language: Language;
@@ -36,6 +37,26 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>(metadata.unit_system === 'imperial' ? 'imperial' : 'metric');
   const [notificationsEnabled, setNotificationsEnabled] = useState(metadata.notifications_enabled !== false);
   const [newPassword, setNewPassword] = useState('');
+  const [subscription, setSubscription] = useState<SubscriptionInfo | null>(null);
+  const [subscriptionLoading, setSubscriptionLoading] = useState(false);
+  const [subscriptionError, setSubscriptionError] = useState('');
+
+  useEffect(() => {
+    if (!session) {
+      setSubscription(null);
+      return;
+    }
+    let active = true;
+    setSubscriptionLoading(true);
+    setSubscriptionError('');
+    subscriptionService.get(session)
+      .then((value) => { if (active) setSubscription(value); })
+      .catch((err) => {
+        if (active) setSubscriptionError(err instanceof Error ? err.message : 'Impossibile caricare l’abbonamento.');
+      })
+      .finally(() => { if (active) setSubscriptionLoading(false); });
+    return () => { active = false; };
+  }, [session?.access_token]);
 
   useEffect(() => {
     const current = session?.user.user_metadata ?? {};
@@ -194,7 +215,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                   <h1 className="font-serif text-3xl font-bold text-[#26343B]">{name || 'Il tuo profilo'}</h1>
-                  <span className="text-xs bg-[#FAF8F5] text-[#8F7451] font-bold px-3 py-1 rounded-full">PIANO FREE</span>
+                  <span className="text-xs bg-[#FAF8F5] text-[#8F7451] font-bold px-3 py-1 rounded-full">{subscription?.plan === 'premium' && ['active', 'trialing', 'past_due'].includes(subscription.status) ? 'PIANO PREMIUM' : 'PIANO BASE'}</span>
                 </div>
                 <p className="text-sm text-[#26343B]/65 mt-1">{session.user.email}</p>
                 <p className="text-xs text-[#26343B]/55 mt-2">Account personale FaiDaTeCasa</p>
@@ -204,9 +225,33 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
             <div className="mt-7 pt-6 border-t border-[#F0EBE1] grid grid-cols-2 sm:grid-cols-4 gap-3">
               <div className="p-4 bg-[#FAF8F5] rounded-2xl text-center"><span className="text-[10px] uppercase font-bold text-[#26343B]/60 block">Progetti completati</span><span className="font-serif text-2xl font-bold">{completedCount}</span></div>
               <div className="p-4 bg-[#FAF8F5] rounded-2xl text-center"><span className="text-[10px] uppercase font-bold text-[#26343B]/60 block">Livello</span><span className="font-serif text-xl font-bold">Iniziale</span></div>
-              <div className="p-4 bg-[#FAF8F5] rounded-2xl text-center"><span className="text-[10px] uppercase font-bold text-[#26343B]/60 block">Abbonamento</span><span className="font-serif text-xl font-bold">Free</span></div>
+              <div className="p-4 bg-[#FAF8F5] rounded-2xl text-center"><span className="text-[10px] uppercase font-bold text-[#26343B]/60 block">Abbonamento</span><span className="font-serif text-xl font-bold">{subscription?.plan === 'premium' && ['active', 'trialing', 'past_due'].includes(subscription.status) ? 'Premium' : 'Base'}</span></div>
               <div className="p-4 bg-[#FAF8F5] rounded-2xl text-center"><span className="text-[10px] uppercase font-bold text-[#26343B]/60 block">Account</span><span className="font-serif text-xl font-bold">Attivo</span></div>
             </div>
+          </section>
+
+          <section className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E5DFD5] shadow-xs space-y-4">
+            <div className="flex items-center justify-between gap-3 pb-3 border-b border-[#F0EBE1]">
+              <h2 className="font-serif text-xl font-bold flex items-center gap-2"><Crown className="w-5 h-5 text-[#B79B76]" /> Il mio abbonamento</h2>
+              <span className={`text-xs font-bold px-3 py-1 rounded-full ${subscription?.plan === 'premium' && ['active', 'trialing'].includes(subscription.status) ? 'bg-emerald-50 text-emerald-700' : 'bg-[#FAF8F5] text-[#8F7451]'}`}>{subscriptionLoading ? 'Caricamento' : subscription?.plan === 'premium' ? (subscription.status === 'past_due' ? 'Pagamento da verificare' : subscription.status === 'canceled' ? 'Disdetto' : 'Attivo') : 'Piano gratuito'}</span>
+            </div>
+            {subscriptionLoading ? <p className="text-sm text-[#26343B]/60">Caricamento dello stato abbonamento...</p> : subscriptionError ? <p role="alert" className="text-sm text-red-700 bg-red-50 rounded-xl p-3">{subscriptionError}</p> : (
+              <>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-[#26343B] text-[#B79B76] flex items-center justify-center"><Crown className="w-6 h-6" /></div>
+                  <div><p className="font-serif text-2xl font-bold">{subscription?.plan === 'premium' && ['active', 'trialing', 'past_due'].includes(subscription.status) ? 'Premium' : 'Base'}</p><p className="text-xs text-[#26343B]/60">{subscription?.plan === 'premium' ? 'Piano associato al tuo account' : 'Accesso gratuito senza scadenza'}</p></div>
+                </div>
+                {subscription?.plan === 'premium' && subscription.current_period_end && (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div className="p-4 bg-[#FAF8F5] rounded-2xl"><div className="flex items-center gap-2 text-xs text-[#26343B]/60"><CalendarClock className="w-4 h-4" /> {subscription.cancel_at_period_end ? 'Accesso valido fino al' : 'Prossimo rinnovo'}</div><p className="font-semibold mt-2">{new Date(subscription.current_period_end).toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric' })}</p><p className="text-xs text-[#26343B]/60 mt-1">{Math.max(0, Math.ceil((new Date(subscription.current_period_end).getTime() - Date.now()) / 86400000))} giorni rimanenti</p></div>
+                    <div className="p-4 bg-[#FAF8F5] rounded-2xl"><div className="flex items-center gap-2 text-xs text-[#26343B]/60"><CreditCard className="w-4 h-4" /> Pagamento</div><p className="font-semibold mt-2">{subscription.provider === 'paypal' ? 'PayPal' : subscription.provider === 'stripe' ? 'Carta tramite Stripe' : 'Non disponibile'}</p><p className="text-xs text-[#26343B]/60 mt-1">{subscription.price_amount != null && subscription.currency ? `${(subscription.price_amount / 100).toFixed(2)} ${subscription.currency.toUpperCase()}` : 'Importo non disponibile'}</p></div>
+                  </div>
+                )}
+                {subscription?.status === 'past_due' && <p className="text-sm text-amber-800 bg-amber-50 rounded-xl p-3">Il pagamento risulta da verificare. Aggiorna il metodo di pagamento per evitare l’interruzione del servizio.</p>}
+                {subscription?.cancel_at_period_end && <p className="text-sm text-[#26343B]/70">La disdetta è programmata: il piano Premium resta disponibile fino alla data indicata.</p>}
+                {subscription?.plan !== 'premium' && <p className="text-sm text-[#26343B]/65">Con Premium potrai accedere alle funzionalità avanzate quando saranno attivate.</p>}
+              </>
+            )}
           </section>
 
           <section className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E5DFD5] shadow-xs space-y-4">
