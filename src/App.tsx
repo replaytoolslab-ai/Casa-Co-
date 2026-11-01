@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { NavTab, BottomNav } from './components/BottomNav';
 import { Header } from './components/Header';
 import { HomeScreen } from './views/HomeScreen';
@@ -18,10 +18,20 @@ import { CategoryId, Project, UserProject } from './types';
 import { INITIAL_USER_PROJECTS, MOCK_PROJECTS } from './data/mockData';
 import { Language } from './i18n/translations';
 import { projectService } from './services/projectService';
+import { AuthSession, authService } from './services/authService';
 import { Search, X, Sparkles, Smartphone, Monitor } from 'lucide-react';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
+  const [authSession, setAuthSession] = useState<AuthSession | null>(null);
+
+  useEffect(() => {
+    let active = true;
+    authService.restoreSession().then((session) => {
+      if (active) setAuthSession(session);
+    });
+    return () => { active = false; };
+  }, []);
   const [language, setLanguage] = useState<Language>('it');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<CategoryId | null>(null);
@@ -217,6 +227,8 @@ export default function App() {
             language={language}
             onLanguageChange={setLanguage}
             completedCount={completedProjectsCount}
+            session={authSession}
+            onSessionChange={setAuthSession}
           />
         );
       default:
