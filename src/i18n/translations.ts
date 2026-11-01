@@ -70,7 +70,7 @@ export interface Translations {
       mobili: { name: string; desc: string; count: number };
       cucina: { name: string; desc: string; count: number };
       bagno: { name: string; desc: string; count: number };
-      pareti: { name: string; desc: string; count: number };
+      intonaci: { name: string; desc: string; count: number };
       pavimenti: { name: string; desc: string; count: number };
       giardino: { name: string; desc: string; count: number };
       pergole: { name: string; desc: string; count: number };
@@ -229,7 +229,7 @@ export const translations: Record<Language, Translations> = {
         mobili: { name: 'Mobili', desc: 'Tavoli, librerie modulari, consolle e complementi d’arredo su misura.', count: 0 },
         cucina: { name: 'Cucina', desc: 'Isole con banconi a listelli, top in resina e ante artigianali.', count: 0 },
         bagno: { name: 'Bagno', desc: 'Mobili sospesi in teak, posa rubinetteria da incasso e nicchie.', count: 0 },
-        pareti: { name: 'Pareti', desc: 'Cannettato in noce, rasatura a calce, boiserie contemporanea.', count: 0 },
+        intonaci: { name: 'Intonaci e Rasatura', desc: 'Cannettato in noce, rasatura a calce, boiserie contemporanea.', count: 0 },
         pavimenti: { name: 'Pavimenti', desc: 'Spina ungherese, posa microcemento e recupero parquet d’epoca.', count: 0 },
         giardino: { name: 'Giardino', desc: 'Fioriere monolitiche, arredi outdoor e camminamenti in pietra.', count: 0 },
         pergole: { name: 'Pergole', desc: 'Strutture bioclimatiche in larice, tettoie e frangisole orientabili.', count: 0 },
@@ -386,7 +386,7 @@ export const translations: Record<Language, Translations> = {
         mobili: { name: 'Furniture', desc: 'Dining tables, modular shelving, consoles and bespoke home fixtures.', count: 0 },
         cucina: { name: 'Kitchen', desc: 'Slatted wood islands, microcement countertops, and crafted cabinet fronts.', count: 0 },
         bagno: { name: 'Bathroom', desc: 'Floating teak vanities, concealed thermostatic mixers, and lit niches.', count: 0 },
-        pareti: { name: 'Walls & Finishes', desc: 'Fluted walnut panels, natural lime plaster, and contemporary wainscoting.', count: 0 },
+        intonaci: { name: 'Plastering & Skim Coating', desc: 'Fluted walnut panels, natural lime plaster, and contemporary wainscoting.', count: 0 },
         pavimenti: { name: 'Flooring', desc: 'Herringbone parquet, seamless microcement, and vintage wood restoration.', count: 0 },
         giardino: { name: 'Garden & Outdoor', desc: 'Monolithic planters, architectural timber seating, and dry stone pathways.', count: 0 },
         pergole: { name: 'Pergolas & Gazebos', desc: 'Larch bioclimatic pergolas, shading louvers, and weatherproof pavilions.', count: 0 },
