@@ -58,7 +58,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       })
     : MOCK_PROJECTS;
 
-  const featuredProjects = filteredProjects.filter((p) => p.isFeatured);
+  const featuredProjects = filteredProjects.filter((p) => p.isFeatured).slice(0, 3);
   const recentProjects = filteredProjects.filter((p) => !p.isFeatured).slice(0, 2);
 
   // Main high-interest categories for the home showcase
@@ -67,8 +67,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     'cucina',
     'bagno',
     'pareti',
-    'pergole',
-    'falegnameria',
   ];
 
   return (
@@ -271,7 +269,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
       </section>
 
       {/* Editorial Stories & Inspirations (Ispirazioni) */}
-      <section>
+      <section className="hidden sm:block">
         <div className="mb-5 sm:mb-6">
           <span className="text-xs uppercase tracking-wider text-[#8F7451] font-bold block mb-1">
             Approfondimenti
