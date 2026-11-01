@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Plus, Trash2, Calculator, Euro } from 'lucide-react';
+import { Plus, Trash2, Calculator, Euro, Receipt } from 'lucide-react';
 
 type CostKind = 'material' | 'labor' | 'equipment';
 
@@ -12,6 +12,8 @@ interface CostRow {
   unitPrice: number;
   actualUnitPrice: number | null;
 }
+
+interface ExpenseEntry { id: number; date: string; store: string; category: string; amount: number; receipt: string; }
 
 interface ProjectCostCalculatorProps {
   projectId: string;
@@ -45,6 +47,13 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ pr
     makeRow(3, 'equipment'),
     ];
   });
+  const [expenses, setExpenses] = useState<ExpenseEntry[]>(() => { try { const saved = window.localStorage.getItem(storageKey); const parsed = saved ? JSON.parse(saved) : null; return Array.isArray(parsed?.expenses) ? parsed.expenses : []; } catch { return []; } });
+  const [expenseDate, setExpenseDate] = useState(() => new Date().toLocaleDateString('en-CA'));
+  const [expenseStore, setExpenseStore] = useState('');
+  const [expenseCategory, setExpenseCategory] = useState('Materiali');
+  const [expenseAmount, setExpenseAmount] = useState('');
+  const [expenseReceipt, setExpenseReceipt] = useState('');
+  const [nextExpenseId, setNextExpenseId] = useState(() => { try { const saved = window.localStorage.getItem(storageKey); const parsed = saved ? JSON.parse(saved) : null; return Number(parsed?.nextExpenseId) || 1; } catch { return 1; } });
   const [vatRate, setVatRate] = useState(() => {
     try { const saved = window.localStorage.getItem(storageKey); return saved ? Number(JSON.parse(saved).vatRate) || 0 : 0; } catch { return 0; }
   });
@@ -57,11 +66,11 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ pr
 
   useEffect(() => {
     try {
-      window.localStorage.setItem(storageKey, JSON.stringify({ rows, vatRate, contingencyRate, nextId }));
+      window.localStorage.setItem(storageKey, JSON.stringify({ rows, vatRate, contingencyRate, nextId, expenses, nextExpenseId }));
     } catch (error) {
       console.warn('Casa&Co: impossibile salvare il computo su questo dispositivo.', error);
     }
-  }, [storageKey, rows, vatRate, contingencyRate, nextId]);
+  }, [storageKey, rows, vatRate, contingencyRate, nextId, expenses, nextExpenseId]);
 
   const totals = useMemo(() => {
     const byKind = {
@@ -86,6 +95,14 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ pr
     const variance = actualSubtotal - trackedBudget;
     return { ...byKind, subtotal, contingency, vat, total: taxable + vat, trackedRows: trackedRows.length, trackedBudget, actualSubtotal, actualTotal, variance };
   }, [rows, vatRate, contingencyRate]);
+
+  const expenseTotal = expenses.reduce((sum, expense) => sum + Math.max(0, expense.amount || 0), 0);
+  const addExpense = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); const amount = Number(expenseAmount);
+    if (!expenseDate || !expenseStore.trim() || !Number.isFinite(amount) || amount <= 0) return;
+    setExpenses((current) => [{ id: nextExpenseId, date: expenseDate, store: expenseStore.trim(), category: expenseCategory, amount, receipt: expenseReceipt.trim() }, ...current]);
+    setNextExpenseId((value) => value + 1); setExpenseStore(''); setExpenseAmount(''); setExpenseReceipt('');
+  };
 
   const updateRow = (id: number, patch: Partial<CostRow>) => {
     setRows((current) => current.map((row) => row.id === id ? { ...row, ...patch } : row));
@@ -198,6 +215,24 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ pr
           <div className="col-span-2 sm:col-span-1 rounded-xl bg-[#26343B] text-white p-3"><span className="block text-[10px] text-white/70">Scostamento</span><strong className="text-base">{totals.variance > 0 ? '+' : totals.variance < 0 ? '−' : ''}{currency(Math.abs(totals.variance))}</strong><span className="block text-[10px] text-white/70">{totals.variance > 0 ? 'Spesa oltre il preventivo' : totals.variance < 0 ? 'Risparmio rispetto al preventivo' : 'In linea con il preventivo'}</span></div>
         </div>
         <p className="text-[10px] text-[#26343B]/55">Il confronto considera solo le righe per cui hai inserito un prezzo effettivo. Inserisci il costo reale per unità man mano che acquisti materiali o sostieni spese. Il totale stimato continua a includere IVA e imprevisti; il confronto qui sopra mostra i subtotali delle sole voci consuntivate.</p>
+      </div>
+      <div className="rounded-2xl border border-[#E5DFD5] bg-white p-4 sm:p-5 space-y-4">
+        <div className="flex items-center gap-2 border-b border-[#F0EBE1] pb-3"><span className="rounded-xl bg-[#EAE4D8] p-2 text-[#8F7451]"><Receipt className="h-5 w-5" /></span><div><span className="block text-[10px] uppercase tracking-wider font-bold text-[#8F7451]">Registro cantiere</span><h4 className="font-serif text-lg font-bold text-[#26343B]">Spese e ricevute</h4></div></div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="rounded-xl bg-[#FAF8F5] p-3"><span className="block text-[10px] text-[#26343B]/60">Spese registrate</span><strong className="text-lg">{currency(expenseTotal)}</strong></div>
+          <div className="rounded-xl bg-[#FAF8F5] p-3"><span className="block text-[10px] text-[#26343B]/60">Budget stimato</span><strong className="text-lg">{currency(totals.total)}</strong></div>
+          <div className="col-span-2 sm:col-span-1 rounded-xl bg-[#26343B] text-white p-3"><span className="block text-[10px] text-white/70">Budget residuo</span><strong className="text-lg">{currency(totals.total - expenseTotal)}</strong></div>
+        </div>
+        <form onSubmit={addExpense} className="grid grid-cols-2 sm:grid-cols-6 gap-2">
+          <label className="text-[10px] font-semibold text-[#26343B]/65">Data<input required type="date" value={expenseDate} onChange={(event) => setExpenseDate(event.target.value)} className="mt-1 w-full min-w-0 rounded-lg border border-[#E5DFD5] bg-[#FAF8F5] px-2 py-2 text-xs text-[#26343B]" /></label>
+          <label className="col-span-1 sm:col-span-2 text-[10px] font-semibold text-[#26343B]/65">Negozio / fornitore<input required value={expenseStore} onChange={(event) => setExpenseStore(event.target.value)} placeholder="Es. ferramenta" className="mt-1 w-full min-w-0 rounded-lg border border-[#E5DFD5] bg-[#FAF8F5] px-2 py-2 text-xs text-[#26343B]" /></label>
+          <label className="text-[10px] font-semibold text-[#26343B]/65">Categoria<select value={expenseCategory} onChange={(event) => setExpenseCategory(event.target.value)} className="mt-1 w-full min-w-0 rounded-lg border border-[#E5DFD5] bg-[#FAF8F5] px-2 py-2 text-xs text-[#26343B]"><option>Materiali</option><option>Manodopera</option><option>Attrezzature</option><option>Trasporto</option><option>Permessi</option><option>Altro</option></select></label>
+          <label className="text-[10px] font-semibold text-[#26343B]/65">Importo (€)<input required type="number" min="0.01" step="0.01" value={expenseAmount} onChange={(event) => setExpenseAmount(event.target.value)} placeholder="0,00" className="mt-1 w-full min-w-0 rounded-lg border border-[#E5DFD5] bg-[#FAF8F5] px-2 py-2 text-xs text-[#26343B]" /></label>
+          <label className="col-span-2 sm:col-span-4 text-[10px] font-semibold text-[#26343B]/65">Riferimento ricevuta / scontrino (facoltativo)<input value={expenseReceipt} onChange={(event) => setExpenseReceipt(event.target.value)} placeholder="Numero documento o nota per ritrovarlo" className="mt-1 w-full min-w-0 rounded-lg border border-[#E5DFD5] bg-[#FAF8F5] px-2 py-2 text-xs text-[#26343B]" /></label>
+          <div className="col-span-2 sm:col-span-2 flex items-end"><button type="submit" className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#26343B] px-3 py-2.5 text-xs font-bold text-white hover:bg-[#1A242A]"><Plus className="h-4 w-4" /> Registra spesa</button></div>
+        </form>
+        {expenses.length > 0 ? <div className="space-y-2">{expenses.map((expense) => <div key={expense.id} className="flex items-center justify-between gap-3 rounded-xl border border-[#EAE4D8] bg-[#FAF8F5] p-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><strong className="text-xs text-[#26343B]">{expense.store}</strong><span className="rounded-full bg-[#EAE4D8] px-2 py-0.5 text-[9px] text-[#26343B]/70">{expense.category}</span></div><p className="mt-1 text-[10px] text-[#26343B]/60">{new Date(expense.date + 'T12:00:00').toLocaleDateString('it-IT')}{expense.receipt ? ' · ' + expense.receipt : ''}</p></div><div className="flex shrink-0 items-center gap-2"><strong className="text-sm text-[#26343B]">{currency(expense.amount)}</strong><button type="button" aria-label="Elimina spesa" onClick={() => setExpenses((current) => current.filter((item) => item.id !== expense.id))} className="rounded-lg p-2 text-[#8F7451] hover:bg-[#EAE4D8]"><Trash2 className="h-4 w-4" /></button></div></div>)}</div> : <p className="rounded-xl bg-[#FAF8F5] p-3 text-xs text-[#26343B]/60">Non hai ancora registrato spese per questo progetto.</p>}
+        <p className="text-[10px] text-[#26343B]/55">Spese e riferimenti delle ricevute vengono salvati automaticamente su questo dispositivo e separati per progetto. Il riferimento non carica il documento: conserva lo scontrino originale.</p>
       </div>
       <p className="text-[10px] text-[#26343B]/55">Calcolo indicativo basato esclusivamente sui valori inseriti. IVA e aliquote dipendono dal tipo di intervento e dalla situazione fiscale: verifica l'applicabilità. I dati del computo vengono salvati automaticamente su questo dispositivo e restano separati per progetto.</p>
     </section>
