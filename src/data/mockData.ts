@@ -4,7 +4,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   mobili: {
     id: 'mobili',
     iconName: 'Armchair',
-    coverImage: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/mobili-e-arredamento.jpg',
     tagline: {
       it: 'Forme pure, incastri nobili e arredi su misura per la casa contemporanea',
       en: 'Pure forms, noble joinery, and custom furniture for contemporary living'
@@ -17,7 +17,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   cucina: {
     id: 'cucina',
     iconName: 'UtensilsCrossed',
-    coverImage: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/cucina.jpg',
     tagline: {
       it: 'Isole centrali, top in microcemento e falegnameria d’autore per cucine aperte',
       en: 'Kitchen islands, microcement worktops, and crafted cabinetry for open kitchens'
@@ -30,7 +30,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   bagno: {
     id: 'bagno',
     iconName: 'Bath',
-    coverImage: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/bagno.jpg',
     tagline: {
       it: 'Spazi benessere in legno idrorepellente, finiture minerali e nicchie a filo muro',
       en: 'Spa-like sanctuaries with water-sealed timber, mineral coatings, and flush niches'
@@ -43,7 +43,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   pareti: {
     id: 'pareti',
     iconName: 'Paintbrush',
-    coverImage: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/intonaci-e-rasatura.jpg',
     tagline: {
       it: 'Cannettati in noce canaletto, rasatura a calce naturale e finiture texturizzate',
       en: 'Fluted walnut panels, natural lime washes, and tactile architectural finishes'
@@ -56,7 +56,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   pavimenti: {
     id: 'pavimenti',
     iconName: 'Layers',
-    coverImage: 'https://images.unsplash.com/photo-1581858726788-75bc0f6a952d?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/pavimenti.jpg',
     tagline: {
       it: 'Dalla spina ungherese al microcemento continuo: l’orizzonte materico del pavimento',
       en: 'From French herringbone to seamless microcement: the tactile foundation of floors'
@@ -69,7 +69,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   giardino: {
     id: 'giardino',
     iconName: 'Trees',
-    coverImage: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/giardino.jpg',
     tagline: {
       it: 'Fioriere monolitiche, percorsi in pietra e arredi outdoor resistenti alle intemperie',
       en: 'Monolithic planters, stone pathways, and weather-defying architectural outdoor furniture'
@@ -82,7 +82,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   pergole: {
     id: 'pergole',
     iconName: 'Tent',
-    coverImage: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/pergole-e-coperture.jpg',
     tagline: {
       it: 'Architetture leggere in larice e alluminio: schermature solari e pergole bioclimatiche',
       en: 'Lightweight timber & aluminum pavilions: sun screening louvers and bioclimatic pergolas'
@@ -95,7 +95,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   falegnameria: {
     id: 'falegnameria',
     iconName: 'Axe',
-    coverImage: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/falegnameria.jpg',
     tagline: {
       it: 'La nobile arte del legno massello, piallatura manuale e incastri a coda di rondine',
       en: 'The noble art of solid hardwood, hand planing, and precision dovetail joinery'
@@ -108,7 +108,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   muratura: {
     id: 'muratura',
     iconName: 'BrickWall',
-    coverImage: 'https://images.unsplash.com/photo-1513467655676-561b7d489a88?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/muratura.jpg',
     tagline: {
       it: 'Tramezzi strutturali in cartongesso, archi scultorei e intonaci materici',
       en: 'Reinforced drywall partitions, sculptural soft arches, and tactile mineral renders'
@@ -121,7 +121,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   idraulica: {
     id: 'idraulica',
     iconName: 'Wrench',
-    coverImage: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/idraulica.jpg',
     tagline: {
       it: 'Collettori multistrato, rubinetteria da incasso e gestione professionale degli scarichi',
       en: 'Multilayer manifolds, concealed brassware, and engineered bathroom drainage'
@@ -134,7 +134,7 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
   elettricita: {
     id: 'elettricita',
     iconName: 'Zap',
-    coverImage: 'https://images.unsplash.com/photo-1558002038-1055907df827?auto=format&fit=crop&w=1200&q=80',
+    coverImage: '/preview/assets/categories/elettricita.jpg',
     tagline: {
       it: 'Linee LED architetturali a 24V, dimmerazione discreta e canalizzazioni invisibili',
       en: 'Architectural 24V LED profiles, discrete dimming, and seamless recessed cabling'
@@ -145,14 +145,15 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
     }
   }
   ,
-  verniciatura: { id: 'verniciatura', iconName: 'Paintbrush', coverImage: 'https://images.unsplash.com/photo-1562259949-e8e7689d7828?auto=format&fit=crop&w=1200&q=80', tagline: { it: 'Preparazione dei supporti, smalti, vernici e finiture professionali', en: 'Surface preparation, enamels, paints and professional finishes' }, subcategories: { it: ['Pittura pareti e soffitti', 'Smalti per legno e metallo', 'Sverniciatura e carteggiatura', 'Effetti decorativi'], en: ['Wall and ceiling painting', 'Wood and metal enamels', 'Paint stripping and sanding', 'Decorative finishes'] } },
-  cartongesso: { id: 'cartongesso', iconName: 'PanelsTopLeft', coverImage: 'https://images.unsplash.com/photo-1620626011761-996317b8d101?auto=format&fit=crop&w=1200&q=80', tagline: { it: 'Contropareti, divisori, controsoffitti e strutture a secco', en: 'Drywall partitions, linings, suspended ceilings and framing' }, subcategories: { it: ['Pareti divisorie', 'Controsoffitti e velette', 'Botole e nicchie', 'Isolamento acustico interno'], en: ['Partition walls', 'Suspended ceilings and coves', 'Access panels and niches', 'Interior acoustic insulation'] } },
-  isolamento: { id: 'isolamento', iconName: 'ThermometerSun', coverImage: 'https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&w=1200&q=80', tagline: { it: 'Comfort termico e acustico: materiali, stratigrafie e ponti termici', en: 'Thermal and acoustic comfort: materials, build-ups and thermal bridges' }, subcategories: { it: ['Isolamento interno', 'Cappotto esterno', 'Isolamento acustico', 'Nastri e tenuta all’aria'], en: ['Internal insulation', 'External wall insulation', 'Sound insulation', 'Air sealing tapes and membranes'] } },
-  serramenti: { id: 'serramenti', iconName: 'PanelsTopLeft', coverImage: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?auto=format&fit=crop&w=1200&q=80', tagline: { it: 'Finestre, porte, oscuranti e miglioramento delle prestazioni', en: 'Windows, doors, shading and performance upgrades' }, subcategories: { it: ['Finestre e portefinestre', 'Porte interne', 'Persiane e tapparelle', 'Guarnizioni e regolazioni'], en: ['Windows and French doors', 'Interior doors', 'Shutters and blinds', 'Seals and adjustments'] } },
-  illuminazione: { id: 'illuminazione', iconName: 'Lightbulb', coverImage: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?auto=format&fit=crop&w=1200&q=80', tagline: { it: 'Luce funzionale e d’atmosfera, corpi illuminanti e sistemi LED', en: 'Functional and ambient lighting, fixtures and LED systems' }, subcategories: { it: ['Faretti e binari', 'Strisce LED e profili', 'Illuminazione esterna', 'Comandi e dimmer'], en: ['Spotlights and tracks', 'LED strips and profiles', 'Outdoor lighting', 'Switches and dimmers'] } },
-  restauro: { id: 'restauro', iconName: 'Brush', coverImage: 'https://images.unsplash.com/photo-1581539250439-c96689b516dd?auto=format&fit=crop&w=1200&q=80', tagline: { it: 'Recupero consapevole di mobili, legni, superfici e dettagli d’epoca', en: 'Careful restoration of furniture, timber, surfaces and period details' }, subcategories: { it: ['Restauro mobili', 'Ripristino legno', 'Ferramenta e finiture d’epoca', 'Riparazioni e consolidamento'], en: ['Furniture restoration', 'Timber repair', 'Period hardware and finishes', 'Repairs and consolidation'] } },
-  impermeabilizzazione: { id: 'impermeabilizzazione', iconName: 'Droplets', coverImage: 'https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?auto=format&fit=crop&w=1200&q=80', tagline: { it: 'Protezione dall’acqua per docce, balconi, terrazzi e locali umidi', en: 'Waterproofing for showers, balconies, terraces and wet rooms' }, subcategories: { it: ['Docce e bagni', 'Balconi e terrazzi', 'Membrane e guaine', 'Sigillature e giunti'], en: ['Showers and bathrooms', 'Balconies and terraces', 'Membranes and coatings', 'Seals and movement joints'] } },
-  terrazzi: { id: 'terrazzi', iconName: 'Sun', coverImage: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1200&q=80', tagline: { it: 'Pavimentazioni, schermature, arredi e cura degli spazi esterni', en: 'Decking, shading, furniture and outdoor space improvements' }, subcategories: { it: ['Pavimenti da esterno', 'Schermature e privacy', 'Arredi e fioriere', 'Drenaggio e pendenze'], en: ['Outdoor flooring', 'Privacy screens and shading', 'Furniture and planters', 'Drainage and falls'] } }
+  verniciatura: { id: 'verniciatura', iconName: 'Paintbrush', coverImage: '/preview/assets/categories/verniciatura.jpg', tagline: { it: 'Preparazione dei supporti, smalti, vernici e finiture professionali', en: 'Surface preparation, enamels, paints and professional finishes' }, subcategories: { it: ['Pittura pareti e soffitti', 'Smalti per legno e metallo', 'Sverniciatura e carteggiatura', 'Effetti decorativi'], en: ['Wall and ceiling painting', 'Wood and metal enamels', 'Paint stripping and sanding', 'Decorative finishes'] } },
+  cartongesso: { id: 'cartongesso', iconName: 'PanelsTopLeft', coverImage: '/preview/assets/categories/cartongesso.jpg', tagline: { it: 'Contropareti, divisori, controsoffitti e strutture a secco', en: 'Drywall partitions, linings, suspended ceilings and framing' }, subcategories: { it: ['Pareti divisorie', 'Controsoffitti e velette', 'Botole e nicchie', 'Isolamento acustico interno'], en: ['Partition walls', 'Suspended ceilings and coves', 'Access panels and niches', 'Interior acoustic insulation'] } },
+  isolamento: { id: 'isolamento', iconName: 'ThermometerSun', coverImage: '/preview/assets/categories/isolamento-termico.jpg', tagline: { it: 'Comfort termico e acustico: materiali, stratigrafie e ponti termici', en: 'Thermal and acoustic comfort: materials, build-ups and thermal bridges' }, subcategories: { it: ['Isolamento interno', 'Cappotto esterno', 'Isolamento acustico', 'Nastri e tenuta all’aria'], en: ['Internal insulation', 'External wall insulation', 'Sound insulation', 'Air sealing tapes and membranes'] } },
+  serramenti: { id: 'serramenti', iconName: 'PanelsTopLeft', coverImage: '/preview/assets/categories/serramenti-e-infissi.jpg', tagline: { it: 'Finestre, porte, oscuranti e miglioramento delle prestazioni', en: 'Windows, doors, shading and performance upgrades' }, subcategories: { it: ['Finestre e portefinestre', 'Porte interne', 'Persiane e tapparelle', 'Guarnizioni e regolazioni'], en: ['Windows and French doors', 'Interior doors', 'Shutters and blinds', 'Seals and adjustments'] } },
+  illuminazione: { id: 'illuminazione', iconName: 'Lightbulb', coverImage: '/preview/assets/categories/illuminazione.jpg', tagline: { it: 'Luce funzionale e d’atmosfera, corpi illuminanti e sistemi LED', en: 'Functional and ambient lighting, fixtures and LED systems' }, subcategories: { it: ['Faretti e binari', 'Strisce LED e profili', 'Illuminazione esterna', 'Comandi e dimmer'], en: ['Spotlights and tracks', 'LED strips and profiles', 'Outdoor lighting', 'Switches and dimmers'] } },
+  restauro: { id: 'restauro', iconName: 'Brush', coverImage: '/preview/assets/categories/restauro.jpg', tagline: { it: 'Recupero consapevole di mobili, legni, superfici e dettagli d’epoca', en: 'Careful restoration of furniture, timber, surfaces and period details' }, subcategories: { it: ['Restauro mobili', 'Ripristino legno', 'Ferramenta e finiture d’epoca', 'Riparazioni e consolidamento'], en: ['Furniture restoration', 'Timber repair', 'Period hardware and finishes', 'Repairs and consolidation'] } },
+  impermeabilizzazione: { id: 'impermeabilizzazione', iconName: 'Droplets', coverImage: '/preview/assets/categories/impermeabilizzazione.jpg', tagline: { it: 'Protezione dall’acqua per docce, balconi, terrazzi e locali umidi', en: 'Waterproofing for showers, balconies, terraces and wet rooms' }, subcategories: { it: ['Docce e bagni', 'Balconi e terrazzi', 'Membrane e guaine', 'Sigillature e giunti'], en: ['Showers and bathrooms', 'Balconies and terraces', 'Membranes and coatings', 'Seals and movement joints'] } },
+  attrezzi: { id: 'attrezzi', iconName: 'Hammer', coverImage: '/preview/assets/categories/attrezzi-e-utensili.jpg', tagline: { it: 'Utensili manuali, elettrici e strumenti per lavorare con precisione e sicurezza', en: 'Hand and power tools for precise, safe DIY work' }, subcategories: { it: ['Utensili manuali', 'Elettroutensili', 'Misurazione e tracciatura', 'Sicurezza e protezioni'], en: ['Hand tools', 'Power tools', 'Measuring and marking', 'Safety equipment'] } },
+  terrazzi: { id: 'terrazzi', iconName: 'Sun', coverImage: '/preview/assets/categories/terrazzi-e-balconi.jpg', tagline: { it: 'Pavimentazioni, schermature, arredi e cura degli spazi esterni', en: 'Decking, shading, furniture and outdoor space improvements' }, subcategories: { it: ['Pavimenti da esterno', 'Schermature e privacy', 'Arredi e fioriere', 'Drenaggio e pendenze'], en: ['Outdoor flooring', 'Privacy screens and shading', 'Furniture and planters', 'Drainage and falls'] } }
 
 };
 
