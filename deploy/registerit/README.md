@@ -6,7 +6,7 @@ Target: PHP 8.4, MySQL allocation available, static Vite frontend, no Node runti
 1. Build the Vite frontend with base path `/preview/` (the workflow artifact is a ZIP containing the contents of `dist/`).
 2. Upload/extract that ZIP into `/www/preview/`. Keep the existing WordPress files in `/www/` untouched.
 3. Upload `api/index.php`, `api/.htaccess`, and a server-only `api/config.php` to `/www/api/`. Create `config.php` by copying `config.example.php` and entering the actual credentials in the hosting File Manager. Never upload the example file as live config.
-4. The API expects Supabase tables from `supabase/schema.sql` and migrations for preferences/subscriptions. Apply them in the connected Supabase SQL editor before enabling account persistence.
+4. In the connected Supabase SQL editor, apply `supabase/schema.sql`, then `supabase/migrations/20261101_user_preferences.sql` and `supabase/migrations/20261101_subscriptions.sql` before enabling account persistence.
 5. Test `https://faidatecasa.it/preview/`, then test API endpoints and Stripe test mode. Only after all checks pass should the main WordPress routing be changed.
 
 ## API routes
