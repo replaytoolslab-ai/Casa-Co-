@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Archive, FileText, Image as ImageIcon, Upload, Download, Trash2, FolderOpen } from 'lucide-react';
 
 type DocumentCategory = 'Preventivi' | 'Fatture' | 'Scontrini' | 'Garanzie' | 'Fornitori' | 'Progetti e schede' | 'Altro';
@@ -35,7 +35,7 @@ export const ProjectDocumentArchive: React.FC<{ projectId: string }> = ({ projec
   const [documents, setDocuments] = useState<DocumentView[]>([]);
   const [category, setCategory] = useState<DocumentCategory>('Preventivi');
   const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);
+  const [busy, setBusy] = useState(false);\n  const urlsRef = useRef<string[]>([]);
 
   const refresh = useCallback(async () => {
     const db = await openDatabase();
@@ -46,15 +46,14 @@ export const ProjectDocumentArchive: React.FC<{ projectId: string }> = ({ projec
       request.onerror = () => reject(request.error);
       transaction.oncomplete = () => db.close();
     });
-    setDocuments(records.map(({ blob, ...item }) => ({ ...item, url: URL.createObjectURL(blob) })));
+    urlsRef.current.forEach((url) => URL.revokeObjectURL(url));\n    const next = records.map(({ blob, ...item }) => ({ ...item, url: URL.createObjectURL(blob) }));\n    urlsRef.current = next.map((item) => item.url);\n    setDocuments(next);
   }, [projectId]);
 
   useEffect(() => {
     void refresh().catch(() => setError('Impossibile caricare i documenti salvati su questo dispositivo.'));
-    return () => { documents.forEach((item) => URL.revokeObjectURL(item.url)); };
-  // refresh reloads the archive when the selected project changes.
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId]);
+  }, [projectId, refresh]);
+
+  useEffect(() => () => { urlsRef.current.forEach((url) => URL.revokeObjectURL(url)); }, []);
 
   const addFiles = async (files: FileList | null) => {
     if (!files?.length) return;
