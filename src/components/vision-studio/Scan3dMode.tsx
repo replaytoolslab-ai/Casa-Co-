@@ -207,7 +207,7 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
             </h3>
           </div>
 
-          <div className="grid grid-cols-1 min-[380px]:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 min-[520px]:grid-cols-3 gap-3">
             <div>
               <label className="block text-[11px] font-bold text-[#26343B]/70 uppercase tracking-wider mb-1">
                 Larghezza (cm)
