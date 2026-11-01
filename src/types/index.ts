@@ -2,7 +2,7 @@ export type CategoryId =
   | 'mobili'
   | 'cucina'
   | 'bagno'
-  | 'pareti'
+  | 'intonaci'
   | 'pavimenti'
   | 'giardino'
   | 'pergole'
