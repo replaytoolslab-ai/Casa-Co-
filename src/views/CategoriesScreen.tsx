@@ -31,7 +31,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
     'mobili',
     'cucina',
     'bagno',
-    'pareti',
+    'intonaci',
     'pavimenti',
     'giardino',
     'pergole',
@@ -46,10 +46,10 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
   const areaGroups: Record<string, CategoryId[]> = {
     all: allCategoryKeys,
     arredo: ['mobili', 'falegnameria', 'cucina'],
-    superfici: ['pareti', 'pavimenti', 'muratura'],
+    superfici: ['intonaci', 'pavimenti', 'muratura'],
     impianti: ['bagno', 'idraulica', 'elettricita'],
     outdoor: ['giardino', 'pergole', 'terrazzi'],
-    finiture: ['pareti', 'pavimenti', 'verniciatura', 'restauro'],
+    finiture: ['intonaci', 'pavimenti', 'verniciatura', 'restauro'],
     involucro: ['cartongesso', 'isolamento', 'serramenti', 'impermeabilizzazione'],
     comfort: ['idraulica', 'elettricita', 'illuminazione'],
     tools: ['attrezzi'],
@@ -254,7 +254,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
                     : 'text-[#26343B]/70 hover:text-[#26343B]'
                 }`}
               >
-                Pareti & Finiture
+                Intonaci & Rasatura
               </button>
               <button
                 onClick={() => setActiveAreaFilter('impianti')}
