@@ -322,7 +322,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
                         </span>
                       </div>
                       <span className="self-start inline-flex items-center rounded-full bg-[#F5F1E9] px-2.5 py-1 text-[10px] font-semibold text-[#8F7451]">
-                        {t.categories.items[cat.id]?.count} {t.categories.guidesAvailable}
+                        {language === 'it' ? 'Guide in preparazione' : 'Guides in preparation'}
                       </span>
                     </div>
                   </div>
