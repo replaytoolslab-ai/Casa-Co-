@@ -170,7 +170,7 @@ export const translations: Record<Language, Translations> = {
     },
     common: {
       appName: 'Casa&Co.',
-      tagline: 'Fai-da-te, Mobili & Ristrutturazione',
+      tagline: 'Rinnova, Ripara, Crea: la tua casa, con le tue mani!',
       createProject: 'Crea il tuo progetto',
       explore: 'Esplora',
       viewDetails: 'Dettagli progetto',
