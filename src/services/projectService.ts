@@ -66,7 +66,7 @@ export const INITIAL_VISION_PROJECT: VisionStudioProject = {
     ],
     scanStatus: 'demo_mode',
     isLiDARAvailable: false,
-    arFramework: 'ARKit',
+    arFramework: 'WebXR Demo',
     lastScanTimestamp: 'Oggi alle 11:20',
     calibrationConfidence: 94
   },
@@ -223,7 +223,7 @@ const EMPTY_VISION_PROJECT: VisionStudioProject = {
   id: 'vision-empty',
   name: '',
   roomType: '',
-  status: 'not_started',
+  status: 'concept',
   progress: 0,
   mainImage: '',
   beforeImage: '',
