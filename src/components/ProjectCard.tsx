@@ -60,6 +60,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
               onToggleSave(project.id, e);
             }}
             aria-label={isSaved ? "Rimuovi dai salvati" : "Salva progetto"}
+            title={isSaved ? "Rimuovi dai salvati" : "Salva progetto"}
             className={`absolute top-3 right-3 p-2 rounded-full backdrop-blur-md transition-all shadow-sm ${
               isSaved
                 ? 'bg-[#B79B76] text-white'
@@ -90,7 +91,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           </div>
 
           {/* Project Title */}
-          <h3 className="font-serif text-lg sm:text-xl font-bold text-[#26343B] group-hover:text-[#8F7451] transition-colors leading-snug mb-2 line-clamp-2">
+          <h3 className="font-serif text-lg sm:text-xl font-bold text-[#26343B] group-hover:text-[#8F7451] transition-colors leading-snug mb-2 break-words">
             {project.title[language]}
           </h3>
 
