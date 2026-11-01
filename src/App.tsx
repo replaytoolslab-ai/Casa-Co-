@@ -28,7 +28,10 @@ export default function App() {
   useEffect(() => {
     let active = true;
     authService.restoreSession().then((session) => {
-      if (active) setAuthSession(session);
+      if (!active) return;
+      setAuthSession(session);
+      const preferredLanguage = session?.user.user_metadata?.preferred_language;
+      if (preferredLanguage === 'it' || preferredLanguage === 'en') setLanguage(preferredLanguage);
     });
     return () => { active = false; };
   }, []);
@@ -228,7 +231,11 @@ export default function App() {
             onLanguageChange={setLanguage}
             completedCount={completedProjectsCount}
             session={authSession}
-            onSessionChange={setAuthSession}
+            onSessionChange={(session) => {
+              setAuthSession(session);
+              const preferredLanguage = session?.user.user_metadata?.preferred_language;
+              if (preferredLanguage === 'it' || preferredLanguage === 'en') setLanguage(preferredLanguage);
+            }}
           />
         );
       default:
