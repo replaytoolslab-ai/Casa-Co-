@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Plus, Trash2, Calculator, Euro, Receipt, Download } from 'lucide-react';
-import { ExpenseReceiptAttachment } from './ExpenseReceiptAttachment';
+import { ExpenseReceiptAttachment, deleteExpenseReceiptAttachment } from './ExpenseReceiptAttachment';
 
 type CostKind = 'material' | 'labor' | 'equipment';
 
@@ -107,7 +107,7 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ pr
       ),
       ['', '', 'TOTALE', expenseTotal.toFixed(2).replace('.', ','), ''].map(quote).join(';'),
     ];
-    const blob = new Blob(['\\uFEFF' + lines.join('\\r\\n')], { type: 'text/csv;charset=utf-8;' });
+    const blob = new Blob(['\uFEFF' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;
@@ -250,7 +250,7 @@ export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ pr
           <label className="col-span-2 sm:col-span-4 text-[10px] font-semibold text-[#26343B]/65">Riferimento ricevuta / scontrino (facoltativo)<input value={expenseReceipt} onChange={(event) => setExpenseReceipt(event.target.value)} placeholder="Numero documento o nota per ritrovarlo" className="mt-1 w-full min-w-0 rounded-lg border border-[#E5DFD5] bg-[#FAF8F5] px-2 py-2 text-xs text-[#26343B]" /></label>
           <div className="col-span-2 sm:col-span-2 flex items-end"><button type="submit" className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[#26343B] px-3 py-2.5 text-xs font-bold text-white hover:bg-[#1A242A]"><Plus className="h-4 w-4" /> Registra spesa</button></div>
         </form>
-        {expenses.length > 0 ? <div className="space-y-2">{expenses.map((expense) => <div key={expense.id} className="flex items-center justify-between gap-3 rounded-xl border border-[#EAE4D8] bg-[#FAF8F5] p-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><strong className="text-xs text-[#26343B]">{expense.store}</strong><span className="rounded-full bg-[#EAE4D8] px-2 py-0.5 text-[9px] text-[#26343B]/70">{expense.category}</span></div><p className="mt-1 text-[10px] text-[#26343B]/60">{new Date(expense.date + 'T12:00:00').toLocaleDateString('it-IT')}{expense.receipt ? ' · ' + expense.receipt : ''}</p><div className="mt-2"><ExpenseReceiptAttachment projectId={projectId} expenseId={expense.id} /></div></div><div className="flex shrink-0 items-center gap-2"><strong className="text-sm text-[#26343B]">{currency(expense.amount)}</strong><button type="button" aria-label="Elimina spesa" onClick={() => setExpenses((current) => current.filter((item) => item.id !== expense.id))} className="rounded-lg p-2 text-[#8F7451] hover:bg-[#EAE4D8]"><Trash2 className="h-4 w-4" /></button></div></div>)}</div> : <p className="rounded-xl bg-[#FAF8F5] p-3 text-xs text-[#26343B]/60">Non hai ancora registrato spese per questo progetto.</p>}
+        {expenses.length > 0 ? <div className="space-y-2">{expenses.map((expense) => <div key={expense.id} className="flex items-center justify-between gap-3 rounded-xl border border-[#EAE4D8] bg-[#FAF8F5] p-3"><div className="min-w-0"><div className="flex flex-wrap items-center gap-2"><strong className="text-xs text-[#26343B]">{expense.store}</strong><span className="rounded-full bg-[#EAE4D8] px-2 py-0.5 text-[9px] text-[#26343B]/70">{expense.category}</span></div><p className="mt-1 text-[10px] text-[#26343B]/60">{new Date(expense.date + 'T12:00:00').toLocaleDateString('it-IT')}{expense.receipt ? ' · ' + expense.receipt : ''}</p><div className="mt-2"><ExpenseReceiptAttachment projectId={projectId} expenseId={expense.id} /></div></div><div className="flex shrink-0 items-center gap-2"><strong className="text-sm text-[#26343B]">{currency(expense.amount)}</strong><button type="button" aria-label="Elimina spesa" onClick={() => { void deleteExpenseReceiptAttachment(projectId, expense.id).catch(() => undefined); setExpenses((current) => current.filter((item) => item.id !== expense.id)); }} className="rounded-lg p-2 text-[#8F7451] hover:bg-[#EAE4D8]"><Trash2 className="h-4 w-4" /></button></div></div>)}</div> : <p className="rounded-xl bg-[#FAF8F5] p-3 text-xs text-[#26343B]/60">Non hai ancora registrato spese per questo progetto.</p>}
         <p className="text-[10px] text-[#26343B]/55">Spese e riferimenti sono salvati per progetto. Foto e PDF allegati sono archiviati nel database locale del browser (IndexedDB), separato dal computo; restano su questo dispositivo e non vengono sincronizzati online. Limite allegato: 8 MB.</p>
       </div>
       <p className="text-[10px] text-[#26343B]/55">Calcolo indicativo basato esclusivamente sui valori inseriti. IVA e aliquote dipendono dal tipo di intervento e dalla situazione fiscale: verifica l'applicabilità. I dati del computo vengono salvati automaticamente su questo dispositivo e restano separati per progetto.</p>
