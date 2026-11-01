@@ -36,6 +36,35 @@ export const VisionStudioDashboard: React.FC<VisionStudioDashboardProps> = ({
 
   const completedChecklistCount = project.checklist.filter((i) => i.completed).length;
 
+  if (!project.name) {
+    const emptyTools: { id: VisionStudioMode; title: string; description: string; icon: React.ElementType; action: string }[] = [
+      { id: 'vision-ai', title: 'Vision AI', description: language === 'it' ? 'Carica una foto del tuo ambiente e scopri proposte di stile e materiali.' : 'Upload a room photo to explore styles and materials.', icon: Sparkles, action: language === 'it' ? 'Apri Vision AI' : 'Open Vision AI' },
+      { id: 'scan-3d', title: 'Anteprima 3D', description: language === 'it' ? 'Inserisci le misure del locale e visualizza un modello parametrico.' : 'Enter room dimensions and view a parametric model.', icon: Box, action: language === 'it' ? 'Apri Scan 3D' : 'Open 3D preview' },
+      { id: 'assistant-ai', title: 'Mastro', description: language === 'it' ? 'Fai domande su lavori, materiali, attrezzi e procedure.' : 'Ask about projects, materials, tools and techniques.', icon: MessageSquare, action: language === 'it' ? 'Parla con Mastro' : 'Chat with Mastro' },
+    ];
+    return (
+      <div className="space-y-6 pb-16">
+        <section className="rounded-3xl border border-[#E5DFD5] bg-white p-6 sm:p-8">
+          <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-[#B79B76]/15 px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#8F7451]">
+            <Sparkles className="h-4 w-4" /> Casa&Co. Vision Studio
+          </div>
+          <h1 className="font-serif text-3xl font-bold text-[#26343B]">{language === 'it' ? 'Da dove vuoi iniziare?' : 'Where would you like to start?'}</h1>
+          <p className="mt-2 max-w-2xl text-sm leading-relaxed text-[#26343B]/70">{language === 'it' ? 'Non hai ancora un progetto aperto. Scegli uno strumento: potrai salvare il lavoro quando avrai inserito le tue informazioni.' : 'You do not have an active project yet. Choose a tool and save your work once you have entered your information.'}</p>
+        </section>
+        <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          {emptyTools.map(({ id, title, description, icon: Icon, action }) => (
+            <button key={id} type="button" onClick={() => onSelectMode(id)} className="flex min-h-52 flex-col items-start rounded-3xl border border-[#E5DFD5] bg-white p-5 text-left shadow-sm transition hover:border-[#B79B76] hover:shadow-md">
+              <span className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-[#26343B] text-[#B79B76]"><Icon className="h-5 w-5" /></span>
+              <span className="font-serif text-xl font-bold text-[#26343B]">{title}</span>
+              <span className="mt-2 flex-1 text-sm leading-relaxed text-[#26343B]/70">{description}</span>
+              <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-[#8F7451]">{action}<ArrowRight className="h-4 w-4" /></span>
+            </button>
+          ))}
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8 pb-16">
       
