@@ -29,7 +29,7 @@ import { Language, translations } from '../../i18n/translations';
 import { InteractiveToolTutorials } from './InteractiveToolTutorials';
 
 const renderAssistantInline = (text: string): React.ReactNode[] => {
-  const parts = text.split(/(\\*\\*[^*]+\\*\\*|`[^`]+`|\\*[^*]+\\*)/g).filter(Boolean);
+  const parts = text.split(/(\*\*[^*]+\*\*|`[^`]+`|\*[^*]+\*)/g).filter(Boolean);
   return parts.map((part, index) => {
     if (part.startsWith('**') && part.endsWith('**')) {
       return <strong key={index} className="font-semibold">{part.slice(2, -2)}</strong>;
@@ -73,8 +73,8 @@ const AssistantFormattedText: React.FC<{ text: string }> = ({ text }) => {
       flushList();
       return;
     }
-    const unordered = line.match(/^(?:[-•*])\\s+(.+)$/);
-    const ordered = line.match(/^\\d+[.)]\\s+(.+)$/);
+    const unordered = line.match(/^(?:[-•*])\s+(.+)$/);
+    const ordered = line.match(/^\d+[.)]\s+(.+)$/);
     if (unordered || ordered) {
       flushParagraph();
       const nextType = unordered ? 'ul' : 'ol';
@@ -84,7 +84,7 @@ const AssistantFormattedText: React.FC<{ text: string }> = ({ text }) => {
       return;
     }
     flushList();
-    const heading = line.match(/^#{1,3}\\s+(.+)$/);
+    const heading = line.match(/^#{1,3}\s+(.+)$/);
     if (heading) {
       flushParagraph();
       blocks.push(<h4 key={`h-${blocks.length}`} className="mt-2 font-semibold text-[#26343B]">{renderAssistantInline(heading[1])}</h4>);
