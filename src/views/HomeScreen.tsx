@@ -232,7 +232,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </section>
 
-      {/* CASA&CO. VISION STUDIO Feature Banner (Central highlight of the app) */}
+      {/* FaiDaTeCasa Vision Studio feature banner */}
       <section className="bg-gradient-to-br from-[#26343B] via-[#1E292E] to-[#172126] rounded-3xl sm:rounded-4xl p-6 sm:p-10 text-[#F5F1E9] border border-[#3A4B53] shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-2/5 bg-radial from-[#B79B76]/20 to-transparent pointer-events-none" />
         <div className="relative z-10 max-w-2xl">
@@ -241,10 +241,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             <span>Nuovo Rilascio Centrale</span>
           </div>
           <h3 className="font-serif text-2xl sm:text-4xl font-bold mb-3 text-[#F5F1E9] leading-tight">
-            CASA&CO. VISION STUDIO<span className="text-[#B79B76]">.</span>
+            FAIDATECASA VISION STUDIO<span className="text-[#B79B76]">.</span>
           </h3>
           <p className="text-xs sm:text-base text-[#F5F1E9]/85 mb-6 leading-relaxed">
-            La piattaforma più spettacolare dell’atelier: trasforma foto grezze con <strong className="text-white">Vision AI</strong> (3 proposte e slider prima/dopo), modella volumi con <strong className="text-white">Scan 3D</strong> (Three.js parametrico) e governa il cantiere con <strong className="text-white">Assistant AI</strong>.
+            Il tuo spazio creativo: trasforma foto grezze con <strong className="text-white">Vision AI</strong> (3 proposte e slider prima/dopo), modella volumi con <strong className="text-white">Scan 3D</strong> (Three.js parametrico) e governa il cantiere con <strong className="text-white">Assistant AI</strong>.
           </p>
 
           <div className="flex flex-wrap items-center gap-3">
