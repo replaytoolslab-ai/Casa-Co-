@@ -79,3 +79,6 @@ main {
   overscroll-behavior-y: contain;
   touch-action: pan-y;
 }
+
+.fdc-hero { min-height: 390px; isolation: isolate; }
+@media (max-width: 639px) { .fdc-hero { min-height: 430px; } }
