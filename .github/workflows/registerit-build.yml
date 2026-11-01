@@ -27,10 +27,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Build for preview subdirectory
         run: npm run build -- --base=/preview/
-      - name: Package static site
-        run: cd dist && zip -r ../faidatecasa-registerit-preview.zip .
       - uses: actions/upload-artifact@v4
         with:
           name: faidatecasa-registerit-preview
-          path: faidatecasa-registerit-preview.zip
+          path: dist/
           retention-days: 7
