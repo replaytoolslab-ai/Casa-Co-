@@ -35,9 +35,7 @@ export const AIProjectScreen: React.FC<AIProjectScreenProps> = ({
   const t = translations[language];
 
   // Form State
-  const [description, setDescription] = useState(
-    'Tavolo da pranzo monumentale in rovere massello a taglio vivo con basamento a trapezio in acciaio scuro'
-  );
+  const [description, setDescription] = useState('');
   const [width, setWidth] = useState(200);
   const [depth, setDepth] = useState(90);
   const [height, setHeight] = useState(76);
@@ -49,7 +47,7 @@ export const AIProjectScreen: React.FC<AIProjectScreenProps> = ({
   // Generation status
   const [isGenerating, setIsGenerating] = useState(false);
   const [generationStep, setGenerationStep] = useState(0);
-  const [hasResult, setHasResult] = useState(true);
+  const [hasResult, setHasResult] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
 
   // Suggested Prompts
@@ -101,6 +99,7 @@ export const AIProjectScreen: React.FC<AIProjectScreenProps> = ({
   };
 
   const handleGenerate = () => {
+    if (!description.trim()) return;
     setIsGenerating(true);
     setGenerationStep(1);
 
@@ -175,8 +174,8 @@ export const AIProjectScreen: React.FC<AIProjectScreenProps> = ({
                   className="text-left px-3 py-2 rounded-xl bg-[#FAF8F5] hover:bg-[#F2ECE1] border border-[#EAE4D8] text-xs text-[#26343B] font-medium transition-colors flex items-center justify-between group"
                 >
                   <span className="truncate">{s.title}</span>
-                  <span className="text-[10px] text-[#8F7451] font-semibold opacity-0 group-hover:opacity-100 transition-opacity">
-                    Carica
+                  <span className="text-[10px] text-[#8F7451] font-semibold shrink-0">
+                    Usa esempio <ArrowRight className="inline w-3 h-3 ml-1" />
                   </span>
                 </button>
               ))}
@@ -192,7 +191,7 @@ export const AIProjectScreen: React.FC<AIProjectScreenProps> = ({
               rows={3}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder={t.aiDesign.inputPlaceholder}
+              placeholder={language === 'it' ? 'Descrivi cosa vuoi realizzare. Es.: un tavolo in legno per 6 persone...' : 'Describe what you want to build. E.g. a wooden table for 6 people...'}
               className="w-full p-3 text-xs sm:text-sm bg-[#FAF8F5] border border-[#E5DFD5] rounded-xl focus:border-[#B79B76] focus:bg-white outline-none leading-relaxed resize-none transition-all"
             />
           </div>
@@ -343,7 +342,7 @@ export const AIProjectScreen: React.FC<AIProjectScreenProps> = ({
           {/* Generate Button */}
           <button
             onClick={handleGenerate}
-            disabled={isGenerating}
+            disabled={isGenerating || !description.trim()}
             className="w-full py-3.5 px-4 rounded-xl bg-[#26343B] text-[#F5F1E9] font-bold text-xs sm:text-sm hover:bg-[#1A242A] transition-all flex items-center justify-center gap-2 shadow-md active:scale-98 disabled:opacity-60"
           >
             <Sparkles className="w-4 h-4 text-[#B79B76]" />
@@ -370,6 +369,13 @@ export const AIProjectScreen: React.FC<AIProjectScreenProps> = ({
 
         {/* Right Column: Generated Executive Blueprint (7 cols on lg) */}
         <div className="lg:col-span-7 space-y-6">
+          {!hasResult && !isGenerating && (
+            <div className="min-h-[220px] bg-white rounded-3xl border border-dashed border-[#D8CDBD] p-6 sm:p-8 flex flex-col items-center justify-center text-center">
+              <FileText className="w-8 h-8 text-[#B79B76] mb-3" />
+              <h2 className="font-serif text-xl font-bold text-[#26343B]">{language === 'it' ? 'La tua scheda apparirà qui' : 'Your project sheet will appear here'}</h2>
+              <p className="text-sm text-[#26343B]/65 mt-2 max-w-sm">{language === 'it' ? 'Descrivi il progetto oppure scegli uno degli esempi. Poi premi “Genera scheda tecnica”.' : 'Describe your project or choose an example, then select “Generate technical sheet”.'}</p>
+            </div>
+          )}
           {hasResult && (
             <div className="bg-white rounded-3xl border border-[#E5DFD5] shadow-xs overflow-hidden">
               
