@@ -21,6 +21,8 @@ import { CategoryIcon } from '../components/CategoryIcon';
 interface MyProjectsScreenProps {
   language: Language;
   projects: UserProject[];
+  isLoading: boolean;
+  isSignedIn: boolean;
   onOpenCreateModal: () => void;
   onUpdateProjectProgress: (projectId: string, progress: number) => void;
   onRemoveProject: (projectId: string) => void;
@@ -31,6 +33,8 @@ interface MyProjectsScreenProps {
 export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
   language,
   projects,
+  isLoading,
+  isSignedIn,
   onOpenCreateModal,
   onUpdateProjectProgress,
   onRemoveProject,
@@ -133,7 +137,21 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
       </div>
 
       {/* Projects List Grid */}
-      {filteredProjects.length > 0 ? (
+      {!isSignedIn ? (
+        <div className="bg-white p-10 rounded-3xl border border-[#E5DFD5] text-center max-w-lg mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-[#FAF8F5] text-[#8F7451] flex items-center justify-center mx-auto mb-4">
+            <FolderKanban className="w-7 h-7" />
+          </div>
+          <h3 className="font-serif text-xl font-bold text-[#26343B]">Accedi per vedere i tuoi progetti</h3>
+          <p className="text-xs sm:text-sm text-[#26343B]/70 mt-2 leading-relaxed">
+            I progetti vengono salvati nel tuo account e saranno disponibili anche dagli altri dispositivi.
+          </p>
+        </div>
+      ) : isLoading ? (
+        <div className="bg-white p-10 rounded-3xl border border-[#E5DFD5] text-center text-sm text-[#26343B]/70">
+          Caricamento dei tuoi progetti…
+        </div>
+      ) : filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => {
             const isEditing = editingNotesId === project.id;
