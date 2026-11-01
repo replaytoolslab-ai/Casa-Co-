@@ -62,6 +62,6 @@ jobs:
           set net:max-retries 3
           set net:timeout 30
           set net:reconnect-interval-base 5
-          mirror --reverse --verbose --exclude-glob categories --exclude-glob 'categories/**' dist/ ./preview/
+          mirror --reverse --transfer-all --verbose --exclude-glob categories --exclude-glob 'categories/**' dist/ ./preview/
           bye
           LFTP
