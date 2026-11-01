@@ -37,6 +37,7 @@ jobs:
           DirectoryIndex index.html index.php
           <IfModule mod_rewrite.c>
             RewriteEngine On
+            RewriteRule ^$ index.html [L]
             RewriteRule ^api/ - [L]
             RewriteCond %{REQUEST_FILENAME} -f [OR]
             RewriteCond %{REQUEST_FILENAME} -d
