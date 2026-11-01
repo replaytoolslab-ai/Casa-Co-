@@ -40,8 +40,8 @@ export const CATEGORIES_DATA: Record<CategoryId, CategoryInfo> = {
       en: ['Floating vanities', 'Illuminated niches', 'Flush shower trays', 'Backlit mirrors']
     }
   },
-  pareti: {
-    id: 'pareti',
+  intonaci: {
+    id: 'intonaci',
     iconName: 'Paintbrush',
     coverImage: '/preview/assets/categories/intonaci-e-rasatura.jpg',
     tagline: {
