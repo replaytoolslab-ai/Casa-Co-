@@ -45,7 +45,7 @@ const renderAssistantInline = (text: string): React.ReactNode[] => {
 };
 
 const AssistantFormattedText: React.FC<{ text: string }> = ({ text }) => {
-  const lines = text.replace(/\\r/g, '').split('\\n');
+  const lines = text.replace(/\r/g, '').split('\n');
   const blocks: React.ReactNode[] = [];
   let paragraph: string[] = [];
   let listItems: string[] = [];
