@@ -12,10 +12,9 @@ import {
   CheckCircle,
   SlidersHorizontal,
 } from 'lucide-react';
-import { CategoryId, Project, UserProject, EditorialArticle } from '../types';
-import { CATEGORIES_DATA, MOCK_PROJECTS, EDITORIAL_ARTICLES } from '../data/mockData';
+import { CategoryId, Project } from '../types';
+import { CATEGORIES_DATA } from '../data/mockData';
 import { Language, translations } from '../i18n/translations';
-import { ProjectCard } from '../components/ProjectCard';
 import { CategoryCard } from '../components/CategoryCard';
 
 interface HomeScreenProps {
@@ -47,19 +46,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 }) => {
   const t = translations[language];
 
-  // Filter projects if there's a search query
-  const filteredProjects = searchQuery.trim()
-    ? MOCK_PROJECTS.filter((p) => {
-        const title = p.title[language].toLowerCase();
-        const desc = p.description[language].toLowerCase();
-        const cat = p.category.toLowerCase();
-        const q = searchQuery.toLowerCase();
-        return title.includes(q) || desc.includes(q) || cat.includes(q);
-      })
-    : MOCK_PROJECTS;
-
-  const featuredProjects = filteredProjects.filter((p) => p.isFeatured).slice(0, 3);
-  const recentProjects = filteredProjects.filter((p) => !p.isFeatured).slice(0, 2);
+  const filteredProjects: Project[] = [];
 
   // Main high-interest categories for the home showcase
   const popularCategoryKeys: CategoryId[] = [
@@ -141,25 +128,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
             </div>
           </div>
 
-          {/* Quick stats banner underneath hero */}
-          <div className="bg-[#1A242A]/90 border-t border-[#37474F]">
-            <div className="grid grid-cols-3 divide-x divide-[#37474F] text-center py-2.5 sm:py-3.5">
-              <div>
-                <span className="font-serif text-lg sm:text-2xl font-bold text-[#F5F1E9]">140+</span>
-                <span className="block text-[10px] sm:text-xs text-[#F5F1E9]/60">{t.home.statProjects}</span>
-              </div>
-              <div>
-                <span className="font-serif text-lg sm:text-2xl font-bold text-[#F5F1E9]">11</span>
-                <span className="block text-[10px] sm:text-xs text-[#F5F1E9]/60">{t.categories.allCategories}</span>
-              </div>
-              <div>
-                <span className="font-serif text-lg sm:text-2xl font-bold text-[#F5F1E9]">12.4k</span>
-                <span className="block text-[10px] sm:text-xs text-[#F5F1E9]/60">{t.home.statArtisans}</span>
-              </div>
-            </div>
-            <div className="text-center pb-2 text-[9px] sm:text-[10px] text-[#DAC9B2]/60 uppercase tracking-wider font-medium">
-              * Dati catalogo editoriale dimostrativo
-            </div>
+          <div className="bg-[#1A242A]/90 border-t border-[#37474F] px-4 py-3 text-center text-xs text-[#F5F1E9]/75">
+            {language === 'it' ? 'Catalogo in aggiornamento: pubblicheremo solo guide complete e verificate.' : 'Catalog under review: only complete, reviewed guides will be published.'}
           </div>
         </section>
       )}
@@ -203,36 +173,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </section>
 
-      {/* Featured / Recommended Projects (Progetti Consigliati) */}
-      <section>
-        <div className="mb-5 flex min-w-0 flex-wrap items-end justify-between gap-3 sm:mb-6">
-          <div>
-            <span className="text-xs uppercase tracking-wider text-[#8F7451] font-bold block mb-1">
-              Selezione della Redazione
-            </span>
-            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#26343B]">
-              {t.home.featuredTitle}
-            </h2>
-            <p className="text-xs sm:text-sm text-[#26343B]/70 mt-1">
-              {t.home.featuredSubtitle}
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              language={language}
-              onSelect={onSelectProject}
-              isSaved={savedProjectIds.includes(project.id)}
-              onToggleSave={onToggleSave}
-            />
-          ))}
-        </div>
-      </section>
-
       {/* CASA&CO. VISION STUDIO Feature Banner (Central highlight of the app) */}
       <section className="bg-gradient-to-br from-[#26343B] via-[#1E292E] to-[#172126] rounded-3xl sm:rounded-4xl p-6 sm:p-10 text-[#F5F1E9] border border-[#3A4B53] shadow-xl relative overflow-hidden">
         <div className="absolute right-0 top-0 bottom-0 w-2/5 bg-radial from-[#B79B76]/20 to-transparent pointer-events-none" />
@@ -268,84 +208,6 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
         </div>
       </section>
 
-      {/* Editorial Stories & Inspirations (Ispirazioni) */}
-      <section className="hidden sm:block">
-        <div className="mb-5 sm:mb-6">
-          <span className="text-xs uppercase tracking-wider text-[#8F7451] font-bold block mb-1">
-            Approfondimenti
-          </span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#26343B]">
-            {t.home.inspirationsTitle}
-          </h2>
-          <p className="text-xs sm:text-sm text-[#26343B]/70 mt-1">
-            {t.home.inspirationsSubtitle}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {EDITORIAL_ARTICLES.map((article) => (
-            <article
-              key={article.id}
-              className="bg-white rounded-2xl border border-[#E5DFD5] overflow-hidden hover:shadow-md hover:border-[#B79B76]/40 transition-all flex flex-col group cursor-pointer"
-            >
-              <div className="aspect-16/10 w-full overflow-hidden bg-[#EAE4D8]">
-                <img
-                  src={article.image}
-                  alt={article.title[language]}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
-              <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center gap-2 text-xs text-[#8F7451] font-semibold mb-2">
-                    <span>{article.category[language]}</span>
-                    <span aria-hidden="true">·</span>
-                    <span className="text-[#26343B]/60 font-medium">{article.readTime}</span>
-                  </div>
-                  <h3 className="font-serif text-base sm:text-lg font-bold text-[#26343B] group-hover:text-[#8F7451] transition-colors leading-snug mb-2">
-                    {article.title[language]}
-                  </h3>
-                  <p className="text-xs text-[#26343B]/75 line-clamp-2 leading-relaxed">
-                    {article.summary[language]}
-                  </p>
-                </div>
-                <div className="pt-3 mt-4 border-t border-[#F0EBE1] flex items-center justify-between text-xs font-semibold text-[#26343B] group-hover:text-[#8F7451]">
-                  <span>Leggi articolo</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {/* Novità & Nuove Uscite (Latest projects) */}
-      <section>
-        <div className="mb-5 sm:mb-6">
-          <span className="text-xs uppercase tracking-wider text-[#8F7451] font-bold block mb-1">
-            Ultimi Cantieri
-          </span>
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#26343B]">
-            {t.home.newsTitle}
-          </h2>
-          <p className="text-xs sm:text-sm text-[#26343B]/70 mt-1">
-            {t.home.newsSubtitle}
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-          {recentProjects.map((project) => (
-            <ProjectCard
-              key={project.id}
-              project={project}
-              language={language}
-              onSelect={onSelectProject}
-              isSaved={savedProjectIds.includes(project.id)}
-              onToggleSave={onToggleSave}
-            />
-          ))}
-        </div>
-      </section>
 
     </div>
   );
