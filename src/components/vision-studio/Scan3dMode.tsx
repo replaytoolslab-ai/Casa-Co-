@@ -89,7 +89,7 @@ export const Scan3dMode: React.FC<Scan3dModeProps> = ({
             Scan 3D — Rilievo Parametrico del Locale
           </h1>
           <p className="text-xs sm:text-sm text-[#26343B]/70 mt-1 max-w-2xl leading-relaxed">
-            Esplora il modello 3D del locale e inserisci o correggi manualmente le misure di pareti, porte e finestre.
+            Esplora l'anteprima parametrica 3D del locale e inserisci o correggi manualmente le misure di pareti, porte e finestre.
           </p>
         </div>
 
