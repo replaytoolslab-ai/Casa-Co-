@@ -229,7 +229,7 @@ export const translations: Record<Language, Translations> = {
         mobili: { name: 'Mobili', desc: 'Tavoli, librerie modulari, consolle e complementi d’arredo su misura.', count: 0 },
         cucina: { name: 'Cucina', desc: 'Isole con banconi a listelli, top in resina e ante artigianali.', count: 0 },
         bagno: { name: 'Bagno', desc: 'Mobili sospesi in teak, posa rubinetteria da incasso e nicchie.', count: 0 },
-        intonaci: { name: 'Intonaci e Rasatura', desc: 'Cannettato in noce, rasatura a calce, boiserie contemporanea.', count: 0 },
+        intonaci: { name: 'Intonaci e Rasatura', desc: 'Intonaci, rasatura, finiture a calce e rivestimenti decorativi.', count: 0 },
         pavimenti: { name: 'Pavimenti', desc: 'Spina ungherese, posa microcemento e recupero parquet d’epoca.', count: 0 },
         giardino: { name: 'Giardino', desc: 'Fioriere monolitiche, arredi outdoor e camminamenti in pietra.', count: 0 },
         pergole: { name: 'Pergole', desc: 'Strutture bioclimatiche in larice, tettoie e frangisole orientabili.', count: 0 },
