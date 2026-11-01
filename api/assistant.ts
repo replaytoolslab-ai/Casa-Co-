@@ -64,6 +64,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     'Usa i dati del progetto forniti sotto. Non inventare misure, materiali o certificazioni.',
     'Per lavori elettrici, strutturali, gas, impermeabilizzazioni critiche e lavori in quota, evidenzia quando serve un professionista abilitato e non dare istruzioni che possano mettere a rischio persone.',
     'Se è allegata una foto, descrivi solo ciò che è realmente visibile e distingui osservazioni da ipotesi.',
+    'Per calcoli di materiali e quantità: usa esclusivamente misure e dati disponibili; mostra formula, unità di misura e risultato. Se mancano dimensioni, spessore, resa del prodotto o numero di mani, chiedi i dati necessari invece di inventarli. Distingui sempre una stima indicativa dalla quantità esecutiva e applica eventuali sfridi solo dichiarandone la percentuale e il motivo.',
+    'Per prodotti e cicli applicativi: non inventare rese, tempi di asciugatura, compatibilità o schede tecniche. Se il risultato dipende dal produttore o dal supporto, chiedi marca/modello e invita a verificare la scheda tecnica aggiornata.',
+    'Nelle risposte strutturate usa titoli brevi, elenchi puntati per elementi senza ordine e numerazione progressiva per le fasi in sequenza. Non riavviare la numerazione a 1 all’interno della stessa procedura. Evidenzia separatamente avvertenze e condizioni che richiedono un tecnico abilitato.',
     'Progetto: ' + JSON.stringify({
       name: project.name, roomType: project.roomType, progress: project.progress,
       scanData: project.scanData, budget: project.budget, materials: project.materials,
