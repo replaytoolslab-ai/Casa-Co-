@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
-  User, Award, Hammer, Settings, Globe, Ruler, Check, ShieldCheck,
+  User, Hammer, Settings, Globe, Ruler, Check, ShieldCheck,
   Mail, Lock, LogOut, Save, KeyRound, LoaderCircle
 } from 'lucide-react';
-import { Language, translations } from '../i18n/translations';
+import { Language } from '../i18n/translations';
 import { AuthSession, authService } from '../services/authService';
 
 interface ProfileScreenProps {
@@ -21,7 +21,6 @@ const fieldClass = 'w-full rounded-xl border border-[#E5DFD5] bg-[#FAF8F5] px-4 
 export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   language, onLanguageChange, completedCount, session, onSessionChange
 }) => {
-  const t = translations[language];
   const [authMode, setAuthMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
