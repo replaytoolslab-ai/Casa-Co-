@@ -1125,56 +1125,7 @@ export const EDITORIAL_ARTICLES: EditorialArticle[] = [
   }
 ];
 
-export const INITIAL_USER_PROJECTS: UserProject[] = [
-  {
-    id: 'my-01',
-    projectId: 'proj-01',
-    title: 'Tavolo da Pranzo in Rovere Massello',
-    category: 'mobili',
-    coverImage: 'https://images.unsplash.com/photo-1538688525198-9b88f6f53126?auto=format&fit=crop&w=800&q=80',
-    progress: 60,
-    status: 'in_progress',
-    lastUpdated: 'Oggi alle 10:30',
-    notes: 'Tavole acquistate dal fornitore a Monza. Tagli di distensione completati. In attesa dell’asciugatura della seconda mano di olio.',
-    completedSteps: [1, 2, 3],
-    totalSteps: 5,
-    difficulty: 'intermediate',
-    timeEstimate: '24 ore',
-    costEstimate: '€290 spesi su €350 budget'
-  },
-  {
-    id: 'my-02',
-    projectId: 'proj-05',
-    title: 'Parete Cannettata con LED in Salotto',
-    category: 'pareti',
-    coverImage: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=800&q=80',
-    progress: 100,
-    status: 'completed',
-    lastUpdated: '12 giorni fa',
-    notes: 'Realizzata dietro il mobile TV. La luce calda a 2700K trasforma completamente l’atmosfera serale.',
-    completedSteps: [1, 2, 3, 4],
-    totalSteps: 4,
-    difficulty: 'beginner',
-    timeEstimate: '10 ore',
-    costEstimate: '€195 totale'
-  },
-  {
-    id: 'my-03',
-    projectId: 'proj-03',
-    title: 'Mobile Bagno Sospeso in Teak',
-    category: 'bagno',
-    coverImage: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=800&q=80',
-    progress: 0,
-    status: 'saved',
-    lastUpdated: 'Ieri',
-    notes: 'Da avviare dopo la ristrutturazione dei sanitari. Verificare interasse delle tubazioni a muro.',
-    completedSteps: [],
-    totalSteps: 4,
-    difficulty: 'intermediate',
-    timeEstimate: '16 ore',
-    costEstimate: '€250 stimati'
-  }
-];
+export const INITIAL_USER_PROJECTS: UserProject[] = [];
 
 export function getProjectCostComparison(project: Project): ProjectCostComparison {
   if (project.costComparison) return project.costComparison;
