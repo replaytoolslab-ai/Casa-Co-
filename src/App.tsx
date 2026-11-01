@@ -294,6 +294,11 @@ export default function App() {
             onToggleDeviceView={() => setIsMobileDeviceView(!isMobileDeviceView)}
             onNavigateAi={handleNavigateAi}
             onNavigateVision={handleNavigateVision}
+            onNavigateHome={() => { setCurrentTab('home'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            onNavigateCategories={() => { setSelectedCategory(null); setCurrentTab('categories'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            onNavigateProjects={handleNavigateProjects}
+            onNavigateProfile={() => { setCurrentTab('profile'); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+            currentTab={currentTab}
             currentSearchQuery={searchQuery}
             onSearchChange={setSearchQuery}
           />
@@ -343,7 +348,7 @@ export default function App() {
           )}
 
           {/* Main App Content Area */}
-          <main className="flex-1 min-h-0 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-8 pb-32 sm:pb-36 overflow-y-auto overscroll-y-contain overflow-x-hidden">
+          <main className="flex-1 min-h-0 max-w-screen-2xl w-full mx-auto px-3 sm:px-6 lg:px-10 pt-4 sm:pt-6 pb-32 sm:pb-36 overflow-y-auto overscroll-y-contain overflow-x-hidden">
             {renderScreen()}
           </main>
 
