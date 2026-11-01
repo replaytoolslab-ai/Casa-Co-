@@ -32,3 +32,20 @@ jobs:
           name: faidatecasa-registerit-preview
           path: dist/
           retention-days: 7
+      - name: Publish preview to Register.it via FTP
+        if: ${{ secrets.FTP_SERVER != '' && secrets.FTP_USERNAME != '' && secrets.FTP_PASSWORD != '' }}
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.6
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftp
+          port: 21
+          server-dir: ./preview/
+          local-dir: ./dist/
+          dangerous-clean-slate: false
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/node_modules/**
+            assets/categories/**
