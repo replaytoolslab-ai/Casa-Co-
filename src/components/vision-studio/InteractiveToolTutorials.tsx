@@ -484,6 +484,7 @@ export const InteractiveToolTutorials: React.FC<InteractiveToolTutorialsProps> =
             <img
               src={tutorial.image}
               alt={tutorial.title}
+              onError={(event) => { event.currentTarget.style.display = 'none'; }}
               className="w-full h-full object-cover opacity-80"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#1A242A] via-transparent to-black/30 pointer-events-none" />
