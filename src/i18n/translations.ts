@@ -86,6 +86,7 @@ export interface Translations {
       restauro: { name: string; desc: string; count: number };
       impermeabilizzazione: { name: string; desc: string; count: number };
       terrazzi: { name: string; desc: string; count: number };
+      attrezzi: { name: string; desc: string; count: number };
     };
   };
   aiDesign: {
@@ -212,14 +213,14 @@ export const translations: Record<Language, Translations> = {
       inspirationsSubtitle: 'Approfondimenti di stile, materiali naturali e tecniche senza tempo',
       newsTitle: 'Novità & Tendenze',
       newsSubtitle: 'Gli ultimi progetti pubblicati dalla nostra redazione di artigiani',
-      viewAllCategories: 'Tutte le 19 categorie',
+      viewAllCategories: 'Tutte le 20 categorie',
       statProjects: 'Progetti guidati',
       statArtisans: 'Membri della community',
       statGuides: 'Schede tecniche',
     },
     categories: {
       title: 'Categorie & Discipline',
-      subtitle: '19 aree pratiche per costruire, riparare e rinnovare casa.',
+      subtitle: '20 aree pratiche per costruire, riparare e rinnovare casa.',
       allCategories: 'Tutte le categorie',
       filterByArea: 'Filtra per area di intervento',
       guidesAvailable: 'guide disponibili',
@@ -244,6 +245,7 @@ export const translations: Record<Language, Translations> = {
         restauro: { name: 'Restauro', desc: 'Recupero di mobili, legno, superfici e dettagli d’epoca.', count: 0 },
         impermeabilizzazione: { name: 'Impermeabilizzazione', desc: 'Docce, bagni, balconi, terrazzi, membrane e sigillature.', count: 0 },
         terrazzi: { name: 'Terrazzi & Balconi', desc: 'Pavimenti esterni, privacy, arredi, drenaggio e schermature.', count: 0 },
+        attrezzi: { name: 'Attrezzi e utensili', desc: 'Utensili manuali, elettroutensili, strumenti di misura e protezioni.', count: 0 },
       },
     },
     aiDesign: {
@@ -368,14 +370,14 @@ export const translations: Record<Language, Translations> = {
       inspirationsSubtitle: 'Deep dives into style, sustainable natural timber, and architectural balance',
       newsTitle: 'Fresh from the Workshop',
       newsSubtitle: 'Latest artisan releases published by our architectural collective',
-      viewAllCategories: 'View all 19 categories',
+      viewAllCategories: 'View all 20 categories',
       statProjects: 'Guided projects',
       statArtisans: 'Makers registered',
       statGuides: 'Technical sheets',
     },
     categories: {
       title: 'Categories & Disciplines',
-      subtitle: '19 practical areas for building, repairing and improving your home.',
+      subtitle: '20 practical areas for building, repairing and improving your home.',
       allCategories: 'All categories',
       filterByArea: 'Filter by trade area',
       guidesAvailable: 'guides available',
@@ -400,6 +402,7 @@ export const translations: Record<Language, Translations> = {
         restauro: { name: 'Restoration', desc: 'Furniture, timber, surfaces and period-detail restoration.', count: 0 },
         impermeabilizzazione: { name: 'Waterproofing', desc: 'Showers, bathrooms, balconies, terraces, membranes and seals.', count: 0 },
         terrazzi: { name: 'Terraces & Balconies', desc: 'Outdoor flooring, privacy, furniture, drainage and shading.', count: 0 },
+        attrezzi: { name: 'Tools & Equipment', desc: 'Hand tools, power tools, measuring equipment and protective gear.', count: 0 },
       },
     },
     aiDesign: {
