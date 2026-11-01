@@ -22,6 +22,7 @@ import { CategoryIcon } from './CategoryIcon';
 import { getProjectCostComparison } from '../data/mockData';
 import { ProjectCostCalculator } from './ProjectCostCalculator';
 import { ProjectDocumentArchive } from './ProjectDocumentArchive';
+import { ProjectDeadlineCalendar } from './ProjectDeadlineCalendar';
 import { TrendingDown, HelpCircle, ShieldCheck as ShieldIcon, ExternalLink } from 'lucide-react';
 
 interface ProjectDetailModalProps {
@@ -255,6 +256,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
           />
 
           <ProjectDocumentArchive projectId={project.id} />
+
+          <ProjectDeadlineCalendar projectId={project.id} />
 
           {/* Quanto risparmi con il fai-da-te? (Cost Comparison & Ethical Disclaimer) */}
           {(() => {
