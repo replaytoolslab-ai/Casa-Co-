@@ -35,7 +35,8 @@ export const ProjectDocumentArchive: React.FC<{ projectId: string }> = ({ projec
   const [documents, setDocuments] = useState<DocumentView[]>([]);
   const [category, setCategory] = useState<DocumentCategory>('Preventivi');
   const [error, setError] = useState('');
-  const [busy, setBusy] = useState(false);\n  const urlsRef = useRef<string[]>([]);
+  const [busy, setBusy] = useState(false);
+  const urlsRef = useRef<string[]>([]);
 
   const refresh = useCallback(async () => {
     const db = await openDatabase();
