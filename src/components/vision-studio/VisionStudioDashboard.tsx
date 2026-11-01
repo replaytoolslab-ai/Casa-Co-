@@ -304,7 +304,7 @@ export const VisionStudioDashboard: React.FC<VisionStudioDashboardProps> = ({
 
               <div className="p-5">
                 <p className="text-xs sm:text-sm text-[#26343B]/80 leading-relaxed mb-4">
-                  Visualizza il locale in 3D e modifica manualmente misure, pareti, porte e finestre. La scansione AR automatica non è disponibile nella versione web.
+                  Anteprima parametrica 3D: visualizza il locale e modifica manualmente misure, pareti, porte e finestre. La scansione AR automatica non è disponibile nella versione web.
                 </p>
 
                 <div className="space-y-1.5 text-xs text-[#26343B]/70">
