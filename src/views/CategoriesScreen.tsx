@@ -39,15 +39,19 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
     'muratura',
     'idraulica',
     'elettricita',
+    'verniciatura', 'cartongesso', 'isolamento', 'serramenti', 'illuminazione', 'restauro', 'impermeabilizzazione', 'terrazzi',
   ];
 
-  // Grouped area categories for filtering the 11 items
+  // Grouped area categories for filtering all 19 items
   const areaGroups: Record<string, CategoryId[]> = {
     all: allCategoryKeys,
     arredo: ['mobili', 'falegnameria', 'cucina'],
     superfici: ['pareti', 'pavimenti', 'muratura'],
     impianti: ['bagno', 'idraulica', 'elettricita'],
-    outdoor: ['giardino', 'pergole'],
+    outdoor: ['giardino', 'pergole', 'terrazzi'],
+    finiture: ['pareti', 'pavimenti', 'verniciatura', 'restauro'],
+    involucro: ['cartongesso', 'isolamento', 'serramenti', 'impermeabilizzazione'],
+    comfort: ['idraulica', 'elettricita', 'illuminazione'],
   };
 
   const currentCategoryInfo = selectedCategory ? CATEGORIES_DATA[selectedCategory] : null;
@@ -74,7 +78,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
               className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-[#8F7451] hover:text-[#26343B] transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              <span>{t.common.back} a tutte le 11 categorie</span>
+              <span>{t.common.back} a tutte le 19 categorie</span>
             </button>
           </div>
 
