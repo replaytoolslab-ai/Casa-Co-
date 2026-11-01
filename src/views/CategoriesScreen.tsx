@@ -52,6 +52,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
     finiture: ['pareti', 'pavimenti', 'verniciatura', 'restauro'],
     involucro: ['cartongesso', 'isolamento', 'serramenti', 'impermeabilizzazione'],
     comfort: ['idraulica', 'elettricita', 'illuminazione'],
+    tools: ['attrezzi'],
   };
 
   const currentCategoryInfo = selectedCategory ? CATEGORIES_DATA[selectedCategory] : null;
