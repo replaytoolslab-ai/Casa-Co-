@@ -19,17 +19,21 @@ import { INITIAL_USER_PROJECTS, MOCK_PROJECTS } from './data/mockData';
 import { Language } from './i18n/translations';
 import { projectService } from './services/projectService';
 import { AuthSession, authService } from './services/authService';
+import { userProjectsService } from './services/userProjectsService';
 import { Search, X, Sparkles, Smartphone, Monitor } from 'lucide-react';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [authSession, setAuthSession] = useState<AuthSession | null>(null);
+  const [authResolved, setAuthResolved] = useState(false);
+  const [projectsLoading, setProjectsLoading] = useState(false);
 
   useEffect(() => {
     let active = true;
     authService.restoreSession().then((session) => {
       if (!active) return;
       setAuthSession(session);
+      setAuthResolved(true);
       const preferredLanguage = session?.user.user_metadata?.preferred_language;
       if (preferredLanguage === 'it' || preferredLanguage === 'en') setLanguage(preferredLanguage);
     });
@@ -44,8 +48,29 @@ export default function App() {
   const [isMobileDeviceView, setIsMobileDeviceView] = useState(false);
 
   // User State
-  const [userProjects, setUserProjects] = useState<UserProject[]>(INITIAL_USER_PROJECTS);
+  const [userProjects, setUserProjects] = useState<UserProject[]>([]);
   const [savedProjectIds, setSavedProjectIds] = useState<string[]>(['proj-01', 'proj-03', 'proj-05']);
+
+  // Load only the signed-in user's projects from the private database.
+  useEffect(() => {
+    if (!authResolved) return;
+    if (!authSession) {
+      setUserProjects([]);
+      setProjectsLoading(false);
+      return;
+    }
+
+    let active = true;
+    setProjectsLoading(true);
+    userProjectsService.list(authSession)
+      .then((projects) => { if (active) setUserProjects(projects); })
+      .catch((error) => {
+        if (active) window.alert(error instanceof Error ? error.message : 'Impossibile caricare i progetti.');
+      })
+      .finally(() => { if (active) setProjectsLoading(false); });
+
+    return () => { active = false; };
+  }, [authResolved, authSession?.access_token]);
 
   // Handle Bookmarks Toggle
   const handleToggleSave = (projectId: string, e?: React.MouseEvent) => {
@@ -56,7 +81,7 @@ export default function App() {
   };
 
   // Add project to workbench
-  const handleAddToMyProjects = (proj: Project) => {
+  const handleAddToMyProjects = async (proj: Project) => {
     const existing = userProjects.find((p) => p.projectId === proj.id);
     if (!existing) {
       const newUserProj: UserProject = {
@@ -75,38 +100,73 @@ export default function App() {
         timeEstimate: proj.timeEstimate[language],
         costEstimate: `${proj.costEstimate.currency}${proj.costEstimate.min} - ${proj.costEstimate.max}`,
       };
-      setUserProjects((prev) => [newUserProj, ...prev]);
+      await saveNewUserProject(newUserProj);
+    }
+  };
+
+  const saveNewUserProject = async (project: UserProject) => {
+    if (!authSession) {
+      window.alert('Per salvare un progetto nel tuo account, accedi o crea un account dalla sezione Profilo.');
+      setCurrentTab('profile');
+      return;
+    }
+    try {
+      const saved = await userProjectsService.create(authSession, project);
+      setUserProjects((prev) => [saved, ...prev]);
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Impossibile salvare il progetto.');
     }
   };
 
   // Add generated AI or custom project
   const handleAddCustomProject = (proj: UserProject) => {
-    setUserProjects((prev) => [proj, ...prev]);
+    void saveNewUserProject(proj);
+  };
+
+  const persistProjectUpdate = async (project: UserProject) => {
+    if (!authSession) return;
+    try {
+      const saved = await userProjectsService.update(authSession, project);
+      setUserProjects((prev) => prev.map((item) => item.id === saved.id ? saved : item));
+    } catch (error) {
+      window.alert(error instanceof Error ? error.message : 'Impossibile aggiornare il progetto.');
+      try {
+        setUserProjects(await userProjectsService.list(authSession));
+      } catch { /* Keep the current view; the next refresh will retry. */ }
+    }
   };
 
   const handleUpdateProgress = (projectId: string, progress: number) => {
-    setUserProjects((prev) =>
-      prev.map((p) =>
-        p.id === projectId
-          ? {
-              ...p,
-              progress,
-              status: progress >= 100 ? 'completed' : 'in_progress',
-              lastUpdated: 'Adesso',
-            }
-          : p
-      )
-    );
+    const project = userProjects.find((item) => item.id === projectId);
+    if (!project) return;
+    const updated = {
+      ...project,
+      progress,
+      status: progress >= 100 ? 'completed' as const : 'in_progress' as const,
+      lastUpdated: new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US')
+    };
+    setUserProjects((prev) => prev.map((item) => item.id === projectId ? updated : item));
+    void persistProjectUpdate(updated);
   };
 
-  const handleRemoveProject = (projectId: string) => {
+  const handleRemoveProject = async (projectId: string) => {
+    if (!authSession) return;
+    const previous = userProjects;
     setUserProjects((prev) => prev.filter((p) => p.id !== projectId));
+    try {
+      await userProjectsService.remove(authSession, projectId);
+    } catch (error) {
+      setUserProjects(previous);
+      window.alert(error instanceof Error ? error.message : 'Impossibile eliminare il progetto.');
+    }
   };
 
   const handleUpdateNotes = (projectId: string, notes: string) => {
-    setUserProjects((prev) =>
-      prev.map((p) => (p.id === projectId ? { ...p, notes, lastUpdated: 'Adesso' } : p))
-    );
+    const project = userProjects.find((item) => item.id === projectId);
+    if (!project) return;
+    const updated = { ...project, notes, lastUpdated: new Date().toLocaleDateString(language === 'it' ? 'it-IT' : 'en-US') };
+    setUserProjects((prev) => prev.map((item) => item.id === projectId ? updated : item));
+    void persistProjectUpdate(updated);
   };
 
   // Category select handler from Home or Categories
@@ -217,6 +277,8 @@ export default function App() {
           <MyProjectsScreen
             language={language}
             projects={userProjects}
+            isLoading={projectsLoading}
+            isSignedIn={Boolean(authSession)}
             onOpenCreateModal={() => setIsCreateModalOpen(true)}
             onUpdateProjectProgress={handleUpdateProgress}
             onRemoveProject={handleRemoveProject}
