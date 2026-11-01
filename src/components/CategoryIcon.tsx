@@ -11,7 +11,13 @@ import {
   BrickWall,
   Wrench,
   Zap,
-  Hammer
+  Hammer,
+  PanelsTopLeft,
+  ThermometerSun,
+  Lightbulb,
+  Brush,
+  Droplets,
+  Sun
 } from 'lucide-react';
 import { CategoryId } from '../types';
 
@@ -44,6 +50,14 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({ category, className 
       return <Wrench className={className} />;
     case 'elettricita':
       return <Zap className={className} />;
+    case 'verniciatura': return <Paintbrush className={className} />;
+    case 'cartongesso': return <PanelsTopLeft className={className} />;
+    case 'isolamento': return <ThermometerSun className={className} />;
+    case 'serramenti': return <PanelsTopLeft className={className} />;
+    case 'illuminazione': return <Lightbulb className={className} />;
+    case 'restauro': return <Brush className={className} />;
+    case 'impermeabilizzazione': return <Droplets className={className} />;
+    case 'terrazzi': return <Sun className={className} />;
     default:
       return <Hammer className={className} />;
   }
