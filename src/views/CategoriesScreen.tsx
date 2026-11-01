@@ -208,7 +208,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
           )}
         </div>
       ) : (
-        /* Full Grid of All 11 Categories */
+        /* Full grid of all categories */
         <div className="space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
@@ -233,7 +233,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
                     : 'text-[#26343B]/70 hover:text-[#26343B]'
                 }`}
               >
-                Tutte (11)
+                {`Tutte (${allCategoryKeys.length})`}
               </button>
               <button
                 onClick={() => setActiveAreaFilter('arredo')}
@@ -278,8 +278,8 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
             </div>
           </div>
 
-          {/* 11 Categories Editorial Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {/* Complete category gallery */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
             {areaGroups[activeAreaFilter].map((catId) => {
               const cat = CATEGORIES_DATA[catId];
               return (
@@ -288,7 +288,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
                   onClick={() => onSelectCategory(cat.id)}
                   className="group relative cursor-pointer bg-white rounded-2xl sm:rounded-3xl border border-[#E5DFD5] overflow-hidden hover:shadow-xl hover:border-[#B79B76]/50 transition-all duration-300 flex flex-col justify-between"
                 >
-                  <div className="relative aspect-16/10 w-full overflow-hidden bg-[#EAE4D8]">
+                  <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#EAE4D8]">
                     <img
                       src={cat.coverImage}
                       alt={t.categories.items[cat.id]?.name}
