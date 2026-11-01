@@ -1,4 +1,7 @@
 name: Build Register.it static site
+concurrency:
+  group: registerit-preview-deploy
+  cancel-in-progress: true
 on:
   workflow_dispatch:
   push:
@@ -27,6 +30,17 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Build for preview subdirectory
         run: npm run build -- --base=/preview/
+      - name: Prevent stale browser cache for the preview
+        run: |
+          cat > dist/.htaccess <<'HTACCESS'
+          <IfModule mod_headers.c>
+            <FilesMatch "^(index\\.html|.*\\.html)$">
+              Header set Cache-Control "no-cache, no-store, must-revalidate"
+              Header set Pragma "no-cache"
+              Header set Expires "0"
+            </FilesMatch>
+          </IfModule>
+          HTACCESS
       - uses: actions/upload-artifact@v4
         with:
           name: faidatecasa-registerit-preview
