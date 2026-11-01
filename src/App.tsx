@@ -311,7 +311,7 @@ export default function App() {
           )}
 
           {/* Main App Content Area */}
-          <main className="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-4 sm:pt-8 pb-28 sm:pb-32 overflow-y-auto overflow-x-hidden safe-area-bottom">
+          <main className="flex-1 max-w-screen-2xl w-full mx-auto px-4 sm:px-8 lg:px-10 pt-5 sm:pt-8 pb-28 sm:pb-32 overflow-y-auto overflow-x-hidden safe-area-bottom">
             {renderScreen()}
           </main>
 
