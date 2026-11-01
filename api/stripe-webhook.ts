@@ -46,13 +46,19 @@ async function saveSubscription(subscriptionId: string, fallbackUserId?: string)
   const periodEnd = item?.current_period_end || sub.current_period_end;
   const amount = price?.unit_amount ?? null;
   const currency = price?.currency ?? null;
+  const endTimestamp = periodEnd ? Number(periodEnd) : 0;
+  const stillEntitled = ['active', 'trialing', 'past_due'].includes(sub.status) ||
+    (sub.status === 'canceled' && endTimestamp * 1000 > Date.now());
+  const allowedStatus = ['active', 'trialing', 'past_due', 'canceled', 'expired', 'incomplete'].includes(sub.status)
+    ? sub.status
+    : sub.status === 'incomplete_expired' ? 'expired' : 'incomplete';
   const row = {
     user_id: userId,
     provider: 'stripe',
     provider_customer_id: customerId || null,
     provider_subscription_id: sub.id,
-    plan: sub.status === 'active' || sub.status === 'trialing' || sub.status === 'past_due' ? 'premium' : 'base',
-    status: sub.status === 'unpaid' ? 'past_due' : sub.status === 'incomplete_expired' ? 'expired' : sub.status,
+    plan: stillEntitled ? 'premium' : 'base',
+    status: sub.status === 'unpaid' ? 'past_due' : allowedStatus,
     current_period_end: periodEnd ? new Date(periodEnd * 1000).toISOString() : null,
     cancel_at_period_end: Boolean(sub.cancel_at_period_end),
     price_amount: amount,
