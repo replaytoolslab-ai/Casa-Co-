@@ -37,12 +37,12 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Brand identity */}
         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#26343B] text-[#F5F1E9] flex items-center justify-center shadow-xs flex-shrink-0">
-            <span className="font-serif font-bold text-base sm:text-lg tracking-tight">C&</span>
+            <span className="font-serif font-bold text-base sm:text-lg tracking-tight">F</span>
           </div>
           <div>
             <div className="flex items-center gap-1">
-              <h1 className="font-serif text-lg sm:text-2xl font-bold tracking-tight text-[#26343B] leading-none whitespace-nowrap">
-                Casa&Co<span className="text-[#B79B76]">.</span>
+              <h1 className="font-serif text-base sm:text-xl lg:text-2xl font-bold tracking-tight text-[#26343B] leading-none whitespace-nowrap">
+                FaiDaTeCasa<span className="text-[#B79B76]">.</span>
               </h1>
             </div>
             <p className="text-[10px] sm:text-xs text-[#26343B]/60 tracking-wider uppercase font-medium mt-0.5 hidden md:block">
