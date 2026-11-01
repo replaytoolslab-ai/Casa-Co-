@@ -33,7 +33,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
     },
     {
       id: 'vision' as NavTab,
-      label: 'Vision',
+      label: language === 'it' ? 'Studio' : 'Studio',
       icon: Sparkles,
       highlight: true,
     },
@@ -76,7 +76,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({
                   <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 bg-[#B79B76] rounded-full border-2 border-[#F5F1E9]" />
                 </div>
                 <span
-                  className={`text-[9.5px] sm:text-[10px] font-bold tracking-tight mt-1 transition-colors leading-none truncate max-w-full ${
+                  className={`text-[10px] sm:text-[11px] font-bold tracking-tight mt-1 transition-colors leading-none truncate max-w-full ${
                     isActive ? 'text-[#26343B]' : 'text-[#26343B]/80'
                   }`}
                 >
