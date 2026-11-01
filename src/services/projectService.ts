@@ -218,16 +218,43 @@ export const PRESET_VISION_PROJECTS: VisionStudioProject[] = [
   BATHROOM_VISION_PROJECT
 ];
 
+const EMPTY_VISION_PROJECT: VisionStudioProject = {
+  ...INITIAL_VISION_PROJECT,
+  id: 'vision-empty',
+  name: '',
+  roomType: '',
+  status: 'not_started',
+  progress: 0,
+  mainImage: '',
+  beforeImage: '',
+  activeProposalId: '',
+  proposals: [],
+  customizations: { accentWall: false, woodSlats: false, ledChannel: false, microcementFloor: false, suspendedFixtures: false },
+  scanData: { ...INITIAL_VISION_PROJECT.scanData, width: 0, length: 0, height: 0, squareMeters: 0, volumeCubicMeters: 0, walls: [], openings: [], scanStatus: 'demo_mode', isLiDARAvailable: false, lastScanTimestamp: '', calibrationConfidence: 0 },
+  budget: { target: 0, spent: 0, estimatedTotal: 0, currency: '€' },
+  materials: [], checklist: [], photoDiary: [], chatHistory: [], createdAt: '', lastModified: ''
+};
+
 function readStoredVisionProject(): VisionStudioProject {
   try {
+    const cleanupKey = 'casa-co:clean-demo-vision-v1';
+    if (!window.localStorage.getItem(cleanupKey)) {
+      window.localStorage.removeItem('casa-co:vision-project');
+      window.localStorage.setItem(cleanupKey, 'done');
+      return EMPTY_VISION_PROJECT;
+    }
+  } catch {
+    return EMPTY_VISION_PROJECT;
+  }
+  try {
     const raw = window.localStorage.getItem('casa-co:vision-project');
-    if (!raw) return INITIAL_VISION_PROJECT;
+    if (!raw) return EMPTY_VISION_PROJECT;
     const saved = JSON.parse(raw) as VisionStudioProject;
     return saved && typeof saved.id === 'string' && Array.isArray(saved.photoDiary) && Array.isArray(saved.chatHistory)
       ? saved
-      : INITIAL_VISION_PROJECT;
+      : EMPTY_VISION_PROJECT;
   } catch {
-    return INITIAL_VISION_PROJECT;
+    return EMPTY_VISION_PROJECT;
   }
 }
 
