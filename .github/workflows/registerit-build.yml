@@ -1,18 +1,19 @@
-name: Build Register.it static site
+name: Build and publish FaiDaTeCasa on Register.it
 concurrency:
-  group: registerit-preview-deploy
+  group: registerit-main-deploy
   cancel-in-progress: true
 on:
   workflow_dispatch:
   push:
     branches:
-      - deploy/registerit-php
+      - main
     paths:
       - 'src/**'
       - 'index.html'
       - 'package.json'
       - 'vite.config.ts'
       - '.github/workflows/registerit-build.yml'
+      - 'public/**'
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -28,11 +29,20 @@ jobs:
         run: php -l api/index.php
       - name: Install dependencies
         run: npm install --no-audit --no-fund
-      - name: Build for preview subdirectory
-        run: npm run build -- --base=/preview/
-      - name: Prevent stale browser cache for the preview
+      - name: Build for the domain root
+        run: npm run build -- --base=/
+      - name: Configure SPA routing and safe browser caching
         run: |
           cat > dist/.htaccess <<'HTACCESS'
+          DirectoryIndex index.html index.php
+          <IfModule mod_rewrite.c>
+            RewriteEngine On
+            RewriteRule ^api/ - [L]
+            RewriteCond %{REQUEST_FILENAME} -f [OR]
+            RewriteCond %{REQUEST_FILENAME} -d
+            RewriteRule ^ - [L]
+            RewriteRule ^ index.html [L]
+          </IfModule>
           <IfModule mod_headers.c>
             <FilesMatch "^(index\\.html|.*\\.html)$">
               Header set Cache-Control "no-cache, no-store, must-revalidate"
@@ -43,18 +53,19 @@ jobs:
           HTACCESS
       - uses: actions/upload-artifact@v4
         with:
-          name: faidatecasa-registerit-preview
+          name: faidatecasa-main-site
           path: dist/
-          retention-days: 7
+          retention-days: 14
       - name: Install lftp
         run: sudo apt-get update && sudo apt-get install -y lftp
-      - name: Publish preview to Register.it via passive FTP
+      - name: Backup current WordPress entry files and publish the new site
         env:
           FTP_SERVER: ${{ secrets.FTP_SERVER }}
           FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
           FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
         run: |
           set -euo pipefail
+          mkdir -p root-backup
           lftp -u "$FTP_USERNAME","$FTP_PASSWORD" "$FTP_SERVER" <<'LFTP'
           set ftp:passive-mode true
           set ftp:prefer-epsv false
@@ -62,6 +73,18 @@ jobs:
           set net:max-retries 3
           set net:timeout 30
           set net:reconnect-interval-base 5
-          mirror --reverse --transfer-all --verbose --exclude-glob categories --exclude-glob 'categories/**' dist/ ./preview/
+          get .htaccess -o root-backup-wordpress-htaccess.bak || true
+          get index.php -o root-backup-wordpress-index.php.bak || true
+          mirror --reverse --transfer-all --verbose dist/ ./
           bye
           LFTP
+          mkdir -p root-backup
+          mv root-backup-wordpress-htaccess.bak root-backup/ 2>/dev/null || true
+          mv root-backup-wordpress-index.php.bak root-backup/ 2>/dev/null || true
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: faidatecasa-wordpress-root-backup
+          path: root-backup/
+          if-no-files-found: ignore
+          retention-days: 30
