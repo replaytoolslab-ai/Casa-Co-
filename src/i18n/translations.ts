@@ -78,6 +78,14 @@ export interface Translations {
       muratura: { name: string; desc: string; count: number };
       idraulica: { name: string; desc: string; count: number };
       elettricita: { name: string; desc: string; count: number };
+      verniciatura: { name: string; desc: string; count: number };
+      cartongesso: { name: string; desc: string; count: number };
+      isolamento: { name: string; desc: string; count: number };
+      serramenti: { name: string; desc: string; count: number };
+      illuminazione: { name: string; desc: string; count: number };
+      restauro: { name: string; desc: string; count: number };
+      impermeabilizzazione: { name: string; desc: string; count: number };
+      terrazzi: { name: string; desc: string; count: number };
     };
   };
   aiDesign: {
@@ -204,14 +212,14 @@ export const translations: Record<Language, Translations> = {
       inspirationsSubtitle: 'Approfondimenti di stile, materiali naturali e tecniche senza tempo',
       newsTitle: 'Novità & Tendenze',
       newsSubtitle: 'Gli ultimi progetti pubblicati dalla nostra redazione di artigiani',
-      viewAllCategories: 'Tutte le 11 categorie',
+      viewAllCategories: 'Tutte le 19 categorie',
       statProjects: 'Progetti guidati',
       statArtisans: 'Membri della community',
       statGuides: 'Schede tecniche',
     },
     categories: {
       title: 'Categorie & Discipline',
-      subtitle: '11 aree specialistiche curate da architetti, designer e maestri artigiani.',
+      subtitle: '19 aree pratiche per costruire, riparare e rinnovare casa.',
       allCategories: 'Tutte le categorie',
       filterByArea: 'Filtra per area di intervento',
       guidesAvailable: 'guide disponibili',
@@ -228,6 +236,14 @@ export const translations: Record<Language, Translations> = {
         muratura: { name: 'Muratura', desc: 'Pareti divisorie in cartongesso strutturale, intonaci grezzi e archi.', count: 0 },
         idraulica: { name: 'Idraulica', desc: 'Collettori moderni, scarichi a parete e sifoneria a vista in ottone.', count: 0 },
         elettricita: { name: 'Elettricità', desc: 'Linee LED a scomparsa, domotica fai-da-te e punti luce d’accento.', count: 0 },
+        verniciatura: { name: 'Verniciatura', desc: 'Preparazione, pitture, smalti e finiture per legno, metallo e pareti.', count: 0 },
+        cartongesso: { name: 'Cartongesso', desc: 'Pareti divisorie, controsoffitti, velette, nicchie e botole.', count: 0 },
+        isolamento: { name: 'Isolamento', desc: 'Soluzioni termiche e acustiche, materiali e posa corretta.', count: 0 },
+        serramenti: { name: 'Serramenti', desc: 'Finestre, porte, oscuranti, guarnizioni e regolazioni.', count: 0 },
+        illuminazione: { name: 'Illuminazione', desc: 'Faretti, binari, LED, dimmer e luce per esterni.', count: 0 },
+        restauro: { name: 'Restauro', desc: 'Recupero di mobili, legno, superfici e dettagli d’epoca.', count: 0 },
+        impermeabilizzazione: { name: 'Impermeabilizzazione', desc: 'Docce, bagni, balconi, terrazzi, membrane e sigillature.', count: 0 },
+        terrazzi: { name: 'Terrazzi & Balconi', desc: 'Pavimenti esterni, privacy, arredi, drenaggio e schermature.', count: 0 },
       },
     },
     aiDesign: {
@@ -352,14 +368,14 @@ export const translations: Record<Language, Translations> = {
       inspirationsSubtitle: 'Deep dives into style, sustainable natural timber, and architectural balance',
       newsTitle: 'Fresh from the Workshop',
       newsSubtitle: 'Latest artisan releases published by our architectural collective',
-      viewAllCategories: 'View all 11 categories',
+      viewAllCategories: 'View all 19 categories',
       statProjects: 'Guided projects',
       statArtisans: 'Makers registered',
       statGuides: 'Technical sheets',
     },
     categories: {
       title: 'Categories & Disciplines',
-      subtitle: '11 specialized areas curated by architects, makers, and master builders.',
+      subtitle: '19 practical areas for building, repairing and improving your home.',
       allCategories: 'All categories',
       filterByArea: 'Filter by trade area',
       guidesAvailable: 'guides available',
@@ -376,6 +392,14 @@ export const translations: Record<Language, Translations> = {
         muratura: { name: 'Masonry & Plaster', desc: 'Reinforced drywall partitions, raw mineral renders, and organic arches.', count: 0 },
         idraulica: { name: 'Plumbing', desc: 'PEX manifolds, concealed wall wastes, and exposed brushed brass fittings.', count: 0 },
         elettricita: { name: 'Electrical & Lighting', desc: 'Recessed architectural LED channels, subtle home automation, and accents.', count: 0 },
+        verniciatura: { name: 'Painting & Finishes', desc: 'Surface prep, paints and finishes for wood, metal and walls.', count: 0 },
+        cartongesso: { name: 'Drywall', desc: 'Partitions, suspended ceilings, coves, niches and access panels.', count: 0 },
+        isolamento: { name: 'Insulation', desc: 'Thermal and acoustic solutions, materials and correct installation.', count: 0 },
+        serramenti: { name: 'Windows & Doors', desc: 'Windows, doors, shutters, seals and adjustments.', count: 0 },
+        illuminazione: { name: 'Lighting', desc: 'Spotlights, tracks, LED strips, dimmers and outdoor lighting.', count: 0 },
+        restauro: { name: 'Restoration', desc: 'Furniture, timber, surfaces and period-detail restoration.', count: 0 },
+        impermeabilizzazione: { name: 'Waterproofing', desc: 'Showers, bathrooms, balconies, terraces, membranes and seals.', count: 0 },
+        terrazzi: { name: 'Terraces & Balconies', desc: 'Outdoor flooring, privacy, furniture, drainage and shading.', count: 0 },
       },
     },
     aiDesign: {
