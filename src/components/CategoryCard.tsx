@@ -33,7 +33,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
           {itemData?.name || category.id}
         </span>
         <span className="text-[10px] text-[#26343B]/50 mt-0.5">
-          {itemData?.count} guide
+          {language === 'it' ? 'Guide in preparazione' : 'Guides in preparation'}
         </span>
       </button>
     );
@@ -83,7 +83,7 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
           <ArrowRight className="w-4 h-4 text-[#B79B76] group-hover:translate-x-1 transition-transform flex-shrink-0 ml-2" />
         </div>
         <span className="self-start inline-flex items-center rounded-full bg-[#F5F1E9] px-2.5 py-1 text-[10px] font-semibold text-[#8F7451]">
-          {itemData?.count} {t.categories.guidesAvailable}
+          {language === 'it' ? 'Guide in preparazione' : 'Guides in preparation'}
         </span>
       </div>
     </div>
