@@ -17,7 +17,8 @@ export type CategoryId =
   | 'illuminazione'
   | 'restauro'
   | 'impermeabilizzazione'
-  | 'terrazzi';
+  | 'terrazzi'
+  | 'attrezzi';
 
 export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
 
