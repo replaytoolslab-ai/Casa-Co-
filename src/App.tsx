@@ -20,6 +20,7 @@ import { Language } from './i18n/translations';
 import { projectService } from './services/projectService';
 import { AuthSession, authService } from './services/authService';
 import { userProjectsService } from './services/userProjectsService';
+import { preferencesService } from './services/preferencesService';
 import { Search, X, Sparkles, Smartphone, Monitor } from 'lucide-react';
 
 export default function App() {
@@ -49,7 +50,7 @@ export default function App() {
 
   // User State
   const [userProjects, setUserProjects] = useState<UserProject[]>([]);
-  const [savedProjectIds, setSavedProjectIds] = useState<string[]>(['proj-01', 'proj-03', 'proj-05']);
+  const [savedProjectIds, setSavedProjectIds] = useState<string[]>([]);
 
   // Load only the signed-in user's projects from the private database.
   useEffect(() => {
@@ -72,12 +73,38 @@ export default function App() {
     return () => { active = false; };
   }, [authResolved, authSession?.access_token]);
 
+  // Restore this account's saved catalog bookmarks.
+  useEffect(() => {
+    if (!authResolved) return;
+    if (!authSession) {
+      setSavedProjectIds([]);
+      return;
+    }
+    let active = true;
+    preferencesService.load(authSession)
+      .then((preferences) => { if (active) setSavedProjectIds(preferences.savedProjectIds); })
+      .catch((error) => {
+        if (active) console.error('Preferences could not be loaded:', error);
+      });
+    return () => { active = false; };
+  }, [authResolved, authSession?.access_token]);
+
   // Handle Bookmarks Toggle
   const handleToggleSave = (projectId: string, e?: React.MouseEvent) => {
     if (e) e.stopPropagation();
-    setSavedProjectIds((prev) =>
-      prev.includes(projectId) ? prev.filter((id) => id !== projectId) : [...prev, projectId]
-    );
+    if (!authSession) {
+      window.alert('Accedi al tuo account per salvare i preferiti e ritrovarli su tutti i dispositivi.');
+      setCurrentTab('profile');
+      return;
+    }
+    const nextIds = savedProjectIds.includes(projectId)
+      ? savedProjectIds.filter((id) => id !== projectId)
+      : [...savedProjectIds, projectId];
+    setSavedProjectIds(nextIds);
+    void preferencesService.save(authSession, { savedProjectIds: nextIds }).catch((error) => {
+      setSavedProjectIds(savedProjectIds);
+      window.alert(error instanceof Error ? error.message : 'Impossibile salvare i preferiti.');
+    });
   };
 
   // Add project to workbench
