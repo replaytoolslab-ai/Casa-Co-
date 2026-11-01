@@ -255,6 +255,33 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           </section>
 
           <section className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E5DFD5] shadow-xs space-y-4">
+            <div className="pb-3 border-b border-[#F0EBE1]">
+              <h2 className="font-serif text-xl font-bold flex items-center gap-2"><Crown className="w-5 h-5 text-[#B79B76]" /> Scegli il tuo piano</h2>
+              <p className="text-xs text-[#26343B]/60 mt-1">Prezzi ufficiali FaiDaTeCasa. L’attivazione dei pagamenti online sarà disponibile dopo il collegamento dei provider.</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="rounded-2xl border border-[#E5DFD5] bg-[#FAF8F5] p-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-[#26343B]/60">Base</p>
+                <p className="font-serif text-2xl font-bold mt-2">Gratis</p>
+                <p className="text-xs text-[#26343B]/60 mt-1">Per sempre</p>
+                <p className="text-xs mt-4 font-semibold">0 €</p>
+              </div>
+              <div className="rounded-2xl border border-[#B79B76] p-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-[#8F7451]">Premium mensile</p>
+                <p className="font-serif text-2xl font-bold mt-2">9,90 €</p>
+                <p className="text-xs text-[#26343B]/60 mt-1">Al mese</p>
+                <p className="text-xs mt-4 font-semibold">Rinnovo mensile</p>
+              </div>
+              <div className="rounded-2xl border border-[#26343B] bg-[#26343B] text-white p-4">
+                <p className="text-xs font-bold uppercase tracking-wide text-[#D8BD96]">Premium annuale</p>
+                <p className="font-serif text-2xl font-bold mt-2">99 €</p>
+                <p className="text-xs text-white/65 mt-1">All’anno</p>
+                <p className="text-xs mt-4 font-semibold text-[#D8BD96]">Risparmi 19,80 €</p>
+              </div>
+            </div>
+          </section>
+
+          <section className="bg-white rounded-3xl p-6 sm:p-8 border border-[#E5DFD5] shadow-xs space-y-4">
             <h2 className="font-serif text-xl font-bold flex items-center gap-2 pb-3 border-b border-[#F0EBE1]"><User className="w-5 h-5 text-[#B79B76]" /> Dati personali</h2>
             <label className="block"><span className="text-xs font-semibold block mb-1.5">Nome</span><input className={fieldClass} value={name} onChange={e => setName(e.target.value)} maxLength={60} placeholder="Come vuoi essere chiamato" /></label>
             <label className="block"><span className="text-xs font-semibold block mb-1.5">Località</span><input className={fieldClass} value={location} onChange={e => setLocation(e.target.value)} maxLength={100} placeholder="Es. Milano, Italia" /></label>
