@@ -15,7 +15,7 @@ import { VisionStudioScreen } from './views/VisionStudioScreen';
 import { ProjectDetailModal } from './components/ProjectDetailModal';
 import { CreateProjectModal } from './components/CreateProjectModal';
 import { CategoryId, Project, UserProject } from './types';
-import { INITIAL_USER_PROJECTS, MOCK_PROJECTS } from './data/mockData';
+import { MOCK_PROJECTS } from './data/mockData';
 import { Language } from './i18n/translations';
 import { projectService } from './services/projectService';
 import { AuthSession, authService } from './services/authService';
