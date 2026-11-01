@@ -167,13 +167,6 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
                       </div>
                     )}
 
-                    {/* Progress Bar Over Image Bottom */}
-                    <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/40">
-                      <div
-                        className="h-full bg-[#B79B76] transition-all duration-500"
-                        style={{ width: `${project.progress}%` }}
-                      />
-                    </div>
                   </div>
 
                   {/* Body Content */}
@@ -273,10 +266,12 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
 
                     <button
                       onClick={() => onRemoveProject(project.id)}
-                      className="p-1.5 text-[#26343B]/40 hover:text-red-700 transition-colors rounded-lg cursor-pointer"
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-semibold text-[#8A4B43] hover:bg-red-50 transition-colors rounded-lg cursor-pointer"
                       title="Rimuovi progetto"
+                      aria-label="Rimuovi progetto"
                     >
-                      <Trash2 className="w-4 h-4" />
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Rimuovi</span>
                     </button>
                   </div>
                 </div>
