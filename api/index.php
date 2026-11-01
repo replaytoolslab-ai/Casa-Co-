@@ -264,7 +264,7 @@ function route_ai(string $kind): never {
     $text=$r['response']??$r['output']??$r['text']??null;
     if (is_array($text)) $text=json_encode($text,JSON_UNESCAPED_UNICODE);
     if (!is_string($text)) respond(502,['error'=>'Risposta AI non valida.']);
-    respond(200,['response'=>$text]);
+    respond(200,['text'=>$text]);
 }
 
 $path=trim((string)($_GET['route']??''),'/');
