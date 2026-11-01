@@ -249,6 +249,7 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
 
           {/* Editable quantity and cost estimate */}
           <ProjectCostCalculator
+            projectId={project.id}
             initialArea={Number(project.dimensions.match(/[0-9]+(?:[.,][0-9]+)?/)?.[0]?.replace(',', '.') || 0)}
           />
 
