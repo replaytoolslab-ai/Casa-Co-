@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Plus, Trash2, Calculator, Euro } from 'lucide-react';
 
 type CostKind = 'material' | 'labor' | 'equipment';
@@ -13,6 +13,7 @@ interface CostRow {
 }
 
 interface ProjectCostCalculatorProps {
+  projectId: string;
   initialArea?: number;
 }
 
@@ -28,15 +29,37 @@ const makeRow = (id: number, kind: CostKind = 'material'): CostRow => ({
 const currency = (value: number) =>
   new Intl.NumberFormat('it-IT', { style: 'currency', currency: 'EUR' }).format(value);
 
-export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ initialArea = 0 }) => {
-  const [rows, setRows] = useState<CostRow[]>([
+export const ProjectCostCalculator: React.FC<ProjectCostCalculatorProps> = ({ projectId, initialArea = 0 }) => {
+  const storageKey = 'casa-co:project-costs:' + projectId;
+  const [rows, setRows] = useState<CostRow[]>(() => {
+    try {
+      const saved = window.localStorage.getItem(storageKey);
+      const parsed = saved ? JSON.parse(saved) : null;
+      if (parsed && Array.isArray(parsed.rows)) return parsed.rows as CostRow[];
+    } catch { /* fallback to initial rows */ }
+    return [
     { ...makeRow(1, 'material'), description: 'Materiale principale', quantity: initialArea > 0 ? initialArea : 1, unit: initialArea > 0 ? 'm²' : 'pz' },
     makeRow(2, 'labor'),
     makeRow(3, 'equipment'),
-  ]);
-  const [vatRate, setVatRate] = useState(0);
-  const [contingencyRate, setContingencyRate] = useState(0);
-  const [nextId, setNextId] = useState(4);
+    ];
+  });
+  const [vatRate, setVatRate] = useState(() => {
+    try { const saved = window.localStorage.getItem(storageKey); return saved ? Number(JSON.parse(saved).vatRate) || 0 : 0; } catch { return 0; }
+  });
+  const [contingencyRate, setContingencyRate] = useState(() => {
+    try { const saved = window.localStorage.getItem(storageKey); return saved ? Number(JSON.parse(saved).contingencyRate) || 0 : 0; } catch { return 0; }
+  });
+  const [nextId, setNextId] = useState(() => {
+    try { const saved = window.localStorage.getItem(storageKey); return saved ? Number(JSON.parse(saved).nextId) || 4 : 4; } catch { return 4; }
+  });
+
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify({ rows, vatRate, contingencyRate, nextId }));
+    } catch (error) {
+      console.warn('Casa&Co: impossibile salvare il computo su questo dispositivo.', error);
+    }
+  }, [storageKey, rows, vatRate, contingencyRate, nextId]);
 
   const totals = useMemo(() => {
     const byKind = {
