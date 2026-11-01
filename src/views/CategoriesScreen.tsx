@@ -220,7 +220,7 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
             </div>
 
             {/* Quick Segmented Area Filter */}
-            <div className="flex items-center gap-1 p-1 bg-white rounded-xl border border-[#E5DFD5] overflow-x-auto no-scrollbar">
+            <div className="flex flex-wrap items-center gap-1 p-1 bg-white rounded-xl border border-[#E5DFD5]">
               <button
                 onClick={() => setActiveAreaFilter('all')}
                 className={`px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap transition-all ${
