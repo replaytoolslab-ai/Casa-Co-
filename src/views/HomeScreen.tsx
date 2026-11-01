@@ -1,21 +1,9 @@
 import React from 'react';
-import {
-  Search,
-  Sparkles,
-  ArrowRight,
-  TrendingUp,
-  Compass,
-  Hammer,
-  Bookmark,
-  BookOpen,
-  ChevronRight,
-  CheckCircle,
-  SlidersHorizontal,
-} from 'lucide-react';
+import { ArrowRight, PlayCircle, Sparkles, Hammer, Clock3, Heart, BookOpen, Calculator, Image as ImageIcon, Wrench, Layers, ShieldCheck } from 'lucide-react';
 import { CategoryId, Project } from '../types';
 import { CATEGORIES_DATA } from '../data/mockData';
 import { Language, translations } from '../i18n/translations';
-import { CategoryCard } from '../components/CategoryCard';
+import { CategoryIcon } from '../components/CategoryIcon';
 
 interface HomeScreenProps {
   language: Language;
@@ -31,188 +19,81 @@ interface HomeScreenProps {
   onSearchChange: (q: string) => void;
 }
 
+const featured = [
+  { id: 'kitchen', category: 'Cucina', title: 'Rinnovo cucina in stile moderno', difficulty: 'Media', time: '3 giorni', image: 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&w=900&q=85', key: 'cucina' as CategoryId },
+  { id: 'bath', category: 'Bagno', title: 'Ristrutturazione bagno completo', difficulty: 'Alta', time: '7 giorni', image: 'https://images.unsplash.com/photo-1584622650111-993a426fbf0a?auto=format&fit=crop&w=900&q=85', key: 'bagno' as CategoryId },
+  { id: 'garden', category: 'Giardino', title: 'Pergola fai da te in legno', difficulty: 'Media', time: '2 giorni', image: 'https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&w=900&q=85', key: 'terrazzi' as CategoryId },
+];
+
 export const HomeScreen: React.FC<HomeScreenProps> = ({
-  language,
-  onSelectProject,
-  onSelectCategory,
-  onOpenCreateModal,
-  onNavigateAi,
-  onNavigateVision,
-  onNavigateCategories,
-  savedProjectIds,
-  onToggleSave,
-  searchQuery,
-  onSearchChange,
+  language, onSelectProject, onSelectCategory, onOpenCreateModal, onNavigateAi, onNavigateVision,
+  onNavigateCategories, savedProjectIds, onToggleSave, searchQuery, onSearchChange,
 }) => {
   const t = translations[language];
-
-  const filteredProjects: Project[] = [];
-
-  // Main high-interest categories for the home showcase
-  const popularCategoryKeys: CategoryId[] = [
-    'mobili',
-    'cucina',
-    'bagno',
-    'intonaci',
-    'pavimenti',
-    'verniciatura',
-    'cartongesso',
-    'illuminazione',
-  ];
-
+  const categoryKeys: CategoryId[] = ['verniciatura','pavimenti','falegnameria','bagno','idraulica','cartongesso','elettricita','muratura','cucina','serramenti','giardino','attrezzi'];
+  const categoryNames: Record<string,string> = {
+    verniciatura:'Verniciatura', pavimenti:'Pavimenti', falegnameria:'Falegnameria', bagno:'Bagno',
+    idraulica:'Idraulica', cartongesso:'Cartongesso', elettricita:'Elettricità', muratura:'Muratura',
+    cucina:'Cucina', serramenti:'Serramenti', giardino:'Giardino', attrezzi:'Attrezzi e utensili'
+  };
   return (
-    <div className="w-full min-w-0 max-w-full space-y-8 overflow-x-clip pb-16 sm:space-y-12">
-      
-      {/* Search active results notification banner */}
-      {searchQuery && (
-        <div className="bg-white p-4 rounded-2xl border border-[#E5DFD5] flex items-center justify-between shadow-xs">
-          <p className="text-sm text-[#26343B]">
-            Risultati per: <span className="font-bold">"{searchQuery}"</span> ({filteredProjects.length} trovati)
-          </p>
-          <button
-            onClick={() => onSearchChange('')}
-            className="text-xs text-[#8F7451] hover:underline font-semibold"
-          >
-            Cancella ricerca
-          </button>
+    <div className="w-full min-w-0 space-y-5 pb-10 sm:space-y-7">
+      {searchQuery && <div className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 text-sm"><span>Ricerca: <b>{searchQuery}</b></span><button onClick={()=>onSearchChange('')} className="font-semibold text-orange-600">Cancella</button></div>}
+      <section className="fdc-hero relative overflow-hidden rounded-2xl text-white shadow-xl">
+        <img className="absolute inset-0 h-full w-full object-cover" src="https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=2200&q=90" alt="Interno di casa moderna in fase di rinnovamento" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#080d12]/95 via-[#101820]/75 to-[#101820]/15" />
+        <div className="relative z-10 flex min-h-[390px] max-w-2xl flex-col justify-center px-6 py-10 sm:min-h-[410px] sm:px-10 lg:px-12">
+          <span className="mb-4 inline-flex w-fit items-center gap-2 text-xs font-bold uppercase tracking-[.18em] text-orange-400"><span className="h-2 w-2 rounded-full bg-orange-500"/> La tua casa, il tuo progetto</span>
+          <h1 className="mb-4 text-3xl font-extrabold leading-[1.08] tracking-tight sm:text-5xl">Il tuo punto di riferimento<br/>per il <span className="text-orange-500">Fai Da Te</span> in casa</h1>
+          <p className="mb-7 max-w-xl text-sm leading-relaxed text-white/90 sm:text-lg">Guide passo passo, progetti, consigli esperti e l’Intelligenza Artificiale sempre al tuo fianco per ristrutturare, riparare e migliorare la tua casa.</p>
+          <div className="flex flex-wrap gap-3">
+            <button onClick={onOpenCreateModal} className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-orange-600"><PlayCircle size={18}/> Inizia un progetto</button>
+            <button onClick={onNavigateAi} className="inline-flex items-center gap-2 rounded-xl border border-white/70 bg-white/10 px-5 py-3 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"><Sparkles size={18}/> Prova l’Assistente AI</button>
+          </div>
         </div>
-      )}
+        <div className="pointer-events-none absolute bottom-5 right-7 hidden items-end gap-3 xl:flex"><div className="rounded-xl border border-white/20 bg-black/35 p-3 text-xs text-white backdrop-blur"><Hammer className="mb-1 text-orange-400"/> Progetta. Realizza. Migliora.</div></div>
+      </section>
 
-      {/* Hero Section with Emotional Renovation Image */}
-      {!searchQuery && (
-        <section className="relative rounded-3xl sm:rounded-4xl overflow-hidden border border-[#E5DFD5] bg-[#26343B] text-[#F5F1E9] shadow-xl">
-          {/* Background Image: Emotional modern home in renovation */}
-          <div className="relative min-h-[540px] w-full sm:min-h-0 sm:aspect-[21/9] lg:aspect-[24/9]">
-            <img
-              src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=2000&q=85"
-              alt="Casa moderna in ristrutturazione con architettura pulita e legno caldo"
-              className="w-full h-full object-cover opacity-60 mix-blend-luminosity scale-102 transform hover:scale-100 transition-transform duration-1000"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#26343B] via-[#26343B]/60 to-transparent" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#26343B]/90 via-[#26343B]/40 to-transparent" />
-
-            {/* Content Overlay */}
-            <div className="absolute inset-0 flex min-w-0 max-w-2xl flex-col justify-end p-5 sm:p-10 lg:p-14">
-              <div className="inline-flex items-center gap-2 mb-3">
-                <span className="w-2 h-2 rounded-full bg-[#B79B76] animate-pulse" />
-                <span className="text-xs uppercase tracking-widest text-[#B79B76] font-semibold">
-                  {t.home.heroKicker}
-                </span>
-              </div>
-
-              <h2 className="mb-3 break-words font-serif text-[clamp(1.55rem,6vw,2.25rem)] font-bold leading-[1.12] tracking-tight text-[#F5F1E9] sm:mb-4 sm:text-4xl lg:text-5xl">
-                {t.home.heroTitle}
-              </h2>
-
-              <p className="mb-5 max-w-xl break-words text-sm font-normal leading-relaxed text-[#F5F1E9]/90 sm:mb-6 sm:text-base">
-                {t.home.heroSubtitle}
-              </p>
-              <p className="-mt-3 mb-5 max-w-xl text-xs font-medium text-[#DAC9B2] sm:mb-6 sm:text-sm">
-                {language === 'it' ? 'Crea mobili, rinnova gli ambienti e segui i lavori passo dopo passo.' : 'Build furniture, refresh your spaces and follow every project step by step.'}
-              </p>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap items-center gap-3">
-                <button
-                  onClick={onOpenCreateModal}
-                  className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[#B79B76] text-[#26343B] font-semibold text-xs sm:text-sm hover:bg-[#c9ad88] transition-all shadow-md active:scale-95"
-                >
-                  <Hammer className="w-4 h-4" />
-                  <span>{t.common.createProject}</span>
-                </button>
-
-                <button
-                  onClick={onNavigateAi}
-                  className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-md text-[#F5F1E9] font-medium text-xs sm:text-sm border border-white/20 transition-all active:scale-95"
-                >
-                  <Sparkles className="w-4 h-4 text-[#B79B76]" />
-                  <span>{t.nav.aiDesign}</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-[#1A242A]/90 border-t border-[#37474F] px-4 py-3 text-center text-xs text-[#F5F1E9]/75">
-            {language === 'it' ? 'Catalogo in aggiornamento: pubblicheremo solo guide complete e verificate.' : 'Catalog under review: only complete, reviewed guides will be published.'}
-          </div>
-        </section>
-      )}
-
-      {/* Main Categories Section */}
-      <section>
-        <div className="mb-5 flex min-w-0 flex-wrap items-end justify-between gap-3 sm:mb-6">
-          <div>
-            <span className="text-xs uppercase tracking-wider text-[#8F7451] font-bold block mb-1">
-              Esplorazione
-            </span>
-            <h2 className="break-words font-serif text-2xl font-bold leading-tight text-[#26343B] sm:text-3xl">
-              {t.home.categoriesTitle}
-            </h2>
-            <p className="text-xs sm:text-sm text-[#26343B]/70 mt-1">
-              {t.home.categoriesSubtitle}
-            </p>
-          </div>
-          <button
-            onClick={onNavigateCategories}
-            className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#8F7451] hover:text-[#26343B] transition-colors"
-          >
-            <span>{t.home.viewAllCategories}</span>
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Scrollable / Responsive categories row */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-4 min-w-0">
-          {popularCategoryKeys.map((catKey) => {
-            const cat = CATEGORIES_DATA[catKey];
-            return (
-              <CategoryCard
-                key={cat.id}
-                category={cat}
-                language={language}
-                onSelect={onSelectCategory}
-              />
-            );
+      <section className="rounded-2xl border border-slate-200 bg-white p-3 shadow-sm sm:p-4">
+        <div className="mb-3 flex items-center justify-between px-1"><h2 className="font-bold text-slate-900">Esplora per categoria</h2><button onClick={onNavigateCategories} className="inline-flex items-center gap-1 text-xs font-bold text-orange-600">Tutte <ArrowRight size={14}/></button></div>
+        <div className="grid grid-cols-3 gap-2 sm:grid-cols-4 md:grid-cols-6 xl:grid-cols-12">
+          {categoryKeys.map(key => {
+            const item = CATEGORIES_DATA[key];
+            return <button key={key} onClick={()=>onSelectCategory(key)} className="group flex min-w-0 flex-col items-center justify-center gap-2 rounded-xl border border-slate-100 bg-slate-50 px-1.5 py-3 text-center transition hover:border-orange-300 hover:bg-orange-50">
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-slate-700 shadow-sm transition group-hover:text-orange-600"><CategoryIcon category={key} className="h-6 w-6"/></span>
+              <span className="line-clamp-2 text-[10px] font-bold leading-tight text-slate-800 sm:text-xs">{categoryNames[key]}</span>
+            </button>
           })}
         </div>
       </section>
 
-      {/* CASA&CO. VISION STUDIO Feature Banner (Central highlight of the app) */}
-      <section className="bg-gradient-to-br from-[#26343B] via-[#1E292E] to-[#172126] rounded-3xl sm:rounded-4xl p-6 sm:p-10 text-[#F5F1E9] border border-[#3A4B53] shadow-xl relative overflow-hidden">
-        <div className="absolute right-0 top-0 bottom-0 w-2/5 bg-radial from-[#B79B76]/20 to-transparent pointer-events-none" />
-        <div className="relative z-10 max-w-2xl">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#B79B76] text-[#26343B] text-xs font-bold uppercase tracking-wider mb-3 shadow-xs">
-            <Sparkles className="w-3.5 h-3.5 text-[#26343B]" />
-            <span>Nuovo Rilascio Centrale</span>
+      <div className="grid gap-5 xl:grid-cols-[.9fr_1.8fr]">
+        <section className="relative flex min-h-[270px] flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br from-[#101b2b] via-[#20234a] to-[#492d68] p-6 text-white shadow-lg">
+          <div className="absolute -right-8 -top-8 h-48 w-48 rounded-full bg-cyan-400/15 blur-3xl"/>
+          <div className="relative z-10 flex items-center gap-4"><div className="flex h-20 w-20 items-center justify-center rounded-3xl border border-cyan-300/30 bg-cyan-400/10 text-5xl shadow-inner">🤖</div><div><span className="text-xs font-bold uppercase tracking-widest text-cyan-300">Sempre al tuo fianco</span><h2 className="mt-1 text-2xl font-extrabold leading-tight">Assistente AI<br/>per la tua casa</h2></div></div>
+          <ul className="relative z-10 my-5 grid gap-2 text-sm text-white/90"><li>✓ Analizza le tue foto</li><li>✓ Ti propone soluzioni</li><li>✓ Stima materiali e costi</li><li>✓ Guide personalizzate</li></ul>
+          <button onClick={onNavigateAi} className="relative z-10 inline-flex w-fit items-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white hover:bg-orange-600">Prova l’AI ora <ArrowRight size={17}/></button>
+        </section>
+        <section className="min-w-0 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+          <div className="mb-4 flex items-center justify-between"><h2 className="flex items-center gap-2 text-lg font-extrabold text-slate-900"><Layers className="text-orange-500"/> Progetti in evidenza</h2><button onClick={onNavigateCategories} className="inline-flex items-center gap-1 text-xs font-bold text-orange-600">Vedi tutti <ArrowRight size={14}/></button></div>
+          <div className="grid gap-3 md:grid-cols-3">
+            {featured.map(p=><article key={p.id} className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+              <button onClick={()=>onSelectCategory(p.key)} className="relative block h-36 w-full overflow-hidden text-left"><img src={p.image} alt={p.title} className="h-full w-full object-cover transition duration-500 hover:scale-105"/><span className="absolute bottom-2 left-2 rounded-md bg-orange-500 px-2 py-1 text-[10px] font-bold text-white">{p.category}</span><span className="absolute right-2 top-2 rounded-full bg-black/45 p-1.5 text-white"><Heart size={15}/></span></button>
+              <div className="p-3"><h3 className="min-h-10 text-sm font-extrabold leading-snug text-slate-900">{p.title}</h3><div className="mt-2 flex items-center justify-between text-[11px] text-slate-500"><span className="inline-flex items-center gap-1"><Wrench size={12}/> Difficoltà: {p.difficulty}</span><span className="inline-flex items-center gap-1"><Clock3 size={12}/> {p.time}</span></div></div>
+            </article>)}
           </div>
-          <h3 className="font-serif text-2xl sm:text-4xl font-bold mb-3 text-[#F5F1E9] leading-tight">
-            CASA&CO. VISION STUDIO<span className="text-[#B79B76]">.</span>
-          </h3>
-          <p className="text-xs sm:text-base text-[#F5F1E9]/85 mb-6 leading-relaxed">
-            La piattaforma più spettacolare dell’atelier: trasforma foto grezze con <strong className="text-white">Vision AI</strong> (3 proposte e slider prima/dopo), modella volumi con <strong className="text-white">Scan 3D</strong> (Three.js parametrico) e governa il cantiere con <strong className="text-white">Assistant AI</strong>.
-          </p>
+        </section>
+      </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={onNavigateVision}
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[#B79B76] text-[#26343B] font-bold text-xs sm:text-sm hover:bg-[#c4a985] transition-all shadow-md active:scale-95"
-            >
-              <Sparkles className="w-4 h-4 text-[#26343B]" />
-              <span>Entra in Vision Studio</span>
-              <ArrowRight className="w-4 h-4 text-[#26343B]" />
-            </button>
-
-            <button
-              onClick={onNavigateAi}
-              className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 backdrop-blur-xs text-white text-xs sm:text-sm font-medium border border-white/20 transition-all"
-            >
-              Configuratore {t.nav.aiDesign}
-            </button>
-          </div>
-        </div>
+      <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+        {[
+          {icon:BookOpen,title:'Guide passo passo',desc:'Tutorial dettagliati e facili da seguire'},
+          {icon:Calculator,title:'Calcola materiali',desc:'Quantità, costi e lista acquisti'},
+          {icon:ImageIcon,title:'Analizza una foto',desc:'Carica un’immagine e ricevi consigli immediati con l’AI'},
+          {icon:Wrench,title:'Pianifica il tuo lavoro',desc:'Crea, salva e gestisci i tuoi progetti di casa'},
+        ].map(({icon:Icon,title,desc})=><button key={title} onClick={title==='Analizza una foto'?onNavigateVision:title==='Pianifica il tuo lavoro'?onNavigateAi:onNavigateCategories} className="flex items-center gap-4 rounded-xl border border-slate-200 bg-white p-4 text-left shadow-sm transition hover:-translate-y-0.5 hover:border-orange-300 hover:shadow-md"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-500"><Icon size={27}/></span><span><b className="block text-sm font-extrabold text-slate-900">{title}</b><span className="mt-1 block text-xs leading-relaxed text-slate-600">{desc}</span></span></button>)}
       </section>
-
-
+      <section className="flex flex-col gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-5 sm:flex-row sm:items-center sm:justify-between"><div><h2 className="font-extrabold text-slate-900">Hai un progetto in mente?</h2><p className="mt-1 text-sm text-slate-600">Inizia a organizzare il tuo prossimo lavoro in casa.</p></div><button onClick={onOpenCreateModal} className="inline-flex items-center justify-center gap-2 rounded-xl bg-orange-500 px-5 py-3 text-sm font-bold text-white hover:bg-orange-600">Crea il tuo progetto <ArrowRight size={16}/></button></section>
     </div>
   );
 };
