@@ -53,7 +53,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     'mobili',
     'cucina',
     'bagno',
-    'pareti',
+    'intonaci',
     'pavimenti',
     'verniciatura',
     'cartongesso',
