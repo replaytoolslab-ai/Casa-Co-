@@ -33,11 +33,11 @@ export const ExpenseReceiptAttachment: React.FC<Props> = ({ projectId, expenseId
         transaction.oncomplete = () => db.close();
       });
       return record;
-    }).then((blob) => {
-      if (active && blob) {
-        currentUrl = URL.createObjectURL(blob);
+    }).then((record) => {
+      if (active && record) {
+        currentUrl = URL.createObjectURL(record.blob);
         setFileUrl(currentUrl);
-        setFileName((blob as Blob & { name?: string }).name || 'Ricevuta allegata');
+        setFileName(record.name || 'Ricevuta allegata');
       }
     }).catch(() => { if (active) setError('Non è stato possibile leggere l’allegato su questo dispositivo.'); });
     return () => { active = false; if (currentUrl) URL.revokeObjectURL(currentUrl); };
@@ -50,7 +50,6 @@ export const ExpenseReceiptAttachment: React.FC<Props> = ({ projectId, expenseId
     try {
       const db = await openReceiptDatabase();
       const stored = new Blob([file], { type: file.type });
-      Object.defineProperty(stored, 'name', { value: file.name });
       await new Promise<void>((resolve, reject) => {
         const transaction = db.transaction(storeName, 'readwrite');
         transaction.objectStore(storeName).put({ blob: stored, name: file.name }, key);
