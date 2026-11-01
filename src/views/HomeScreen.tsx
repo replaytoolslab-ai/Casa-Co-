@@ -59,7 +59,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     : MOCK_PROJECTS;
 
   const featuredProjects = filteredProjects.filter((p) => p.isFeatured);
-  const recentProjects = filteredProjects.filter((p) => !p.isFeatured && (p.isNew || !p.isFeatured)).slice(0, 4);
+  const recentProjects = filteredProjects.filter((p) => !p.isFeatured).slice(0, 2);
 
   // Main high-interest categories for the home showcase
   const popularCategoryKeys: CategoryId[] = [
@@ -72,7 +72,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
   ];
 
   return (
-    <div className="w-full min-w-0 max-w-full space-y-10 overflow-x-clip pb-16 sm:space-y-16">
+    <div className="w-full min-w-0 max-w-full space-y-8 overflow-x-clip pb-16 sm:space-y-12">
       
       {/* Search active results notification banner */}
       {searchQuery && (
@@ -284,7 +284,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {EDITORIAL_ARTICLES.map((article) => (
             <article
               key={article.id}
