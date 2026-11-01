@@ -192,7 +192,7 @@ export const VisionAiMode: React.FC<VisionAiModeProps> = ({
                 Supporta JPG, PNG o WebP fino a 3 MB
               </span>
               <span className="mt-2 max-w-xs text-[10px] leading-relaxed text-[#8F7451]">
-                La foto viene inviata a Google Gemini per analisi e generazione del rendering.
+                La foto viene elaborata da Casa&Co. Vision AI per analizzare il locale e preparare le proposte visive.
               </span>
             </label>
           </div>
