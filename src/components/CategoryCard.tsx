@@ -58,11 +58,6 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
           <CategoryIcon category={category.id} className="w-4 h-4" />
         </div>
 
-        {/* Project count badge Top Right */}
-        <div className="absolute top-3.5 right-3.5 bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-full text-white text-[11px] font-medium">
-          {itemData?.count} {t.categories.guidesAvailable}
-        </div>
-
         {/* Text bottom overlay */}
         <div className="absolute bottom-3 left-3.5 right-3.5 text-white">
           <h3 className="font-serif text-lg sm:text-xl font-bold leading-tight">
@@ -75,16 +70,21 @@ export const CategoryCard: React.FC<CategoryCardProps> = ({
       </div>
 
       {/* Subcategories tags */}
-      <div className="p-3.5 bg-white flex items-center justify-between text-xs text-[#26343B]/70 border-t border-[#F0EBE1]">
-        <div className="flex items-center gap-1.5 overflow-hidden truncate">
-          {category.subcategories[language].slice(0, 2).map((sub, idx) => (
-            <span key={idx} className="truncate">
-              {idx > 0 && <span className="text-[#B79B76] mr-1.5">/</span>}
-              {sub}
-            </span>
-          ))}
+      <div className="p-3.5 bg-white border-t border-[#F0EBE1] flex flex-col gap-2">
+        <div className="flex items-center justify-between gap-2 text-xs text-[#26343B]/70">
+          <div className="flex items-center gap-1.5 overflow-hidden min-w-0">
+            {category.subcategories[language].slice(0, 2).map((sub, idx) => (
+              <span key={idx} className="truncate">
+                {idx > 0 && <span className="text-[#B79B76] mr-1.5">/</span>}
+                {sub}
+              </span>
+            ))}
+          </div>
+          <ArrowRight className="w-4 h-4 text-[#B79B76] group-hover:translate-x-1 transition-transform flex-shrink-0 ml-2" />
         </div>
-        <ArrowRight className="w-4 h-4 text-[#B79B76] group-hover:translate-x-1 transition-transform flex-shrink-0 ml-2" />
+        <span className="self-start inline-flex items-center rounded-full bg-[#F5F1E9] px-2.5 py-1 text-[10px] font-semibold text-[#8F7451]">
+          {itemData?.count} {t.categories.guidesAvailable}
+        </span>
       </div>
     </div>
   );
