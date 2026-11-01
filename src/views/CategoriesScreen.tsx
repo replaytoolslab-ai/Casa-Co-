@@ -299,10 +299,6 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
                       </div>
                     </div>
 
-                    <div className="absolute top-3.5 right-3.5 bg-black/50 backdrop-blur-md px-2.5 py-1 rounded-full text-white text-[11px] font-medium">
-                      {t.categories.items[cat.id]?.count} {t.categories.guidesAvailable}
-                    </div>
-
                     {/* Text title over image */}
                     <div className="absolute bottom-3 left-4 right-4 text-white">
                       <h2 className="font-serif text-xl sm:text-2xl font-bold">
@@ -316,12 +312,17 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = ({
                       {t.categories.items[cat.id]?.desc}
                     </p>
 
-                    <div className="pt-3 border-t border-[#F0EBE1] flex items-center justify-between">
-                      <span className="text-xs text-[#8F7451] font-semibold">
-                        {t.categories.viewProjects}
-                      </span>
-                      <span className="text-xs text-[#26343B]/50 font-medium">
-                        {cat.subcategories[language].length} sottosezioni
+                    <div className="pt-3 border-t border-[#F0EBE1] flex flex-col gap-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs text-[#8F7451] font-semibold">
+                          {t.categories.viewProjects}
+                        </span>
+                        <span className="text-xs text-[#26343B]/50 font-medium">
+                          {cat.subcategories[language].length} sottosezioni
+                        </span>
+                      </div>
+                      <span className="self-start inline-flex items-center rounded-full bg-[#F5F1E9] px-2.5 py-1 text-[10px] font-semibold text-[#8F7451]">
+                        {t.categories.items[cat.id]?.count} {t.categories.guidesAvailable}
                       </span>
                     </div>
                   </div>
