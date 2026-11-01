@@ -21,6 +21,8 @@ import { CategoryIcon } from '../components/CategoryIcon';
 interface MyProjectsScreenProps {
   language: Language;
   projects: UserProject[];
+  isLoading: boolean;
+  isSignedIn: boolean;
   onOpenCreateModal: () => void;
   onUpdateProjectProgress: (projectId: string, progress: number) => void;
   onRemoveProject: (projectId: string) => void;
@@ -31,6 +33,8 @@ interface MyProjectsScreenProps {
 export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
   language,
   projects,
+  isLoading,
+  isSignedIn,
   onOpenCreateModal,
   onUpdateProjectProgress,
   onRemoveProject,
@@ -89,10 +93,10 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
       </div>
 
       {/* Tabs Filter */}
-      <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 bg-white rounded-2xl border border-[#E5DFD5] w-full sm:w-auto self-start">
+      <div className="flex items-center gap-1.5 p-1 bg-white rounded-2xl border border-[#E5DFD5] w-full sm:w-auto self-start overflow-x-auto no-scrollbar">
         <button
           onClick={() => setActiveTab('all')}
-          className={`w-full sm:w-auto px-3 sm:px-4 py-2 text-xs font-semibold text-center rounded-xl transition-all ${
+          className={`flex-1 sm:flex-initial px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
             activeTab === 'all'
               ? 'bg-[#26343B] text-[#F5F1E9] shadow-xs'
               : 'text-[#26343B]/70 hover:text-[#26343B]'
@@ -133,7 +137,21 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
       </div>
 
       {/* Projects List Grid */}
-      {filteredProjects.length > 0 ? (
+      {!isSignedIn ? (
+        <div className="bg-white p-10 rounded-3xl border border-[#E5DFD5] text-center max-w-lg mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-[#FAF8F5] text-[#8F7451] flex items-center justify-center mx-auto mb-4">
+            <FolderKanban className="w-7 h-7" />
+          </div>
+          <h3 className="font-serif text-xl font-bold text-[#26343B]">Accedi per vedere i tuoi progetti</h3>
+          <p className="text-xs sm:text-sm text-[#26343B]/70 mt-2 leading-relaxed">
+            I progetti vengono salvati nel tuo account e saranno disponibili anche dagli altri dispositivi.
+          </p>
+        </div>
+      ) : isLoading ? (
+        <div className="bg-white p-10 rounded-3xl border border-[#E5DFD5] text-center text-sm text-[#26343B]/70">
+          Caricamento dei tuoi progetti…
+        </div>
+      ) : filteredProjects.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => {
             const isEditing = editingNotesId === project.id;
@@ -167,6 +185,13 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
                       </div>
                     )}
 
+                    {/* Progress Bar Over Image Bottom */}
+                    <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-black/40">
+                      <div
+                        className="h-full bg-[#B79B76] transition-all duration-500"
+                        style={{ width: `${project.progress}%` }}
+                      />
+                    </div>
                   </div>
 
                   {/* Body Content */}
@@ -266,12 +291,10 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
 
                     <button
                       onClick={() => onRemoveProject(project.id)}
-                      className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-[11px] font-semibold text-[#8A4B43] hover:bg-red-50 transition-colors rounded-lg cursor-pointer"
+                      className="p-1.5 text-[#26343B]/40 hover:text-red-700 transition-colors rounded-lg cursor-pointer"
                       title="Rimuovi progetto"
-                      aria-label="Rimuovi progetto"
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Rimuovi</span>
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   </div>
                 </div>

@@ -3,10 +3,7 @@ import { VisionStylePreset, VisionProposal } from '../types';
 export const VISION_STYLES: VisionStylePreset[] = [
   {
     id: 'japandi',
-    name: {
-      it: 'Japandi Warm & Ebanisteria',
-      en: 'Japandi Warm & Craft Wood'
-    },
+    name: { it: 'Japandi Warm & Ebanisteria', en: 'Japandi Warm & Craft Wood' },
     description: {
       it: 'Minimalismo caldo, rovere fiammato, parete cannettata in noce canaletto e microcemento setoso.',
       en: 'Warm minimalism, flame-grained oak, fluted walnut accent walls, and silky microcement.'
@@ -17,10 +14,7 @@ export const VISION_STYLES: VisionStylePreset[] = [
   },
   {
     id: 'minimal-mineral',
-    name: {
-      it: 'Minimalismo Minerale & Calce',
-      en: 'Mineral Minimalism & Lime'
-    },
+    name: { it: 'Minimalismo Minerale & Calce', en: 'Mineral Minimalism & Lime' },
     description: {
       it: 'Superfici scultoree traspiranti, intonaco di calce a frattazzo e inserti metallici sottili.',
       en: 'Sculptural breathable surfaces, hand-troweled lime plaster, and slim blackened iron.'
@@ -31,10 +25,7 @@ export const VISION_STYLES: VisionStylePreset[] = [
   },
   {
     id: 'mediterranean',
-    name: {
-      it: 'Moderno Mediterraneo',
-      en: 'Modern Mediterranean'
-    },
+    name: { it: 'Moderno Mediterraneo', en: 'Modern Mediterranean' },
     description: {
       it: 'Luminosità organica, accenti in cotto naturale, legno chiaro di frassino e archi morbidi.',
       en: 'Organic brightness, natural terracotta accents, light ash lumber, and gentle arches.'
@@ -45,10 +36,7 @@ export const VISION_STYLES: VisionStylePreset[] = [
   },
   {
     id: 'industrial-soft',
-    name: {
-      it: 'Loft Architettonico & Ferro Caldo',
-      en: 'Architectural Warm Loft'
-    },
+    name: { it: 'Loft Architettonico & Ferro Caldo', en: 'Architectural Warm Loft' },
     description: {
       it: 'Acciaio cerato a mano, legno massello di recupero e ampie campiture vetrate luminose.',
       en: 'Hand-waxed raw steel, reclaimed architectural timber, and luminous expansive glazing.'
@@ -80,6 +68,11 @@ export const DEMO_ROOM_IMAGES = [
   }
 ];
 
+/**
+ * Demo-only Vision Studio implementation.
+ * It selects local style presets and stock photos; it does not generate or edit images with AI.
+ * Cost ranges are illustrative placeholders, not quotes or verified estimates.
+ */
 export class AiVisionService {
   getStyles(): VisionStylePreset[] {
     return VISION_STYLES;
@@ -87,35 +80,35 @@ export class AiVisionService {
 
   generateProposalsForStyle(styleId: string, roomType: string): VisionProposal[] {
     const style = VISION_STYLES.find((s) => s.id === styleId) || VISION_STYLES[0];
-    
+
     return [
       {
         id: `prop-${styleId}-1`,
-        title: `Proposta 1 — ${style.name.it} (Equilibrato)`,
+        title: `Concept demo 1 — ${style.name.it} (Equilibrato)`,
         styleId,
         image: style.thumbnail,
-        description: `Progetto completo calibrato per ${roomType}. Enfasi su ${style.keyMaterials.slice(0, 2).join(' e ')} con illuminazione architettonica integrata.`,
-        estimatedCost: '€3.900 - €5.200',
+        description: `Concept dimostrativo per ${roomType}, composto da un preset di stile e immagini illustrative non generate sulla tua foto. Materiali suggeriti: ${style.keyMaterials.slice(0, 2).join(' e ')}.`,
+        estimatedCost: 'Stima indicativa demo: €3.900 - €5.200',
         highlights: ['Pareti materiche', 'Mobili su misura sospesi', 'Tagli di luce indiretta'],
         materialsList: style.keyMaterials
       },
       {
         id: `prop-${styleId}-2`,
-        title: `Proposta 2 — ${style.name.it} (Enfasi Materica Legno)`,
+        title: `Concept demo 2 — ${style.name.it} (Enfasi Materica Legno)`,
         styleId,
         image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1600&q=85',
-        description: `Variante con maggiore presenza di essenze lignee massicce a vista, bancone centrale e schermature a lamelle verticali.`,
-        estimatedCost: '€4.400 - €5.900',
+        description: 'Variante illustrativa con maggiore presenza di essenze lignee, bancone centrale e schermature a lamelle verticali. L’immagine è di repertorio.',
+        estimatedCost: 'Stima indicativa demo: €4.400 - €5.900',
         highlights: ['Bancone in legno massello', 'Controsoffitto con gole LED', 'Pavimento continuo'],
         materialsList: ['Rovere Massello', 'Microcemento', 'Feltro Acustico']
       },
       {
         id: `prop-${styleId}-3`,
-        title: `Proposta 3 — ${style.name.it} (Luminosità Massima)`,
+        title: `Concept demo 3 — ${style.name.it} (Luminosità Massima)`,
         styleId,
         image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&w=1600&q=85',
-        description: `Soluzione ad alto coefficiente di riflessione luminosa con tinteggiatura minerale a calce e finiture chiare seriche.`,
-        estimatedCost: '€3.600 - €4.700',
+        description: 'Variante illustrativa con finiture chiare e tinte minerali. L’immagine è di repertorio e non rappresenta una modifica della foto della stanza.',
+        estimatedCost: 'Stima indicativa demo: €3.600 - €4.700',
         highlights: ['Tinte minerali chiare', 'Arredi a scomparsa filomuro', 'Riflessi diffusi'],
         materialsList: ['Grassello di Calce', 'Frassino Naturale', 'Top Graniglia']
       }

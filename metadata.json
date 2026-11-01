@@ -1,6 +1,6 @@
 {
-  "name": "Casa&Co. - Fai-da-te e Design",
-  "description": "Web app editoriale e mobile-first dedicata al fai-da-te, alla costruzione di mobili artigianali e alla ristrutturazione della casa con strumenti guidati e progettazione assistita.",
+  "name": "FaiDaTeCasa",
+  "description": "Piattaforma web per il fai-da-te, la progettazione di mobili, la ristrutturazione domestica e strumenti digitali assistiti dall'intelligenza artificiale.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }
