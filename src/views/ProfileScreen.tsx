@@ -88,7 +88,8 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
         location: location.trim(),
         bio: bio.trim(),
         unit_system: unitSystem,
-        notifications_enabled: notificationsEnabled
+        notifications_enabled: notificationsEnabled,
+        preferred_language: language
       });
       onSessionChange(updated);
       setNotice('Profilo e preferenze salvati.');
