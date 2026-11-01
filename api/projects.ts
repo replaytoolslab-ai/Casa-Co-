@@ -36,8 +36,9 @@ async function supabaseRequest(path: string, key: string, init: RequestInit = {}
   return fetch(`${baseUrl}/rest/v1/${path}`, {
     ...init,
     headers: {
+      // Supabase sb_secret_* keys are API keys, not JWTs.
+      // Send them via apikey only; do not put them in Authorization: Bearer.
       apikey: key,
-      Authorization: `Bearer ${key}`,
       'Content-Type': 'application/json',
       ...init.headers
     }
