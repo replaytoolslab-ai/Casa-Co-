@@ -59,7 +59,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
     : MOCK_PROJECTS;
 
   const featuredProjects = filteredProjects.filter((p) => p.isFeatured);
-  const recentProjects = filteredProjects.filter((p) => p.isNew || !p.isFeatured).slice(0, 4);
+  const recentProjects = filteredProjects.filter((p) => !p.isFeatured && (p.isNew || !p.isFeatured)).slice(0, 4);
 
   // Main high-interest categories for the home showcase
   const popularCategoryKeys: CategoryId[] = [
@@ -117,6 +117,9 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({
 
               <p className="mb-5 max-w-xl break-words text-sm font-normal leading-relaxed text-[#F5F1E9]/90 sm:mb-6 sm:text-base">
                 {t.home.heroSubtitle}
+              </p>
+              <p className="-mt-3 mb-5 max-w-xl text-xs font-medium text-[#DAC9B2] sm:mb-6 sm:text-sm">
+                {language === 'it' ? 'Crea mobili, rinnova gli ambienti e segui i lavori passo dopo passo.' : 'Build furniture, refresh your spaces and follow every project step by step.'}
               </p>
 
               {/* Action Buttons */}
