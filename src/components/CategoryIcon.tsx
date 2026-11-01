@@ -34,7 +34,7 @@ export const CategoryIcon: React.FC<CategoryIconProps> = ({ category, className 
       return <UtensilsCrossed className={className} />;
     case 'bagno':
       return <Bath className={className} />;
-    case 'pareti':
+    case 'intonaci':
       return <Paintbrush className={className} />;
     case 'pavimenti':
       return <Layers className={className} />;
