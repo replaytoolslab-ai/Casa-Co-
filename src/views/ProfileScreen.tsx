@@ -38,6 +38,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
   completedCount,
 }) => {
   const t = translations[language];
+  const [displayName, setDisplayName] = useState<string>(() => readProfileSetting('display-name', 'Carlo'));
   const [unitSystem, setUnitSystem] = useState<'metric' | 'imperial'>(() => readProfileSetting('unit-system', 'metric'));
   const [notificationsEnabled, setNotificationsEnabled] = useState<boolean>(() => readProfileSetting('notifications-enabled', true));
 
@@ -57,13 +58,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
 
   useEffect(() => {
     try {
+      window.localStorage.setItem('casa-co:profile:display-name', JSON.stringify(displayName));
       window.localStorage.setItem('casa-co:profile:unit-system', JSON.stringify(unitSystem));
       window.localStorage.setItem('casa-co:profile:notifications-enabled', JSON.stringify(notificationsEnabled));
       window.localStorage.setItem('casa-co:profile:tools-inventory', JSON.stringify(toolsInventory));
     } catch (error) {
       console.warn('Casa&Co: impossibile salvare le impostazioni del profilo.', error);
     }
-  }, [unitSystem, notificationsEnabled, toolsInventory]);
+  }, [displayName, unitSystem, notificationsEnabled, toolsInventory]);
 
   const toggleTool = (index: number) => {
     setToolsInventory((prev) =>
@@ -93,16 +95,14 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
           {/* User Bio */}
           <div className="flex-1">
             <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-              <h1 className="font-serif text-2xl sm:text-3xl font-bold text-[#26343B]">Matteo Vianello</h1>
-              <span className="text-xs bg-[#B79B76]/15 text-[#8F7451] font-bold px-2.5 py-0.5 rounded-full">
-                PRO MAKER
-              </span>
+              <input aria-label={language === "it" ? "Il tuo nome" : "Your name"} value={displayName} onChange={(event) => setDisplayName(event.target.value)} placeholder={language === "it" ? "Inserisci il tuo nome" : "Enter your name"} className="w-full max-w-xs bg-transparent border-b border-[#D8C8B3] px-1 py-1 text-center sm:text-left font-serif text-2xl sm:text-3xl font-bold text-[#26343B] outline-none focus:border-[#8F7451]" />
+              
             </div>
             <p className="text-xs sm:text-sm text-[#26343B]/70 font-medium">
               {t.profile.role} · {t.profile.location}
             </p>
             <p className="text-xs text-[#26343B]/80 mt-2 max-w-xl leading-relaxed">
-              Appassionato di falegnameria giapponese, ristrutturazione d’interni in bioedilizia e complementi d’arredo in massello e metallo.
+              {language === 'it' ? 'Il tuo profilo Casa&Co.' : 'Your Casa&Co. profile'}
             </p>
           </div>
 
@@ -115,7 +115,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
               Statistiche Maker
             </span>
             <span className="text-[10px] text-[#26343B]/50 italic">
-              * Dati di simulazione profilo dimostrativo
+              {language === 'it' ? 'Statistiche basate sui tuoi progetti' : 'Statistics based on your projects'}
             </span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -124,7 +124,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 {t.profile.stats.projectsCompleted}
               </span>
               <span className="font-serif text-2xl font-bold text-[#26343B]">
-                {completedCount + 2}
+                {completedCount}
               </span>
             </div>
 
@@ -133,7 +133,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 {t.profile.stats.hoursDedicated}
               </span>
               <span className="font-serif text-2xl font-bold text-[#26343B]">
-                54h
+                0h
               </span>
             </div>
 
@@ -142,7 +142,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 {t.profile.stats.moneySaved}
               </span>
               <span className="font-serif text-2xl font-bold text-[#8F7451]">
-                €840
+                €0
               </span>
             </div>
 
@@ -151,7 +151,7 @@ export const ProfileScreen: React.FC<ProfileScreenProps> = ({
                 {t.profile.stats.level}
               </span>
               <span className="font-serif text-2xl font-bold text-[#26343B]">
-                Mastro II
+                —
               </span>
             </div>
           </div>
