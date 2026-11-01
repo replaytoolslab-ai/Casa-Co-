@@ -92,7 +92,7 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
       <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 bg-white rounded-2xl border border-[#E5DFD5] w-full sm:w-auto self-start">
         <button
           onClick={() => setActiveTab('all')}
-          className={`flex-1 sm:flex-initial px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
+          className={`w-full sm:w-auto px-3 sm:px-4 py-2 text-xs font-semibold text-center rounded-xl transition-all ${
             activeTab === 'all'
               ? 'bg-[#26343B] text-[#F5F1E9] shadow-xs'
               : 'text-[#26343B]/70 hover:text-[#26343B]'
