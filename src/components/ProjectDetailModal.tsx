@@ -21,6 +21,7 @@ import { Language, translations } from '../i18n/translations';
 import { CategoryIcon } from './CategoryIcon';
 import { getProjectCostComparison } from '../data/mockData';
 import { ProjectCostCalculator } from './ProjectCostCalculator';
+import { ProjectDocumentArchive } from './ProjectDocumentArchive';
 import { TrendingDown, HelpCircle, ShieldCheck as ShieldIcon, ExternalLink } from 'lucide-react';
 
 interface ProjectDetailModalProps {
@@ -252,6 +253,8 @@ export const ProjectDetailModal: React.FC<ProjectDetailModalProps> = ({
             projectId={project.id}
             initialArea={Number(project.dimensions.match(/[0-9]+(?:[.,][0-9]+)?/)?.[0]?.replace(',', '.') || 0)}
           />
+
+          <ProjectDocumentArchive projectId={project.id} />
 
           {/* Quanto risparmi con il fai-da-te? (Cost Comparison & Ethical Disclaimer) */}
           {(() => {
