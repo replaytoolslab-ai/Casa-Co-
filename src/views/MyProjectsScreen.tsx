@@ -89,7 +89,7 @@ export const MyProjectsScreen: React.FC<MyProjectsScreenProps> = ({
       </div>
 
       {/* Tabs Filter */}
-      <div className="flex items-center gap-1.5 p-1 bg-white rounded-2xl border border-[#E5DFD5] w-full sm:w-auto self-start overflow-x-auto no-scrollbar">
+      <div className="grid grid-cols-2 sm:flex items-center gap-1.5 p-1 bg-white rounded-2xl border border-[#E5DFD5] w-full sm:w-auto self-start">
         <button
           onClick={() => setActiveTab('all')}
           className={`flex-1 sm:flex-initial px-4 py-2 text-xs font-semibold rounded-xl transition-all ${
