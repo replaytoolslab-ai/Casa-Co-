@@ -30,6 +30,19 @@ function readStored<T>(key: string, fallback: T): T {
 }
 
 export default function App() {
+  // One-time cleanup of the old demo workspace. The user confirmed no real projects existed.
+  useEffect(() => {
+    try {
+      const key = 'casa-co:clean-demo-workspace-v1';
+      if (!window.localStorage.getItem(key)) {
+        window.localStorage.removeItem('casa-co:user-projects');
+        window.localStorage.removeItem('casa-co:saved-project-ids');
+        window.localStorage.setItem(key, 'done');
+      }
+    } catch (error) {
+      console.warn('Casa&Co: impossibile ripulire i dati dimostrativi locali.', error);
+    }
+  }, []);
   const [currentTab, setCurrentTab] = useState<NavTab>('home');
   const [language, setLanguage] = useState<Language>(() => readStored<Language>('language', 'it'));
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -40,8 +53,8 @@ export default function App() {
   const [isMobileDeviceView, setIsMobileDeviceView] = useState(false);
 
   // User State
-  const [userProjects, setUserProjects] = useState<UserProject[]>(() => readStored<UserProject[]>('user-projects', INITIAL_USER_PROJECTS));
-  const [savedProjectIds, setSavedProjectIds] = useState<string[]>(() => readStored<string[]>('saved-project-ids', ['proj-01', 'proj-03', 'proj-05']));
+  const [userProjects, setUserProjects] = useState<UserProject[]>(() => readStored<UserProject[]>('user-projects', []));
+  const [savedProjectIds, setSavedProjectIds] = useState<string[]>(() => readStored<string[]>('saved-project-ids', []));
 
   useEffect(() => {
     try {
