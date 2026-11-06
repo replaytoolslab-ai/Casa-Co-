@@ -44,6 +44,7 @@ class StreamServer(
     private val latestH264Format = AtomicReference<H264StreamFormat?>(null)
     private val latestH264Packet = AtomicReference<H264Packet?>(null)
     private val h264Sequence = AtomicLong(0L)
+    private val h264Unavailable = AtomicBoolean(false)
     private val activeClients = CopyOnWriteArrayList<OutputStream>()
     private val mjpegClients = AtomicInteger(0)
     val connectedClientsCount = AtomicInteger(0)
@@ -56,6 +57,7 @@ class StreamServer(
         if (isRunning.get()) return true
         return try {
             serverSocket = ServerSocket(port)
+            h264Unavailable.set(false)
             isRunning.set(true)
             Log.i(tag, "StreamServer started on port $port")
             serverJob = CoroutineScope(Dispatchers.IO).launch {
@@ -195,6 +197,13 @@ class StreamServer(
             var formatSent = false
             var lastSent = -1L
             while (isRunning.get() && !socket.isClosed) {
+                if (h264Unavailable.get()) {
+                    // Protocol type 2 tells the receiver to reconnect using MJPEG.
+                    data.writeByte(2)
+                    data.writeInt(0)
+                    data.flush()
+                    break
+                }
                 val format = latestH264Format.get()
                 if (!formatSent && format != null) {
                     val bytes = java.io.ByteArrayOutputStream().use { buffer ->
@@ -253,7 +262,14 @@ class StreamServer(
         frameSequence.incrementAndGet()
     }
 
+    fun onH264Unavailable() {
+        h264Unavailable.set(true)
+        latestH264Format.set(null)
+        latestH264Packet.set(null)
+    }
+
     fun onH264Format(format: H264StreamFormat) {
+        h264Unavailable.set(false)
         latestH264Format.set(format)
         latestH264Packet.set(null)
         h264Sequence.set(0L)
@@ -277,6 +293,7 @@ class StreamServer(
         mjpegClients.set(0)
         latestH264Format.set(null)
         latestH264Packet.set(null)
+        h264Unavailable.set(false)
         onViewerCountChanged(0)
         Log.i(tag, "StreamServer stopped")
     }
