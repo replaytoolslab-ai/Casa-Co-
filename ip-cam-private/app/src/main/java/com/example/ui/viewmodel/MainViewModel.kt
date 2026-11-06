@@ -668,6 +668,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun shouldEncodeJpeg(): Boolean = streamServer?.shouldEncodeJpeg() ?: true
+    fun shouldEncodeH264(): Boolean = streamServer?.shouldEncodeH264() ?: false
 
     fun updateCameraDeviceName(name: String) {
         _cameraName.value = name
