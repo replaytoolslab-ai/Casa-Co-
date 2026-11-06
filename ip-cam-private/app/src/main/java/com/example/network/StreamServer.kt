@@ -35,6 +35,7 @@ class StreamServer(
 
     // Current latest JPEG frame
     private val latestFrame = AtomicReference<ByteArray?>(null)
+    private val frameSequence = java.util.concurrent.atomic.AtomicLong(0L)
     private val activeClients = CopyOnWriteArrayList<OutputStream>()
     val connectedClientsCount = AtomicInteger(0)
 
@@ -232,6 +233,7 @@ class StreamServer(
      */
     fun onNewFrame(jpegBytes: ByteArray) {
         latestFrame.set(jpegBytes)
+        frameSequence.incrementAndGet()
     }
 
     fun stop() {
