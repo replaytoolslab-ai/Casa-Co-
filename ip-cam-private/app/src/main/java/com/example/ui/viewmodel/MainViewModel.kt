@@ -494,6 +494,24 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun setRemoteNightMode(cameraId: String, enabled: Boolean) {
+        val cam = _pairedCameras.value.find { it.id == cameraId } ?: return
+        viewModelScope.launch {
+            if (CameraControlApi.setNightMode(cam, enabled)) {
+                showFeedback(if (enabled) "Modalità notte attivata." else "Modalità notte disattivata.")
+            } else showFeedback("Comando modalità notte non riuscito.")
+        }
+    }
+
+    fun setRemoteExposure(cameraId: String, value: Int) {
+        val cam = _pairedCameras.value.find { it.id == cameraId } ?: return
+        viewModelScope.launch {
+            if (!CameraControlApi.setExposure(cam, value)) {
+                showFeedback("Regolazione esposizione non riuscita.")
+            }
+        }
+    }
+
     fun switchRemoteCameraFacing(cameraId: String) {
         val cam = _pairedCameras.value.find { it.id == cameraId } ?: return
         viewModelScope.launch {
