@@ -44,6 +44,8 @@ class CameraManager(private val context: Context) {
     private var shouldEncodeJpeg: () -> Boolean = { true }
     private var h264Encoder: H264StreamEncoder? = null
     private var h264EncoderAttempted = false
+    private var h264UnavailableListener: (() -> Unit)? = null
+    private var pendingStreamingStart: (() -> Unit)? = null
     private var qrListener: ((code: String) -> Unit)? = null
 
     fun initialize(onReady: () -> Unit) {
@@ -52,6 +54,9 @@ class CameraManager(private val context: Context) {
             try {
                 cameraProvider = future.get()
                 onReady()
+                val pending = pendingStreamingStart
+                pendingStreamingStart = null
+                pending?.invoke()
             } catch (e: Exception) {
                 Log.e(tag, "CameraProvider init failed", e)
             }
@@ -64,14 +69,28 @@ class CameraManager(private val context: Context) {
         onFrame: (jpegBytes: ByteArray, bitmap: Bitmap) -> Unit,
         onH264Format: (H264StreamFormat) -> Unit = {},
         onH264Frame: (bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) -> Unit = { _, _, _ -> },
-        shouldEncodeJpeg: () -> Boolean = { true }
+        shouldEncodeJpeg: () -> Boolean = { true },
+        onH264Unavailable: () -> Unit = {}
     ) {
-        val provider = cameraProvider ?: return
         this.frameListener = onFrame
         this.h264FormatListener = onH264Format
         this.h264FrameListener = onH264Frame
         this.shouldEncodeJpeg = shouldEncodeJpeg
+        this.h264UnavailableListener = onH264Unavailable
         isStreamingActive.set(true)
+
+        val provider = cameraProvider
+        if (provider == null) {
+            // CameraX may still be initializing when the first Live receiver connects.
+            pendingStreamingStart = {
+                startCameraForStreaming(
+                    lifecycleOwner, previewView, onFrame,
+                    onH264Format, onH264Frame, shouldEncodeJpeg, onH264Unavailable
+                )
+            }
+            return
+        }
+        pendingStreamingStart = null
         h264Encoder?.stop()
         h264Encoder = null
         h264EncoderAttempted = false
@@ -150,7 +169,8 @@ class CameraManager(private val context: Context) {
                     h264Encoder = encoder
                 } else {
                     encoder.stop()
-                    Log.w(tag, "Hardware H.264 encoder unavailable; MJPEG fallback remains available")
+                    Log.w(tag, "Hardware H.264 encoder unavailable; requesting MJPEG fallback")
+                    h264UnavailableListener?.invoke()
                 }
             }
             h264Encoder?.encode(imageProxy)
@@ -227,7 +247,9 @@ class CameraManager(private val context: Context) {
 
     fun stop() {
         isStreamingActive.set(false)
+        pendingStreamingStart = null
         frameListener = null
+        h264UnavailableListener = null
         h264FormatListener = null
         h264FrameListener = null
         h264Encoder?.stop()
