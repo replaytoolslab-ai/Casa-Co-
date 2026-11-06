@@ -55,7 +55,9 @@ fun StatusBadge(
             color = if (isOnline) StatusOnline else Color(0xFF8893A5),
             fontSize = 11.sp,
             fontWeight = FontWeight.Bold,
-            letterSpacing = 0.5.sp
+            letterSpacing = 0.5.sp,
+            maxLines = 1,
+            softWrap = false
         )
     }
 }
