@@ -577,9 +577,14 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         cameraManager.toggleTorch(turnOn)
                         _isCameraTorchOn.value = turnOn
                     }
+                    "night_mode" -> {
+                        cameraManager.setNightMode(value == "on")
+                    }
+                    "exposure" -> {
+                        value?.toIntOrNull()?.let { cameraManager.setExposureCompensation(it) }
+                    }
                     "switch_camera" -> {
-                        // Switch camera triggered remotely
-                        // Handled when preview restarts
+                        _remoteSwitchRequest.value = _remoteSwitchRequest.value + 1
                     }
                 }
             }
