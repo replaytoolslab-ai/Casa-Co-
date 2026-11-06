@@ -81,7 +81,9 @@ class StreamClient(
         val url = URL("http://$host:$port/h264?token=$securityToken")
         val connection = (url.openConnection() as HttpURLConnection).apply {
             connectTimeout = 4000
-            readTimeout = 3000
+            // The transmitter starts CameraX only after this socket is counted as a viewer.
+            // Keep the first-frame wait open; stop() explicitly disconnects this socket.
+            readTimeout = 0
             requestMethod = "GET"
             useCaches = false
         }
@@ -173,7 +175,8 @@ class StreamClient(
     private fun readMjpegConnection() {
         val connection = (URL("http://$host:$port/stream?token=$securityToken").openConnection() as HttpURLConnection).apply {
             connectTimeout = 4000
-            readTimeout = 8000
+            // CameraX can take several seconds to initialize; don't drop the viewer before first JPEG.
+            readTimeout = 0
             requestMethod = "GET"
             useCaches = false
         }
