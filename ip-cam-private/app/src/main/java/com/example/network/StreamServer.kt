@@ -173,8 +173,9 @@ class StreamServer(
             // Client disconnected.
         } finally {
             activeClients.remove(out)
-            mjpegClients.decrementAndGet()
-            onViewerCountChanged(connectedClientsCount.decrementAndGet().coerceAtLeast(0))
+            mjpegClients.updateAndGet { (it - 1).coerceAtLeast(0) }
+            val remaining = connectedClientsCount.updateAndGet { (it - 1).coerceAtLeast(0) }
+            onViewerCountChanged(remaining)
             try { socket.close() } catch (_: Exception) {}
         }
     }
@@ -232,7 +233,8 @@ class StreamServer(
         } catch (_: Exception) {
             // Client disconnected.
         } finally {
-            onViewerCountChanged(connectedClientsCount.decrementAndGet().coerceAtLeast(0))
+            val remaining = connectedClientsCount.updateAndGet { (it - 1).coerceAtLeast(0) }
+            onViewerCountChanged(remaining)
             try { socket.close() } catch (_: Exception) {}
         }
     }
