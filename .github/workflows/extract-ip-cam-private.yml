@@ -1,0 +1,113 @@
+name: Prepare IP CAM PRIVATE Android project
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract-android-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Extract Android project
+        run: |
+          test -f ip-cam-private.zip
+          mkdir -p /tmp/ip-cam-private
+          unzip -q ip-cam-private.zip -d /tmp/ip-cam-private
+          PROJECT_DIR="$(find /tmp/ip-cam-private -name settings.gradle.kts -printf '%h\n' | head -n 1)"
+          test -n "$PROJECT_DIR"
+          mkdir -p ip-cam-private
+          cp -a "$PROJECT_DIR"/. ip-cam-private/
+          test -f ip-cam-private/app/build.gradle.kts
+          test -f ip-cam-private/app/src/main/AndroidManifest.xml
+
+      - name: Prepare build files
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Generate Gradle wrapper
+        working-directory: ip-cam-private
+        run: gradle wrapper --gradle-version 9.3.1 --distribution-type bin
+
+      - name: Add Codemagic configuration
+        run: |
+          cat > ip-cam-private/codemagic.yaml <<'YAML'
+          workflows:
+            android-debug:
+              name: IP CAM PRIVATE - Android debug APK
+              max_build_duration: 60
+              environment:
+                android_signing:
+                  - ip_cam_private_debug
+                vars:
+                  PACKAGE_NAME: "com.aistudio.ipcamprivate.hqxz"
+              scripts:
+                - name: Build debug APK
+                  script: |
+                    chmod +x ./gradlew
+                    ./gradlew --no-daemon clean assembleDebug
+              artifacts:
+                - app/build/outputs/apk/debug/*.apk
+                - app/build/outputs/mapping/**/mapping.txt
+              publishing:
+                email:
+                  recipients:
+                    - "$CM_EMAIL"
+          YAML
+
+      - name: Replace starter README
+        run: |
+          cat > ip-cam-private/README.md <<'MD'
+          # IP CAM PRIVATE
+
+          App Android nativa per usare uno o più telefoni come telecamere IP sulla rete Wi-Fi locale e un telefono come unità CONTROLLO con archivio centrale.
+
+          ## Requisiti
+          - Android Studio recente
+          - JDK 17
+          - Android SDK API 36
+          - Connessione Wi-Fi locale condivisa tra i dispositivi
+
+          ## Apertura
+          1. Aprire in Android Studio la cartella `ip-cam-private`.
+          2. Attendere la sincronizzazione Gradle.
+          3. Collegare un dispositivo Android o avviare un emulatore.
+          4. Eseguire la variante `debug`.
+
+          ## Build da terminale
+          ```bash
+          ./gradlew clean testDebugUnitTest assembleDebug
+          ```
+
+          L'APK debug viene generato in `app/build/outputs/apk/debug/`.
+
+          ## Build con Codemagic
+          Collegare il repository GitHub a Codemagic e selezionare il file `codemagic.yaml`. Per la prima build debug non serve una chiave di firma personale.
+
+          ## Privacy e rete
+          - Streaming e controllo sono progettati per la rete locale.
+          - Camera e microfono richiedono i permessi Android.
+          - Le riprese devono essere avviate in modo visibile dall'utente.
+          - Non configurare chiavi o password nel repository.
+          MD
+
+      - name: Commit project to dedicated branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B ip-cam-private
+          git add ip-cam-private/
+          git commit -m "Extract and prepare IP CAM PRIVATE Android project" || echo "No changes to commit"
+          git push origin ip-cam-private --force-with-lease
