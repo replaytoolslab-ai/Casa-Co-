@@ -1,0 +1,21 @@
+workflows:
+  android-debug:
+    name: IP CAM PRIVATE - Android debug APK
+    max_build_duration: 60
+    environment:
+      android_signing:
+        - ip_cam_private_debug
+      vars:
+        PACKAGE_NAME: "com.aistudio.ipcamprivate.hqxz"
+    scripts:
+      - name: Build debug APK
+        script: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon clean assembleDebug
+    artifacts:
+      - app/build/outputs/apk/debug/*.apk
+      - app/build/outputs/mapping/**/mapping.txt
+    publishing:
+      email:
+        recipients:
+          - "$CM_EMAIL"
