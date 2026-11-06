@@ -84,13 +84,14 @@ class CameraManager(private val context: Context) {
 
         val provider = cameraProvider
         if (provider == null) {
-            // CameraX may still be initializing when the first Live receiver connects.
+            // CameraX may still be initializing (or its first attempt may have preceded permission grant).
             pendingStreamingStart = {
                 startCameraForStreaming(
                     lifecycleOwner, previewView, onFrame,
                     onH264Format, onH264Frame, shouldEncodeJpeg, onH264Unavailable, shouldEncodeH264
                 )
             }
+            initialize { }
             return
         }
         pendingStreamingStart = null
