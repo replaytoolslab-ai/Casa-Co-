@@ -124,7 +124,8 @@ fun CameraTransmitterScreen(
                     viewModel.onH264Frame(bytes, pts, keyFrame)
                 },
                 shouldEncodeJpeg = { viewModel.shouldEncodeJpeg() },
-                onH264Unavailable = viewModel::onH264Unavailable
+                onH264Unavailable = viewModel::onH264Unavailable,
+                shouldEncodeH264 = { viewModel.shouldEncodeH264() }
             )
         } else {
             viewModel.cameraManager.stop()
