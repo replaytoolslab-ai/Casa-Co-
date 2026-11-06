@@ -109,6 +109,25 @@ fun CameraTransmitterScreen(
         }
     }
 
+    // Acquisizione e analisi si attivano solo quando CONTROLLO apre il Live.
+    LaunchedEffect(isServerRunning, connectedClients, previewViewRef) {
+        val preview = previewViewRef
+        if (isServerRunning && connectedClients > 0 && preview != null) {
+            viewModel.cameraManager.startCameraForStreaming(
+                lifecycleOwner = lifecycleOwner,
+                previewView = preview
+            ) { jpegBytes, bitmap ->
+                viewModel.onNewCameraFrame(jpegBytes, bitmap)
+            }
+        } else {
+            viewModel.cameraManager.stop()
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose { viewModel.cameraManager.stop() }
+    }
+
     if (isStealthMode) {
         // Stealth / Screen Dimming Mode (Battery Saver during continuous transmission)
         Box(
@@ -161,14 +180,6 @@ fun CameraTransmitterScreen(
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
                     previewViewRef = this
-                    if (isServerRunning) {
-                        viewModel.cameraManager.startCameraForStreaming(
-                            lifecycleOwner = lifecycleOwner,
-                            previewView = this
-                        ) { jpegBytes, bitmap ->
-                            viewModel.onNewCameraFrame(jpegBytes, bitmap)
-                        }
-                    }
                 }
             },
             modifier = Modifier.fillMaxSize()
@@ -418,11 +429,6 @@ fun CameraTransmitterScreen(
                             viewModel.stopCameraTransmitter()
                         } else {
                             viewModel.startCameraTransmitter()
-                            previewViewRef?.let { pv ->
-                                viewModel.cameraManager.startCameraForStreaming(lifecycleOwner, pv) { jpegBytes, bitmap ->
-                                    viewModel.onNewCameraFrame(jpegBytes, bitmap)
-                                }
-                            }
                         }
                     },
                     colors = ButtonDefaults.buttonColors(
