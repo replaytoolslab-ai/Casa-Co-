@@ -26,7 +26,8 @@ class StreamServer(
     var cameraName: String = "Telecamera IP",
     var securityToken: String = "",
     var securityPin: String = "",
-    private val onControlAction: (action: String, value: String?) -> Unit = { _, _ -> }
+    private val onControlAction: (action: String, value: String?) -> Unit = { _, _ -> },
+    private val onViewerCountChanged: (count: Int) -> Unit = {}
 ) {
     private val tag = "StreamServer"
     private var serverSocket: ServerSocket? = null
@@ -125,7 +126,7 @@ class StreamServer(
                         out.flush()
 
                         activeClients.add(out)
-                        connectedClientsCount.incrementAndGet()
+                        onViewerCountChanged(connectedClientsCount.incrementAndGet())
 
                         try {
                             var lastSentSequence = -1L
@@ -155,7 +156,7 @@ class StreamServer(
                             // Client disconnected
                         } finally {
                             activeClients.remove(out)
-                            connectedClientsCount.decrementAndGet()
+                            onViewerCountChanged(connectedClientsCount.decrementAndGet().coerceAtLeast(0))
                             try { socket.close() } catch (_: Exception) {}
                         }
                     }
@@ -250,6 +251,7 @@ class StreamServer(
         serverJob?.cancel()
         activeClients.clear()
         connectedClientsCount.set(0)
+        onViewerCountChanged(0)
         Log.i(tag, "StreamServer stopped")
     }
 
