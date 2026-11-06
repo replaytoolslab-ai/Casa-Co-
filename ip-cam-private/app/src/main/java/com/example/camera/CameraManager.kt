@@ -114,7 +114,7 @@ class CameraManager(private val context: Context) {
             previewView?.let { preview.surfaceProvider = it.surfaceProvider }
 
             val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(1920, 1080))
+                .setTargetResolution(Size(1280, 720))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
@@ -128,7 +128,7 @@ class CameraManager(private val context: Context) {
                 }
             }
             applyNightModeIfEnabled()
-            Log.i(tag, "Camera bound for streaming (facing: ${if (isFrontCamera) "FRONT" else "BACK"}; requested: 1920x1080)")
+            Log.i(tag, "Camera bound for streaming (facing: ${if (isFrontCamera) "FRONT" else "BACK"}; requested: 1280x720)")
         } catch (e: Exception) {
             Log.e(tag, "Failed to bind camera for streaming", e)
         }
