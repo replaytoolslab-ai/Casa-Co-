@@ -47,6 +47,7 @@ class StreamServer(
     private val h264Unavailable = AtomicBoolean(false)
     private val activeClients = CopyOnWriteArrayList<OutputStream>()
     private val mjpegClients = AtomicInteger(0)
+    private val h264Clients = AtomicInteger(0)
     val connectedClientsCount = AtomicInteger(0)
 
     var currentFacing: String = "BACK"
@@ -191,6 +192,7 @@ class StreamServer(
     private fun serveH264(socket: Socket, out: OutputStream) {
         out.write("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nCache-Control: no-store\r\nConnection: close\r\n\r\n".toByteArray())
         out.flush()
+        h264Clients.incrementAndGet()
         onViewerCountChanged(connectedClientsCount.incrementAndGet())
         try {
             val data = DataOutputStream(out)
@@ -243,6 +245,7 @@ class StreamServer(
         } catch (_: Exception) {
             // Client disconnected.
         } finally {
+            h264Clients.updateAndGet { (it - 1).coerceAtLeast(0) }
             val remaining = connectedClientsCount.updateAndGet { (it - 1).coerceAtLeast(0) }
             onViewerCountChanged(remaining)
             try { socket.close() } catch (_: Exception) {}
@@ -282,6 +285,7 @@ class StreamServer(
     }
 
     fun shouldEncodeJpeg(): Boolean = mjpegClients.get() > 0
+    fun shouldEncodeH264(): Boolean = h264Clients.get() > 0
 
     fun stop() {
         isRunning.set(false)
@@ -291,6 +295,7 @@ class StreamServer(
         activeClients.clear()
         connectedClientsCount.set(0)
         mjpegClients.set(0)
+        h264Clients.set(0)
         latestH264Format.set(null)
         latestH264Packet.set(null)
         h264Unavailable.set(false)
