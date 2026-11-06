@@ -2,7 +2,11 @@ package com.example.camera
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.ColorMatrix
+import android.graphics.ColorMatrixColorFilter
 import android.graphics.Matrix
+import android.graphics.Paint
 import android.util.Log
 import android.util.Size
 import androidx.camera.core.Camera
@@ -189,7 +193,8 @@ class CameraManager(private val context: Context) {
                 h264EncoderAttempted = true
                 val encoder = H264StreamEncoder(
                     onFormat = { format -> h264FormatListener?.invoke(format) },
-                    onAccessUnit = { bytes, pts, key -> h264FrameListener?.invoke(bytes, pts, key) }
+                    onAccessUnit = { bytes, pts, key -> h264FrameListener?.invoke(bytes, pts, key) },
+                    nightModeEnabled = { isNightModeEnabled }
                 )
                 if (encoder.start(imageProxy.width, imageProxy.height, imageProxy.imageInfo.rotationDegrees)) {
                     h264Encoder = encoder
@@ -205,6 +210,11 @@ class CameraManager(private val context: Context) {
             if (!shouldEncodeJpeg()) return
 
             var bitmap = imageProxy.toBitmap()
+            if (isNightModeEnabled) {
+                val enhanced = applyNightEnhancement(bitmap)
+                bitmap.recycle()
+                bitmap = enhanced
+            }
             val rotation = imageProxy.imageInfo.rotationDegrees
             if (rotation != 0) {
                 val matrix = Matrix().apply {
@@ -223,6 +233,22 @@ class CameraManager(private val context: Context) {
         }
     }
 
+    /** Matches the night-mode ColorMatrix used by the receiver: contrast 1.35 and +40 luminance. */
+    private fun applyNightEnhancement(source: Bitmap): Bitmap {
+        val matrix = ColorMatrix(floatArrayOf(
+            1.35f, 0f, 0f, 0f, 40f,
+            0f, 1.35f, 0f, 0f, 40f,
+            0f, 0f, 1.35f, 0f, 40f,
+            0f, 0f, 0f, 1f, 0f
+        ))
+        val output = Bitmap.createBitmap(source.width, source.height, Bitmap.Config.ARGB_8888)
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            colorFilter = ColorMatrixColorFilter(matrix)
+        }
+        Canvas(output).drawBitmap(source, 0f, 0f, paint)
+        return output
+    }
+
     fun setNightMode(enabled: Boolean) {
         isNightModeEnabled = enabled
         applyNightModeIfEnabled()
@@ -235,7 +261,7 @@ class CameraManager(private val context: Context) {
         if (range.lower == 0 && range.upper == 0) return
         if (isNightModeEnabled) {
             if (previousExposureIndex == null) previousExposureIndex = exposureState.exposureCompensationIndex
-            control.setExposureCompensationIndex(minOf(range.upper, maxOf(2, range.lower)))
+            control.setExposureCompensationIndex(range.upper)
         } else {
             control.setExposureCompensationIndex((previousExposureIndex ?: 0).coerceIn(range.lower, range.upper))
             previousExposureIndex = null
