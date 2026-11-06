@@ -161,6 +161,12 @@ class CameraManager(private val context: Context) {
             return
         }
         try {
+            // Release the hardware encoder as soon as the last H.264 receiver disconnects.
+            if (!shouldEncodeH264() && h264Encoder != null) {
+                h264Encoder?.stop()
+                h264Encoder = null
+                h264EncoderAttempted = false
+            }
             // Encode from CameraX YUV planes directly; no JPEG is sent on the H.264 path.
             if (shouldEncodeH264() && h264Encoder == null && !h264EncoderAttempted) {
                 h264EncoderAttempted = true
