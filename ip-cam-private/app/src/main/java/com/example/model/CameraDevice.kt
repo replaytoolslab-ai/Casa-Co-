@@ -11,6 +11,10 @@ data class CameraDevice(
     val batteryPercent: Int = 100,
     val facing: String = "BACK", // "BACK" or "FRONT"
     val isTorchOn: Boolean = false,
+    val isNightMode: Boolean = false,
+    val zoomRatio: Float = 1.0f,
+    val maxZoomRatio: Float = 5.0f,
+    val codec: String = "MJPEG",
     val lastSeenTimestamp: Long = 0L,
     val fps: Float = 0f,
     val isRecording: Boolean = false,
