@@ -45,12 +45,10 @@ class H264StreamEncoder(
             val info = selectHardwareEncoder(frameWidth, frameHeight) ?: return false
             val caps = info.getCapabilitiesForType(MediaFormat.MIMETYPE_VIDEO_AVC)
             colorFormat = when {
-                caps.colorFormats.contains(MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible) ->
-                    MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible
-                caps.colorFormats.contains(MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar) ->
-                    MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar
                 caps.colorFormats.contains(MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar) ->
                     MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar
+                caps.colorFormats.contains(MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar) ->
+                    MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar
                 else -> return false
             }
 
@@ -199,8 +197,7 @@ class H264StreamEncoder(
                     val video = caps.videoCapabilities
                     video != null && video.areSizeAndRateSupported(w, h, 30.0) &&
                         caps.colorFormats.any { c ->
-                            c == MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Flexible ||
-                                c == MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar ||
+                            c == MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420Planar ||
                                 c == MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar
                         }
                 } catch (_: Exception) { false }
