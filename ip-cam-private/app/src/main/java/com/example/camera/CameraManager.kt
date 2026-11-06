@@ -233,7 +233,8 @@ class CameraManager(private val context: Context) {
                 listener,
                 h264FormatListener ?: {},
                 h264FrameListener ?: { _, _, _ -> },
-                shouldEncodeJpeg
+                shouldEncodeJpeg,
+                h264UnavailableListener ?: {}
             )
         }
     }
