@@ -35,6 +35,7 @@ class H264StreamEncoder(
     private val running = AtomicBoolean(false)
     private val bufferInfo = MediaCodec.BufferInfo()
     private var formatSent = false
+    val isRunning: Boolean get() = running.get()
 
     fun start(frameWidth: Int, frameHeight: Int, rotation: Int): Boolean {
         if (running.get()) return true
