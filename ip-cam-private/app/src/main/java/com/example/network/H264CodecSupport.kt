@@ -77,7 +77,7 @@ object H264CodecSupport {
                 supportsFullHd30 = supportsFullHd30,
                 maxWidth = video.supportedWidths.upper,
                 maxHeight = video.supportedHeights.upper,
-                maxFrameRate = video.supportedFrameRates.upper
+                maxFrameRate = video.supportedFrameRates.upper.toDouble()
             )
         } catch (_: Exception) {
             null
