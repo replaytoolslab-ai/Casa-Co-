@@ -81,7 +81,7 @@ class StreamClient(
         val url = URL("http://$host:$port/h264?token=$securityToken")
         val connection = (url.openConnection() as HttpURLConnection).apply {
             connectTimeout = 4000
-            readTimeout = 8000
+            readTimeout = 3000
             requestMethod = "GET"
             useCaches = false
         }
@@ -133,6 +133,7 @@ class StreamClient(
                         frameCount++
                         byteCount += length.toLong() + 13L
                     }
+                    2 -> throw IllegalStateException("Hardware H.264 encoder unavailable; switching to MJPEG")
                     else -> throw IllegalStateException("Unknown H.264 packet type: $type")
                 }
 
