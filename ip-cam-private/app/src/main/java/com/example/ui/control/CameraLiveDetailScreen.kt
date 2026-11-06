@@ -33,6 +33,7 @@ import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.Slider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -78,11 +79,11 @@ fun CameraLiveDetailScreen(
     val detailBitrate by viewModel.detailBitrate.collectAsState()
 
     var scale by remember { mutableFloatStateOf(1f) }
-    var offset by remember { mutableStateOf(Offset.Zero) }
+    var offset by remember { mutableStateOf(Offset.Zero) }\n    var nightMode by remember { mutableStateOf(false) }\n    var exposure by remember { mutableFloatStateOf(0f) }
 
     val transformState = rememberTransformableState { zoomChange, panChange, _ ->
         scale = (scale * zoomChange).coerceIn(1f, 4f)
-        offset = Offset(offset.x + panChange.x, offset.y + panChange.y)
+        val limit = 420f * (scale - 1f)\n        offset = Offset((offset.x + panChange.x).coerceIn(-limit, limit), (offset.y + panChange.y).coerceIn(-limit, limit))
     }
 
     Box(
@@ -164,7 +165,7 @@ fun CameraLiveDetailScreen(
             }
         }
 
-        // Reset Zoom button (if zoomed in)
+        Column(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 10.dp).clip(RoundedCornerShape(16.dp)).background(Color.Black.copy(alpha = 0.75f)).border(1.dp, CardBorder, RoundedCornerShape(16.dp)).padding(6.dp), horizontalAlignment = Alignment.CenterHorizontally) {\n            Text("ZOOM", color = OrangePrimary, fontSize = 9.sp, fontWeight = FontWeight.Bold)\n            IconButton(onClick = { scale = (scale + 0.25f).coerceIn(1f, 4f) }) { Text("+", color = Color.White, fontSize = 22.sp) }\n            IconButton(onClick = { scale = (scale - 0.25f).coerceIn(1f, 4f); if (scale <= 1f) offset = Offset.Zero }) { Text("−", color = Color.White, fontSize = 22.sp) }\n            IconButton(onClick = { offset = Offset(offset.x, (offset.y + 55f).coerceIn(-420f * (scale - 1f), 420f * (scale - 1f))) }, enabled = scale > 1.05f) { Text("↑", color = Color.White) }\n            Row(verticalAlignment = Alignment.CenterVertically) {\n                IconButton(onClick = { offset = Offset((offset.x + 55f).coerceIn(-420f * (scale - 1f), 420f * (scale - 1f)), offset.y) }, enabled = scale > 1.05f) { Text("←", color = Color.White) }\n                IconButton(onClick = { offset = Offset.Zero; scale = 1f }) { Text("◎", color = OrangePrimary) }\n                IconButton(onClick = { offset = Offset((offset.x - 55f).coerceIn(-420f * (scale - 1f), 420f * (scale - 1f)), offset.y) }, enabled = scale > 1.05f) { Text("→", color = Color.White) }\n            }\n            IconButton(onClick = { offset = Offset(offset.x, (offset.y - 55f).coerceIn(-420f * (scale - 1f), 420f * (scale - 1f))) }, enabled = scale > 1.05f) { Text("↓", color = Color.White) }\n        }\n\n        // Reset Zoom button (if zoomed in)
         if (scale > 1.05f) {
             Box(
                 modifier = Modifier
@@ -184,7 +185,7 @@ fun CameraLiveDetailScreen(
             }
         }
 
-        // Floating Bottom Controls Bar
+        Column(modifier = Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(start = 10.dp, bottom = 108.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.8f)).border(1.dp, CardBorder, RoundedCornerShape(14.dp)).padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {\n            IconButton(onClick = { nightMode = !nightMode; viewModel.setRemoteNightMode(cameraId, nightMode) }, modifier = Modifier.size(42.dp).background(if (nightMode) OrangePrimary else Color(0xFF2C3240), CircleShape)) { Text("☾", color = Color.White, fontSize = 20.sp) }\n            Text("ESPOSIZIONE", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)\n            Slider(value = exposure, onValueChange = { exposure = it; viewModel.setRemoteExposure(cameraId, it.toInt()) }, valueRange = -6f..6f, steps = 11, modifier = Modifier.width(110.dp))\n        }\n\n        // Floating Bottom Controls Bar
         Box(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
