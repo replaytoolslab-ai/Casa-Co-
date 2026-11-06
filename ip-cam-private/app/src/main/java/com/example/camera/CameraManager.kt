@@ -42,6 +42,7 @@ class CameraManager(private val context: Context) {
     private var h264FormatListener: ((H264StreamFormat) -> Unit)? = null
     private var h264FrameListener: ((bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) -> Unit)? = null
     private var shouldEncodeJpeg: () -> Boolean = { true }
+    private var shouldEncodeH264: () -> Boolean = { true }
     private var h264Encoder: H264StreamEncoder? = null
     private var h264EncoderAttempted = false
     private var h264UnavailableListener: (() -> Unit)? = null
@@ -70,13 +71,15 @@ class CameraManager(private val context: Context) {
         onH264Format: (H264StreamFormat) -> Unit = {},
         onH264Frame: (bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) -> Unit = { _, _, _ -> },
         shouldEncodeJpeg: () -> Boolean = { true },
-        onH264Unavailable: () -> Unit = {}
+        onH264Unavailable: () -> Unit = {},
+        shouldEncodeH264: () -> Boolean = { true }
     ) {
         this.frameListener = onFrame
         this.h264FormatListener = onH264Format
         this.h264FrameListener = onH264Frame
         this.shouldEncodeJpeg = shouldEncodeJpeg
         this.h264UnavailableListener = onH264Unavailable
+        this.shouldEncodeH264 = shouldEncodeH264
         isStreamingActive.set(true)
 
         val provider = cameraProvider
@@ -85,7 +88,7 @@ class CameraManager(private val context: Context) {
             pendingStreamingStart = {
                 startCameraForStreaming(
                     lifecycleOwner, previewView, onFrame,
-                    onH264Format, onH264Frame, shouldEncodeJpeg, onH264Unavailable
+                    onH264Format, onH264Frame, shouldEncodeJpeg, onH264Unavailable, shouldEncodeH264
                 )
             }
             return
@@ -159,7 +162,7 @@ class CameraManager(private val context: Context) {
         }
         try {
             // Encode from CameraX YUV planes directly; no JPEG is sent on the H.264 path.
-            if (h264Encoder == null && !h264EncoderAttempted) {
+            if (shouldEncodeH264() && h264Encoder == null && !h264EncoderAttempted) {
                 h264EncoderAttempted = true
                 val encoder = H264StreamEncoder(
                     onFormat = { format -> h264FormatListener?.invoke(format) },
@@ -234,7 +237,8 @@ class CameraManager(private val context: Context) {
                 h264FormatListener ?: {},
                 h264FrameListener ?: { _, _, _ -> },
                 shouldEncodeJpeg,
-                h264UnavailableListener ?: {}
+                h264UnavailableListener ?: {},
+                shouldEncodeH264
             )
         }
     }
@@ -251,6 +255,7 @@ class CameraManager(private val context: Context) {
         pendingStreamingStart = null
         frameListener = null
         h264UnavailableListener = null
+        shouldEncodeH264 = { false }
         h264FormatListener = null
         h264FrameListener = null
         h264Encoder?.stop()
