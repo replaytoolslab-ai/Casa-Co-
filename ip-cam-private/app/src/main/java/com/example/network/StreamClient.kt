@@ -86,6 +86,8 @@ class StreamClient(
             useCaches = false
         }
         var decoder: H264StreamDecoder? = null
+        val lastDecodedFrameAt = java.util.concurrent.atomic.AtomicLong(0L)
+        var decoderCreatedAt = 0L
         activeConnection = connection
         try {
             connection.connect()
@@ -123,9 +125,11 @@ class StreamClient(
                         decoder = H264StreamDecoder(
                             H264StreamFormat(width, height, rotation, csd0, csd1)
                         ) { bitmap, jpeg ->
+                            lastDecodedFrameAt.set(System.currentTimeMillis())
                             _currentBitmap.value = bitmap
                             onFrame(bitmap, jpeg)
                         }
+                        decoderCreatedAt = System.currentTimeMillis()
                         byteCount += length
                     }
                     1 -> {
@@ -134,6 +138,14 @@ class StreamClient(
                         val bytes = ByteArray(length)
                         input.readFully(bytes)
                         decoder?.queueAccessUnit(bytes, pts, keyFrame)
+                        val nowForDecodeCheck = System.currentTimeMillis()
+                        val lastRendered = lastDecodedFrameAt.get()
+                        val noDecodedFrameTooLong = decoder != null &&
+                            if (lastRendered == 0L) nowForDecodeCheck - decoderCreatedAt > 4000L
+                            else nowForDecodeCheck - lastRendered > 4000L
+                        if (noDecodedFrameTooLong) {
+                            throw IllegalStateException("H.264 decoder received data but produced no video frames")
+                        }
                         frameCount++
                         byteCount += length.toLong() + 13L
                     }
