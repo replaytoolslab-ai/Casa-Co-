@@ -78,6 +78,7 @@ class StreamServer(
     }
 
     private fun handleClientConnection(socket: Socket) {
+        try { socket.tcpNoDelay = true } catch (_: Exception) {}
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val reader = BufferedReader(InputStreamReader(socket.getInputStream()))
