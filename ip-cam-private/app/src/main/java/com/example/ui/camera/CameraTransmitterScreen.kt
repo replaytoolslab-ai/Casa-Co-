@@ -46,7 +46,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect\nimport androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -90,14 +91,23 @@ fun CameraTransmitterScreen(
     val qrBitmap by viewModel.qrBitmap.collectAsState()
     val isStealthMode by viewModel.isStealthMode.collectAsState()
     val isTorchOn by viewModel.isCameraTorchOn.collectAsState()
-    val currentMode by viewModel.currentMode.collectAsState()\n    val remoteSwitchRequest by viewModel.remoteSwitchRequest.collectAsState()
+    val currentMode by viewModel.currentMode.collectAsState()
+    val remoteSwitchRequest by viewModel.remoteSwitchRequest.collectAsState()
 
     val lifecycleOwner = LocalLifecycleOwner.current
     var previewViewRef by remember { mutableStateOf<PreviewView?>(null) }
     var showQrDialog by remember { mutableStateOf(false) }
     var showRenameDialog by remember { mutableStateOf(false) }
     var renameInput by remember { mutableStateOf("") }
-    var isNightModeEnabled by remember { mutableStateOf(viewModel.cameraManager.isNightModeEnabled) }\n    var handledSwitchRequest by remember { mutableStateOf(0) }\n\n    LaunchedEffect(remoteSwitchRequest, previewViewRef) {\n        if (remoteSwitchRequest > handledSwitchRequest && previewViewRef != null) {\n            viewModel.cameraManager.switchCamera(lifecycleOwner, previewViewRef)\n            handledSwitchRequest = remoteSwitchRequest\n        }\n    }
+    var isNightModeEnabled by remember { mutableStateOf(viewModel.cameraManager.isNightModeEnabled) }
+    var handledSwitchRequest by remember { mutableStateOf(0) }
+
+    LaunchedEffect(remoteSwitchRequest, previewViewRef) {
+        if (remoteSwitchRequest > handledSwitchRequest && previewViewRef != null) {
+            viewModel.cameraManager.switchCamera(lifecycleOwner, previewViewRef)
+            handledSwitchRequest = remoteSwitchRequest
+        }
+    }
 
     if (isStealthMode) {
         // Stealth / Screen Dimming Mode (Battery Saver during continuous transmission)
@@ -127,7 +137,8 @@ fun CameraTransmitterScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Streaming in corso verso CONTROLLO\nTocca lo schermo per riattivare la visualizzazione",
+                    text = "Streaming in corso verso CONTROLLO
+Tocca lo schermo per riattivare la visualizzazione",
                     color = Color.White.copy(alpha = 0.35f),
                     fontSize = 11.sp,
                     textAlign = TextAlign.Center
