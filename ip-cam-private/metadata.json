@@ -1,0 +1,6 @@
+{
+  "name": "IP CAM PRIVATE",
+  "description": "Sistema di videosorveglianza e telecamere IP su rete locale Wi-Fi con registrazione centralizzata e controllo multi-dispositivo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
