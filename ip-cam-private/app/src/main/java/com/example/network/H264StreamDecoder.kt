@@ -7,6 +7,9 @@ import android.media.Image
 import android.media.ImageReader
 import android.media.MediaCodec
 import android.media.MediaFormat
+import android.media.MediaCodecInfo
+import android.media.MediaCodecList
+import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.Log
@@ -68,7 +71,23 @@ class H264StreamDecoder(
         if (format.csd1.isNotEmpty()) mediaFormat.setByteBuffer("csd-1", ByteBuffer.wrap(format.csd1))
         mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 30)
 
-        decoder = MediaCodec.createDecoderByType(MediaFormat.MIMETYPE_VIDEO_AVC).also {
+        val decoderInfo = MediaCodecList(MediaCodecList.REGULAR_CODECS).codecInfos
+            .asSequence()
+            .filter { !it.isEncoder && it.supportedTypes.any { type -> type.equals(MediaFormat.MIMETYPE_VIDEO_AVC, true) } }
+            .filter {
+                val hardware = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) it.isHardwareAccelerated
+                else !it.name.startsWith("OMX.google.", true) && !it.name.startsWith("c2.android.", true)
+                hardware
+            }
+            .firstOrNull {
+                try {
+                    val video = it.getCapabilitiesForType(MediaFormat.MIMETYPE_VIDEO_AVC).videoCapabilities
+                    video != null && (video.areSizeAndRateSupported(format.width, format.height, 30.0) ||
+                        video.areSizeAndRateSupported(format.height, format.width, 30.0))
+                } catch (_: Exception) { false }
+            } ?: throw IllegalStateException("No compatible hardware H.264 decoder")
+
+        decoder = MediaCodec.createByCodecName(decoderInfo.name).also {
             it.configure(mediaFormat, imageReader.surface, null, 0)
             it.start()
         }
