@@ -168,17 +168,28 @@ fun CameraLiveDetailScreen(
             }
         }
 
-        Column(modifier = Modifier.align(Alignment.CenterEnd).padding(end = 10.dp).clip(RoundedCornerShape(16.dp)).background(Color.Black.copy(alpha = 0.75f)).border(1.dp, CardBorder, RoundedCornerShape(16.dp)).padding(6.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("ZOOM", color = OrangePrimary, fontSize = 9.sp, fontWeight = FontWeight.Bold)
-            IconButton(onClick = { scale = (scale + 0.25f).coerceIn(1f, 4f) }) { Text("+", color = Color.White, fontSize = 22.sp) }
-            IconButton(onClick = { scale = (scale - 0.25f).coerceIn(1f, 4f); if (scale <= 1f) offset = Offset.Zero }) { Text("−", color = Color.White, fontSize = 22.sp) }
-            IconButton(onClick = { offset = Offset(offset.x, (offset.y + 55f).coerceIn(-420f * (scale - 1f), 420f * (scale - 1f))) }, enabled = scale > 1.05f) { Text("↑", color = Color.White) }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = { offset = Offset((offset.x + 55f).coerceIn(-420f * (scale - 1f), 420f * (scale - 1f)), offset.y) }, enabled = scale > 1.05f) { Text("←", color = Color.White) }
-                IconButton(onClick = { offset = Offset.Zero; scale = 1f }) { Text("◎", color = OrangePrimary) }
-                IconButton(onClick = { offset = Offset((offset.x - 55f).coerceIn(-420f * (scale - 1f), 420f * (scale - 1f)), offset.y) }, enabled = scale > 1.05f) { Text("→", color = Color.White) }
+        Row(
+            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 10.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(Color.Black.copy(alpha = 0.72f))
+                .border(1.dp, CardBorder, RoundedCornerShape(24.dp))
+                .padding(horizontal = 5.dp, vertical = 3.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text("ZOOM", color = OrangePrimary, fontSize = 8.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 4.dp))
+            IconButton(onClick = { scale = (scale - 0.25f).coerceIn(1f, 4f); if (scale <= 1f) offset = Offset.Zero }, modifier = Modifier.size(34.dp)) {
+                Text("−", color = Color.White, fontSize = 20.sp)
             }
-            IconButton(onClick = { offset = Offset(offset.x, (offset.y - 55f).coerceIn(-420f * (scale - 1f), 420f * (scale - 1f))) }, enabled = scale > 1.05f) { Text("↓", color = Color.White) }
+            Text(String.format("%.1fx", scale), color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.SemiBold)
+            IconButton(onClick = { scale = (scale + 0.25f).coerceIn(1f, 4f) }, modifier = Modifier.size(34.dp)) {
+                Text("+", color = Color.White, fontSize = 20.sp)
+            }
+            if (scale > 1.05f) {
+                IconButton(onClick = { offset = Offset.Zero; scale = 1f }, modifier = Modifier.size(34.dp)) {
+                    Text("↺", color = OrangePrimary, fontSize = 18.sp)
+                }
+            }
         }
 
         // Reset Zoom button (if zoomed in)
@@ -201,10 +212,31 @@ fun CameraLiveDetailScreen(
             }
         }
 
-        Column(modifier = Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(start = 10.dp, bottom = 108.dp).clip(RoundedCornerShape(14.dp)).background(Color.Black.copy(alpha = 0.8f)).border(1.dp, CardBorder, RoundedCornerShape(14.dp)).padding(8.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            IconButton(onClick = { nightMode = !nightMode; viewModel.setRemoteNightMode(cameraId, nightMode) }, modifier = Modifier.size(42.dp).background(if (nightMode) OrangePrimary else Color(0xFF2C3240), CircleShape)) { Text("☾", color = Color.White, fontSize = 20.sp) }
-            Text("ESPOSIZIONE", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
-            Slider(value = exposure, onValueChange = { exposure = it; viewModel.setRemoteExposure(cameraId, it.toInt()) }, valueRange = -6f..6f, steps = 11, modifier = Modifier.width(110.dp))
+        Column(
+            modifier = Modifier.align(Alignment.BottomStart).navigationBarsPadding()
+                .padding(start = 10.dp, bottom = 108.dp)
+                .clip(RoundedCornerShape(14.dp))
+                .background(Color.Black.copy(alpha = 0.82f))
+                .border(1.dp, CardBorder, RoundedCornerShape(14.dp))
+                .padding(horizontal = 9.dp, vertical = 7.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                IconButton(
+                    onClick = { nightMode = !nightMode; viewModel.setRemoteNightMode(cameraId, nightMode) },
+                    modifier = Modifier.size(34.dp).background(if (nightMode) OrangePrimary else Color(0xFF2C3240), CircleShape)
+                ) { Text("☾", color = Color.White, fontSize = 18.sp) }
+                Text(if (nightMode) "NOTTE ON" else "NOTTE", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+            }
+            Text("ESPOSIZIONE " + exposure.toInt(), color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+            Slider(
+                value = exposure,
+                onValueChange = { exposure = it },
+                onValueChangeFinished = { viewModel.setRemoteExposure(cameraId, exposure.toInt()) },
+                valueRange = -6f..6f,
+                steps = 11,
+                modifier = Modifier.width(116.dp)
+            )
         }
 
         // Floating Bottom Controls Bar
