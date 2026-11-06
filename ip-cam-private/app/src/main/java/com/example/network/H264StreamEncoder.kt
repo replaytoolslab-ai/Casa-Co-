@@ -24,7 +24,8 @@ data class H264StreamFormat(
  */
 class H264StreamEncoder(
     private val onFormat: (H264StreamFormat) -> Unit,
-    private val onAccessUnit: (bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) -> Unit
+    private val onAccessUnit: (bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) -> Unit,
+    private val nightModeEnabled: () -> Boolean = { false }
 ) {
     private val tag = "H264StreamEncoder"
     private var codec: MediaCodec? = null
@@ -110,7 +111,7 @@ class H264StreamEncoder(
         val y = image.planes[0]
         val u = image.planes[1]
         val v = image.planes[2]
-        copyPlane(y.buffer, y.rowStride, y.pixelStride, width, height, output)
+        copyLumaPlane(y.buffer, y.rowStride, y.pixelStride, width, height, output, nightModeEnabled())
         if (colorFormat == MediaCodecInfo.CodecCapabilities.COLOR_FormatYUV420SemiPlanar) {
             val uBuffer = u.buffer.duplicate()
             val vBuffer = v.buffer.duplicate()
@@ -123,6 +124,29 @@ class H264StreamEncoder(
         } else {
             copyPlane(u.buffer, u.rowStride, u.pixelStride, chromaWidth, chromaHeight, output)
             copyPlane(v.buffer, v.rowStride, v.pixelStride, chromaWidth, chromaHeight, output)
+        }
+    }
+
+    /** Applies the requested night contrast/luminance curve directly to luma before AVC encoding. */
+    private fun copyLumaPlane(
+        source: ByteBuffer,
+        rowStride: Int,
+        pixelStride: Int,
+        planeWidth: Int,
+        planeHeight: Int,
+        output: ByteBuffer,
+        enhance: Boolean
+    ) {
+        val buffer = source.duplicate()
+        for (row in 0 until planeHeight) {
+            val rowStart = row * rowStride
+            for (col in 0 until planeWidth) {
+                val sample = buffer.get(rowStart + col * pixelStride).toInt() and 0xff
+                val adjusted = if (enhance) {
+                    (((sample - 128) * 1.35f) + 128f + 40f).toInt().coerceIn(0, 255)
+                } else sample
+                output.put(adjusted.toByte())
+            }
         }
     }
 
