@@ -44,6 +44,18 @@ object CameraControlApi {
     suspend fun setExposure(device: CameraDevice, value: Int): Boolean =
         sendControl(device, "exposure", value.toString())
 
+    suspend fun setZoom(device: CameraDevice, ratio: Float): Boolean =
+        sendControl(device, "zoom", ratio.coerceIn(1.0f, device.maxZoomRatio).toString())
+
+    suspend fun zoomIn(device: CameraDevice): Boolean =
+        sendControl(device, "zoom_in", "")
+
+    suspend fun zoomOut(device: CameraDevice): Boolean =
+        sendControl(device, "zoom_out", "")
+
+    suspend fun resetZoom(device: CameraDevice): Boolean =
+        sendControl(device, "zoom_reset", "")
+
     private suspend fun sendControl(device: CameraDevice, action: String, value: String): Boolean =
         withContext(Dispatchers.IO) {
             try {
