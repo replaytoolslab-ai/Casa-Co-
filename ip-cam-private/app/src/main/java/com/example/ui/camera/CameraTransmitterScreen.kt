@@ -115,10 +115,16 @@ fun CameraTransmitterScreen(
         if (isServerRunning && connectedClients > 0 && preview != null) {
             viewModel.cameraManager.startCameraForStreaming(
                 lifecycleOwner = lifecycleOwner,
-                previewView = preview
-            ) { jpegBytes, bitmap ->
-                viewModel.onNewCameraFrame(jpegBytes, bitmap)
-            }
+                previewView = preview,
+                onFrame = { jpegBytes, bitmap ->
+                    viewModel.onNewCameraFrame(jpegBytes, bitmap)
+                },
+                onH264Format = viewModel::onH264Format,
+                onH264Frame = { bytes, pts, keyFrame ->
+                    viewModel.onH264Frame(bytes, pts, keyFrame)
+                },
+                shouldEncodeJpeg = { viewModel.shouldEncodeJpeg() }
+            )
         } else {
             viewModel.cameraManager.stop()
         }
