@@ -137,8 +137,7 @@ fun CameraTransmitterScreen(
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "Streaming in corso verso CONTROLLO
-Tocca lo schermo per riattivare la visualizzazione",
+                    text = "Streaming in corso verso CONTROLLO\nTocca lo schermo per riattivare la visualizzazione",
                     color = Color.White.copy(alpha = 0.35f),
                     fontSize = 11.sp,
                     textAlign = TextAlign.Center
