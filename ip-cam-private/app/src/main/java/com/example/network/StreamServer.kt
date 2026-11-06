@@ -128,23 +128,28 @@ class StreamServer(
                         connectedClientsCount.incrementAndGet()
 
                         try {
+                            var lastSentSequence = -1L
                             while (isActive && isRunning.get() && !socket.isClosed) {
-                                // Wait for fresh frame
-                                val frame = latestFrame.get()
-                                if (frame != null) {
-                                    val frameHeader = (
-                                        "--boundaryframe\r\n" +
-                                        "Content-Type: image/jpeg\r\n" +
-                                        "Content-Length: ${frame.size}\r\n" +
-                                        "X-Timestamp: ${System.currentTimeMillis()}\r\n\r\n"
-                                    ).toByteArray()
+                                val sequence = frameSequence.get()
+                                if (sequence != lastSentSequence) {
+                                    val frame = latestFrame.get()
+                                    if (frame != null) {
+                                        val frameHeader = (
+                                            "--boundaryframe\r\n" +
+                                            "Content-Type: image/jpeg\r\n" +
+                                            "Content-Length: ${frame.size}\r\n" +
+                                            "X-Timestamp: ${System.currentTimeMillis()}\r\n\r\n"
+                                        ).toByteArray()
 
-                                    out.write(frameHeader)
-                                    out.write(frame)
-                                    out.write("\r\n".toByteArray())
-                                    out.flush()
+                                        out.write(frameHeader)
+                                        out.write(frame)
+                                        out.write("\r\n".toByteArray())
+                                        out.flush()
+                                        lastSentSequence = sequence
+                                    }
+                                } else {
+                                    Thread.sleep(4) // Never resend an unchanged frame
                                 }
-                                Thread.sleep(33) // ~30 fps cap
                             }
                         } catch (_: Exception) {
                             // Client disconnected
