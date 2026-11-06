@@ -151,7 +151,6 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             stopCameraTransmitter()
             _currentScreen.value = AppScreen.Dashboard
             startLanDiscoveryListener()
-            reconnectAllStreams()
         } else {
             // Camera mode
             disconnectAllStreams()
@@ -162,20 +161,35 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun navigateTo(screen: AppScreen) {
-        screenBackstack.add(_currentScreen.value)
+        val current = _currentScreen.value
+        if (current is AppScreen.LiveDetail && (screen !is AppScreen.LiveDetail || screen.cameraId != current.cameraId)) {
+            releaseStreamIfIdle(current.cameraId)
+        }
+        screenBackstack.add(current)
         _currentScreen.value = screen
         if (screen is AppScreen.LiveDetail) {
             _activeDetailCameraId.value = screen.cameraId
             connectStreamForCamera(screen.cameraId)
+        } else {
+            _activeDetailCameraId.value = null
+            _detailFrameBitmap.value = null
         }
     }
 
     fun navigateBack(): Boolean {
         if (screenBackstack.isNotEmpty()) {
+            val leaving = _currentScreen.value
             val previous = screenBackstack.removeAt(screenBackstack.size - 1)
+            if (leaving is AppScreen.LiveDetail && (previous !is AppScreen.LiveDetail || previous.cameraId != leaving.cameraId)) {
+                releaseStreamIfIdle(leaving.cameraId)
+            }
             _currentScreen.value = previous
-            if (previous !is AppScreen.LiveDetail) {
+            if (previous is AppScreen.LiveDetail) {
+                _activeDetailCameraId.value = previous.cameraId
+                connectStreamForCamera(previous.cameraId)
+            } else {
                 _activeDetailCameraId.value = null
+                _detailFrameBitmap.value = null
             }
             return true
         }
@@ -261,8 +275,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
 
         _pairedCameras.update { it + newCam }
         savePairedCameras()
-        connectStreamForCamera(newCam.id)
-        showFeedback("Telecamera aggiunta con successo!")
+        showFeedback("Telecamera aggiunta. Apri il Live per avviare il video.")
     }
 
     fun removeCamera(cameraId: String) {
@@ -381,8 +394,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     private fun reconnectAllStreams() {
-        _pairedCameras.value.forEach { cam ->
-            connectStreamForCamera(cam.id)
+        val live = _currentScreen.value as? AppScreen.LiveDetail
+        live?.let { connectStreamForCamera(it.cameraId) }
+        activeRecorders.keys.forEach { connectStreamForCamera(it) }
+    }
+
+    private fun releaseStreamIfIdle(cameraId: String) {
+        if (activeRecorders.containsKey(cameraId)) return
+        streamClients.remove(cameraId)?.stop()
+        latestBitmaps.remove(cameraId)
+        latestJpegBytes.remove(cameraId)
+        if (_activeDetailCameraId.value == cameraId) {
+            _detailFrameBitmap.value = null
+            _detailFps.value = 0f
+            _detailBitrate.value = 0f
         }
     }
 
@@ -425,6 +450,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             val success = engine.start()
             if (success) {
                 activeRecorders[cameraId] = engine
+                connectStreamForCamera(cameraId)
                 _pairedCameras.update { list ->
                     list.map { if (it.id == cameraId) it.copy(isRecording = true, recordingDurationSeconds = 0L) else it }
                 }
@@ -446,6 +472,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             refreshStorageStats()
             if (savedUri != null) {
                 showFeedback("Video salvato in Movies/IP CAM PRIVATE/")
+            }
+            if ((_currentScreen.value as? AppScreen.LiveDetail)?.cameraId != cameraId) {
+                releaseStreamIfIdle(cameraId)
             }
         }
     }
