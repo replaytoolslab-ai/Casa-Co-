@@ -81,7 +81,7 @@ class CameraManager(private val context: Context) {
             }
 
             val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(640, 360)) // Lower processing and Wi-Fi load for smoother live view
+                .setTargetResolution(Size(1280, 720)) // HD stream: higher detail while keeping analysis workload practical
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
@@ -173,8 +173,8 @@ class CameraManager(private val context: Context) {
                 rawBitmap = rotated
             }
 
-            val stream = ByteArrayOutputStream(64 * 1024)
-            rawBitmap.compress(Bitmap.CompressFormat.JPEG, 68, stream)
+            val stream = ByteArrayOutputStream(256 * 1024)
+            rawBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
             val jpegBytes = stream.toByteArray()
 
             frameListener?.invoke(jpegBytes, rawBitmap)
