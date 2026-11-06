@@ -616,6 +616,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                         _remoteSwitchRequest.value = _remoteSwitchRequest.value + 1
                     }
                 }
+            },
+            onViewerCountChanged = { count ->
+                _connectedClientsCount.value = count
             }
         )
 
