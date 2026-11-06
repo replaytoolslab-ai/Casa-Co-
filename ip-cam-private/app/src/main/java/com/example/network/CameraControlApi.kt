@@ -38,6 +38,28 @@ object CameraControlApi {
         }
     }
 
+    suspend fun setNightMode(device: CameraDevice, enabled: Boolean): Boolean =
+        sendControl(device, "night_mode", if (enabled) "on" else "off")
+
+    suspend fun setExposure(device: CameraDevice, value: Int): Boolean =
+        sendControl(device, "exposure", value.toString())
+
+    private suspend fun sendControl(device: CameraDevice, action: String, value: String): Boolean =
+        withContext(Dispatchers.IO) {
+            try {
+                val endpoint = "${device.controlUrl}&action=$action&value=$value"
+                val conn = (URL(endpoint).openConnection() as HttpURLConnection).apply {
+                    connectTimeout = 2500
+                    readTimeout = 2500
+                    requestMethod = "POST"
+                }
+                conn.responseCode == 200
+            } catch (e: Exception) {
+                e.printStackTrace()
+                false
+            }
+        }
+
     suspend fun fetchSnapshot(device: CameraDevice): ByteArray? = withContext(Dispatchers.IO) {
         try {
             val conn = (URL(device.snapshotUrl).openConnection() as HttpURLConnection).apply {
