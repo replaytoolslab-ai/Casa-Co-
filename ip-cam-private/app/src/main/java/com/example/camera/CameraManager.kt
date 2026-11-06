@@ -35,6 +35,10 @@ class CameraManager(private val context: Context) {
         private set
     var isNightModeEnabled: Boolean = false
         private set
+    var currentZoomRatio: Float = 1.0f
+        private set
+    var maxZoomRatio: Float = 1.0f
+        private set
     private var previousExposureIndex: Int? = null
 
     private val isStreamingActive = AtomicBoolean(false)
@@ -113,6 +117,12 @@ class CameraManager(private val context: Context) {
             imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy -> processStreamFrame(imageProxy) }
             camera = provider.bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
             cameraControl = camera?.cameraControl
+            camera?.cameraInfo?.zoomState?.observe(lifecycleOwner) { zoomState ->
+                if (zoomState != null) {
+                    currentZoomRatio = zoomState.zoomRatio
+                    maxZoomRatio = zoomState.maxZoomRatio.coerceAtLeast(1.0f)
+                }
+            }
             applyNightModeIfEnabled()
             Log.i(tag, "Camera bound for streaming (facing: ${if (isFrontCamera) "FRONT" else "BACK"}; requested: 1920x1080)")
         } catch (e: Exception) {
@@ -237,6 +247,21 @@ class CameraManager(private val context: Context) {
         val range = exposureState.exposureCompensationRange
         cameraControl?.setExposureCompensationIndex(value.coerceIn(range.lower, range.upper))
     }
+
+    /** Applies true CameraX optical/digital sensor zoom on the TELECAMERA device. */
+    fun setZoom(ratio: Float) {
+        val control = cameraControl ?: return
+        val max = maxZoomRatio.coerceAtLeast(1.0f)
+        val target = ratio.coerceIn(1.0f, max)
+        control.setZoomRatio(target)
+        currentZoomRatio = target
+    }
+
+    fun zoomIn(step: Float = 0.35f) = setZoom(currentZoomRatio + step)
+
+    fun zoomOut(step: Float = 0.35f) = setZoom(currentZoomRatio - step)
+
+    fun resetZoom() = setZoom(1.0f)
 
     fun switchCamera(lifecycleOwner: LifecycleOwner, previewView: PreviewView?) {
         isFrontCamera = !isFrontCamera
