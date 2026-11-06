@@ -27,13 +27,15 @@ class H264StreamDecoder(
 ) {
     private val tag = "H264StreamDecoder"
     private val running = AtomicBoolean(false)
+    private val released = AtomicBoolean(false)
+    private val lastBitmapFrameAt = java.util.concurrent.atomic.AtomicLong(0L)
     private val handlerThread = HandlerThread("H264ImageOutput").apply { start() }
     private val handler = Handler(handlerThread.looper)
     private val imageReader = ImageReader.newInstance(
         format.width,
         format.height,
         ImageFormat.YUV_420_888,
-        3
+        2
     )
     private var decoder: MediaCodec? = null
     private var lastJpegAt = 0L
@@ -43,17 +45,28 @@ class H264StreamDecoder(
         imageReader.setOnImageAvailableListener({ reader ->
             val image = reader.acquireLatestImage() ?: return@setOnImageAvailableListener
             try {
+                if (released.get()) return@setOnImageAvailableListener
+
+                // MediaCodec continues decoding at the source frame rate. Convert to Bitmap
+                // only at 10 fps for Compose/central recording to avoid 1080p allocation bursts.
+                val now = android.os.SystemClock.elapsedRealtime()
+                val previous = lastBitmapFrameAt.get()
+                if (previous != 0L && now - previous < 100L) {
+                    return@setOnImageAvailableListener
+                }
+                lastBitmapFrameAt.set(now)
+
                 val bitmap = imageToBitmap(image, format.rotationDegrees)
-                val now = System.currentTimeMillis()
+                val wallClockNow = System.currentTimeMillis()
                 var jpeg = latestJpeg
-                if (jpeg == null || now - lastJpegAt >= 500L) {
+                if (jpeg == null || wallClockNow - lastJpegAt >= 500L) {
                     val output = ByteArrayOutputStream()
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 88, output)
                     jpeg = output.toByteArray()
                     latestJpeg = jpeg
-                    lastJpegAt = now
+                    lastJpegAt = wallClockNow
                 }
-                if (jpeg != null) onFrame(bitmap, jpeg!!)
+                if (!released.get() && jpeg != null) onFrame(bitmap, jpeg!!)
             } catch (e: Exception) {
                 Log.w(tag, "Unable to convert decoded H.264 frame", e)
             } finally {
@@ -165,6 +178,7 @@ class H264StreamDecoder(
     }
 
     fun release() {
+        if (!released.compareAndSet(false, true)) return
         running.set(false)
         try { decoder?.stop() } catch (_: Exception) {}
         try { decoder?.release() } catch (_: Exception) {}
