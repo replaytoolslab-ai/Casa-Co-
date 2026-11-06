@@ -94,7 +94,8 @@ class H264StreamEncoder(
             }
             drainEncoder(encoder)
         } catch (e: Exception) {
-            Log.w(tag, "H.264 frame encode failed", e)
+            Log.w(tag, "H.264 frame encode failed; switching to MJPEG fallback", e)
+            stop()
         }
     }
 
