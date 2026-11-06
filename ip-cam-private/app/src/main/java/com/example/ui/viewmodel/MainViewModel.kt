@@ -17,6 +17,7 @@ import com.example.model.AppScreen
 import com.example.model.CameraDevice
 import com.example.model.MediaItem
 import com.example.network.CameraControlApi
+import com.example.network.H264StreamFormat
 import com.example.network.LanDiscovery
 import com.example.network.StreamClient
 import com.example.network.StreamServer
@@ -653,6 +654,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             _connectedClientsCount.value = it.connectedClientsCount.get()
         }
     }
+
+    fun onH264Format(format: H264StreamFormat) {
+        streamServer?.onH264Format(format)
+    }
+
+    fun onH264Frame(bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) {
+        streamServer?.onH264Frame(bytes, presentationTimeUs, keyFrame)
+    }
+
+    fun shouldEncodeJpeg(): Boolean = streamServer?.shouldEncodeJpeg() ?: true
 
     fun updateCameraDeviceName(name: String) {
         _cameraName.value = name
