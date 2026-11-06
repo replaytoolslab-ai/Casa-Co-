@@ -2,7 +2,6 @@ package com.example.network
 
 import android.graphics.Bitmap
 import android.graphics.Matrix
-import android.graphics.Rect
 import android.media.Image
 import android.media.ImageReader
 import android.media.MediaCodec
@@ -131,8 +130,9 @@ class H264StreamDecoder(
     }
 
     private fun imageToBitmap(image: Image, rotation: Int): Bitmap {
-        val width = image.width
-        val height = image.height
+        val crop = image.cropRect
+        val width = crop.width()
+        val height = crop.height()
         val planes = image.planes
         val yPlane = planes[0]
         val uPlane = planes[1]
@@ -141,7 +141,6 @@ class H264StreamDecoder(
         val uBuffer = uPlane.buffer.duplicate()
         val vBuffer = vPlane.buffer.duplicate()
         val pixels = IntArray(width * height)
-        val crop = image.cropRect
         for (row in 0 until height) {
             val sourceY = row + crop.top
             for (col in 0 until width) {
