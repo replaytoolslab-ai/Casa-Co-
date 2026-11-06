@@ -99,6 +99,10 @@ class StreamClient(
             while (isRunning.get()) {
                 val type = input.readUnsignedByte()
                 val length = input.readInt()
+                if (type == 2) {
+                    require(length == 0) { "Invalid H.264 fallback marker" }
+                    throw IllegalStateException("Hardware H.264 encoder unavailable; switching to MJPEG")
+                }
                 require(length in 1..4_194_304) { "Invalid H.264 packet length: $length" }
                 when (type) {
                     0 -> {
@@ -133,7 +137,6 @@ class StreamClient(
                         frameCount++
                         byteCount += length.toLong() + 13L
                     }
-                    2 -> throw IllegalStateException("Hardware H.264 encoder unavailable; switching to MJPEG")
                     else -> throw IllegalStateException("Unknown H.264 packet type: $type")
                 }
 
