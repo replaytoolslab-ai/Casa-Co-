@@ -1,0 +1,77 @@
+name: IP CAM PRIVATE - Google AI Studio APK test
+
+on:
+  push:
+    branches: [ip-cam-private-google-ai-test]
+    paths:
+      - 'ip-cam-private.zip'
+      - '.github/workflows/ip-cam-google-ai-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-google-ai-project:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout test branch
+        uses: actions/checkout@v4
+        with:
+          ref: ip-cam-private-google-ai-test
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install Gradle 9.3.1
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '9.3.1'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v4
+
+      - name: Install Android SDK packages
+        run: |
+          yes | sdkmanager --licenses
+          sdkmanager "platform-tools" "platforms;android-36" "build-tools;36.0.0"
+
+      - name: Extract the exact Google AI Studio project
+        run: |
+          test -s ip-cam-private.zip
+          mkdir -p google-ai-studio-source
+          unzip -q ip-cam-private.zip -d google-ai-studio-source
+          test -f google-ai-studio-source/settings.gradle.kts
+          test -f google-ai-studio-source/app/src/main/java/com/example/MainActivity.kt
+          echo "Google AI Studio project extracted successfully."
+
+      - name: Create debug signing key
+        working-directory: google-ai-studio-source
+        run: |
+          keytool -genkeypair -keystore debug.keystore -storepass android \
+            -alias androiddebugkey -keypass android \
+            -dname "CN=Android Debug,O=Android,C=US" \
+            -keyalg RSA -keysize 2048 -validity 10000
+
+      - name: Compile and run unit tests from Google AI Studio source
+        run: |
+          gradle --no-daemon -p google-ai-studio-source clean testDebugUnitTest assembleDebug --stacktrace
+
+      - name: Verify generated APK
+        run: |
+          APK="google-ai-studio-source/app/build/outputs/apk/debug/app-debug.apk"
+          test -s "$APK"
+          ls -lh "$APK"
+          sha256sum "$APK"
+
+      - name: Upload Google AI Studio test APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ip-cam-private-google-ai-studio-test-apk
+          path: google-ai-studio-source/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
