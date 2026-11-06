@@ -226,7 +226,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                             host = obj.getString("host"),
                             port = obj.optInt("port", 8888),
                             securityToken = obj.optString("securityToken", ""),
-                            securityPin = obj.optString("securityPin", "")
+                            securityPin = obj.optString("securityPin", ""),
+                            isNightMode = obj.optBoolean("isNightMode", false),
+                            zoomRatio = obj.optDouble("zoomRatio", 1.0).toFloat(),
+                            maxZoomRatio = obj.optDouble("maxZoomRatio", 5.0).toFloat(),
+                            codec = obj.optString("codec", "MJPEG")
                         )
                     )
                 }
@@ -248,6 +252,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     put("port", cam.port)
                     put("securityToken", cam.securityToken)
                     put("securityPin", cam.securityPin)
+                    put("isNightMode", cam.isNightMode)
+                    put("zoomRatio", cam.zoomRatio.toDouble())
+                    put("maxZoomRatio", cam.maxZoomRatio.toDouble())
+                    put("codec", cam.codec)
                 }
                 array.put(obj)
             }
