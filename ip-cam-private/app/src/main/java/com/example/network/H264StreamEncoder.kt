@@ -56,7 +56,7 @@ class H264StreamEncoder(
 
             val format = MediaFormat.createVideoFormat(MediaFormat.MIMETYPE_VIDEO_AVC, width, height).apply {
                 setInteger(MediaFormat.KEY_COLOR_FORMAT, colorFormat)
-                setInteger(MediaFormat.KEY_BIT_RATE, 6_000_000)
+                setInteger(MediaFormat.KEY_BIT_RATE, 2_500_000)
                 setInteger(MediaFormat.KEY_FRAME_RATE, 30)
                 setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, 1)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
