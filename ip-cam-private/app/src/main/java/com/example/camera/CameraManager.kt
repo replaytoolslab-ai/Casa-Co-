@@ -32,6 +32,9 @@ class CameraManager(private val context: Context) {
         private set
     var isTorchEnabled: Boolean = false
         private set
+    var isNightModeEnabled: Boolean = false
+        private set
+    private var previousExposureIndex: Int? = null
 
     private val isStreamingActive = AtomicBoolean(false)
     private var frameListener: ((jpegBytes: ByteArray, bitmap: Bitmap) -> Unit)? = null
@@ -78,7 +81,7 @@ class CameraManager(private val context: Context) {
             }
 
             val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(960, 540)) // Good balance between quality and smooth LAN bandwidth
+                .setTargetResolution(Size(640, 360)) // Lower processing and Wi-Fi load for smoother live view
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
@@ -93,6 +96,7 @@ class CameraManager(private val context: Context) {
                 imageAnalysis
             )
             cameraControl = camera?.cameraControl
+            applyNightModeIfEnabled()
             Log.i(tag, "Camera bound for streaming (facing: ${if (isFrontCamera) "FRONT" else "BACK"})")
         } catch (e: Exception) {
             Log.e(tag, "Failed to bind camera for streaming", e)
@@ -169,8 +173,8 @@ class CameraManager(private val context: Context) {
                 rawBitmap = rotated
             }
 
-            val stream = ByteArrayOutputStream()
-            rawBitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream)
+            val stream = ByteArrayOutputStream(64 * 1024)
+            rawBitmap.compress(Bitmap.CompressFormat.JPEG, 68, stream)
             val jpegBytes = stream.toByteArray()
 
             frameListener?.invoke(jpegBytes, rawBitmap)
@@ -178,6 +182,35 @@ class CameraManager(private val context: Context) {
             Log.w(tag, "Frame processing error", e)
         } finally {
             imageProxy.close()
+        }
+    }
+
+
+    /**
+     * Improves visibility in low light by raising camera exposure compensation.
+     * The supported range is device-specific.
+     */
+    fun setNightMode(enabled: Boolean) {
+        isNightModeEnabled = enabled
+        applyNightModeIfEnabled()
+    }
+
+    private fun applyNightModeIfEnabled() {
+        val control = cameraControl ?: return
+        val exposureState = camera?.cameraInfo?.exposureState ?: return
+        val range = exposureState.exposureCompensationRange
+        if (range.lower == 0 && range.upper == 0) return
+
+        if (isNightModeEnabled) {
+            if (previousExposureIndex == null) {
+                previousExposureIndex = exposureState.exposureCompensationIndex
+            }
+            val target = minOf(range.upper, maxOf(2, range.lower))
+            control.setExposureCompensationIndex(target)
+        } else {
+            val restore = previousExposureIndex ?: 0
+            control.setExposureCompensationIndex(restore.coerceIn(range.lower, range.upper))
+            previousExposureIndex = null
         }
     }
 
