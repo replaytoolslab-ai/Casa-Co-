@@ -97,6 +97,7 @@ fun CameraTransmitterScreen(
     var showQrDialog by remember { mutableStateOf(false) }
     var showRenameDialog by remember { mutableStateOf(false) }
     var renameInput by remember { mutableStateOf("") }
+    var isNightModeEnabled by remember { mutableStateOf(viewModel.cameraManager.isNightModeEnabled) }
 
     if (isStealthMode) {
         // Stealth / Screen Dimming Mode (Battery Saver during continuous transmission)
@@ -347,6 +348,25 @@ fun CameraTransmitterScreen(
                     )
                 }
 
+                // Night mode: increase exposure using the camera sensor
+                IconButton(
+                    onClick = {
+                        isNightModeEnabled = !isNightModeEnabled
+                        viewModel.cameraManager.setNightMode(isNightModeEnabled)
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(if (isNightModeEnabled) OrangePrimary else Color.Black.copy(alpha = 0.7f), CircleShape)
+                        .border(1.dp, CardBorder, CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.BrightnessLow,
+                        contentDescription = if (isNightModeEnabled) "Disattiva modalità notturna" else "Attiva modalità notturna",
+                        tint = Color.White,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+
                 // Switch front/back camera
                 IconButton(
                     onClick = {
@@ -374,7 +394,7 @@ fun CameraTransmitterScreen(
                         .border(1.dp, CardBorder, CircleShape)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.BrightnessLow,
+                        imageVector = Icons.Default.Visibility,
                         contentDescription = "Risparmio Schermo",
                         tint = Color.White,
                         modifier = Modifier.size(22.dp)
