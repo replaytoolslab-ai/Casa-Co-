@@ -101,7 +101,7 @@ class StreamClient(
 
     private fun readMjpegStream(input: BufferedInputStream) {
         val buffer = ByteArray(16384)
-        val frameBuffer = ByteArrayOutputStream(65536)
+        val frameBuffer = ByteArrayOutputStream(262144)
         var prevByte = -1
         var inFrame = false
 
@@ -136,7 +136,7 @@ class StreamClient(
                         if (jpegBytes.size > 100) {
                             try {
                                 val opts = BitmapFactory.Options().apply {
-                                    inPreferredConfig = Bitmap.Config.RGB_565 // Fast & efficient decoding
+                                    inPreferredConfig = Bitmap.Config.ARGB_8888 // Preserve full color depth for the live view
                                 }
                                 val bitmap = BitmapFactory.decodeByteArray(jpegBytes, 0, jpegBytes.size, opts)
                                 if (bitmap != null) {
