@@ -161,6 +161,12 @@ class CameraManager(private val context: Context) {
             return
         }
         try {
+            // If MediaCodec stopped unexpectedly, notify the receiver so it can switch to MJPEG.
+            if (h264Encoder != null && !h264Encoder!!.isRunning && shouldEncodeH264()) {
+                h264Encoder = null
+                h264EncoderAttempted = true
+                h264UnavailableListener?.invoke()
+            }
             // Release the hardware encoder as soon as the last H.264 receiver disconnects.
             if (!shouldEncodeH264() && h264Encoder != null) {
                 h264Encoder?.stop()
