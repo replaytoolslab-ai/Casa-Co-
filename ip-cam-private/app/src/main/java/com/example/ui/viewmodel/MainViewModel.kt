@@ -114,7 +114,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _isCameraTorchOn = MutableStateFlow(false)
     val isCameraTorchOn: StateFlow<Boolean> = _isCameraTorchOn.asStateFlow()
 
-    private val _isCameraFacingFront = MutableStateFlow(false)\n    private val _remoteSwitchRequest = MutableStateFlow(0)\n    val remoteSwitchRequest: StateFlow<Int> = _remoteSwitchRequest.asStateFlow()
+    private val _isCameraFacingFront = MutableStateFlow(false)
+    private val _remoteSwitchRequest = MutableStateFlow(0)
+    val remoteSwitchRequest: StateFlow<Int> = _remoteSwitchRequest.asStateFlow()
     val isCameraFacingFront: StateFlow<Boolean> = _isCameraFacingFront.asStateFlow()
 
     private var streamServer: StreamServer? = null
