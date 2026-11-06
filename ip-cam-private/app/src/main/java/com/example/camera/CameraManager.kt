@@ -81,7 +81,7 @@ class CameraManager(private val context: Context) {
             }
 
             val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(1920, 1080)) // Full HD 1080p stream: request maximum detail by default
+                .setTargetResolution(Size(1280, 720)) // 720p reduces encoding, Wi-Fi and decoding load for smoother live view
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
@@ -97,7 +97,7 @@ class CameraManager(private val context: Context) {
             )
             cameraControl = camera?.cameraControl
             applyNightModeIfEnabled()
-            Log.i(tag, "Camera bound for streaming (facing: ${if (isFrontCamera) "FRONT" else "BACK"}; requested: 1920x1080)")
+            Log.i(tag, "Camera bound for streaming (facing: ${if (isFrontCamera) "FRONT" else "BACK"}; requested: 1280x720)")
         } catch (e: Exception) {
             Log.e(tag, "Failed to bind camera for streaming", e)
         }
@@ -158,7 +158,6 @@ class CameraManager(private val context: Context) {
         }
 
         try {
-            Log.d(tag, "Captured frame: ${imageProxy.width}x${imageProxy.height}")
             var rawBitmap = imageProxy.toBitmap()
             val rotationDegrees = imageProxy.imageInfo.rotationDegrees
 
@@ -175,7 +174,7 @@ class CameraManager(private val context: Context) {
             }
 
             val stream = ByteArrayOutputStream(256 * 1024)
-            rawBitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+            rawBitmap.compress(Bitmap.CompressFormat.JPEG, 78, stream)
             val jpegBytes = stream.toByteArray()
 
             frameListener?.invoke(jpegBytes, rawBitmap)
