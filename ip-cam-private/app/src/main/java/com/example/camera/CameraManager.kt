@@ -15,6 +15,8 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
+import com.example.network.H264StreamEncoder
+import com.example.network.H264StreamFormat
 import java.io.ByteArrayOutputStream
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -22,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class CameraManager(private val context: Context) {
     private val tag = "CameraManager"
-
     private var cameraProvider: ProcessCameraProvider? = null
     private var camera: Camera? = null
     private var cameraControl: CameraControl? = null
@@ -38,6 +39,10 @@ class CameraManager(private val context: Context) {
 
     private val isStreamingActive = AtomicBoolean(false)
     private var frameListener: ((jpegBytes: ByteArray, bitmap: Bitmap) -> Unit)? = null
+    private var h264FormatListener: ((H264StreamFormat) -> Unit)? = null
+    private var h264FrameListener: ((bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) -> Unit)? = null
+    private var shouldEncodeJpeg: () -> Boolean = { true }
+    private var h264Encoder: H264StreamEncoder? = null
     private var qrListener: ((code: String) -> Unit)? = null
 
     fun initialize(onReady: () -> Unit) {
@@ -52,49 +57,36 @@ class CameraManager(private val context: Context) {
         }, ContextCompat.getMainExecutor(context))
     }
 
-    /**
-     * Start camera in TELECAMERA transmitter mode with preview and frame analysis for streaming.
-     */
     fun startCameraForStreaming(
         lifecycleOwner: LifecycleOwner,
         previewView: PreviewView?,
-        onFrame: (jpegBytes: ByteArray, bitmap: Bitmap) -> Unit
+        onFrame: (jpegBytes: ByteArray, bitmap: Bitmap) -> Unit,
+        onH264Format: (H264StreamFormat) -> Unit = {},
+        onH264Frame: (bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) -> Unit = { _, _, _ -> },
+        shouldEncodeJpeg: () -> Boolean = { true }
     ) {
         val provider = cameraProvider ?: return
         this.frameListener = onFrame
+        this.h264FormatListener = onH264Format
+        this.h264FrameListener = onH264Frame
+        this.shouldEncodeJpeg = shouldEncodeJpeg
         isStreamingActive.set(true)
+        h264Encoder?.stop()
+        h264Encoder = null
 
         try {
             provider.unbindAll()
-
-            val selector = if (isFrontCamera) {
-                CameraSelector.DEFAULT_FRONT_CAMERA
-            } else {
-                CameraSelector.DEFAULT_BACK_CAMERA
-            }
-
-            val preview = Preview.Builder()
-                .build()
-
-            previewView?.let {
-                preview.surfaceProvider = it.surfaceProvider
-            }
+            val selector = if (isFrontCamera) CameraSelector.DEFAULT_FRONT_CAMERA else CameraSelector.DEFAULT_BACK_CAMERA
+            val preview = Preview.Builder().build()
+            previewView?.let { preview.surfaceProvider = it.surfaceProvider }
 
             val imageAnalysis = ImageAnalysis.Builder()
-                .setTargetResolution(Size(1920, 1080)) // Request Full HD; verify actual ImageProxy output on device
+                .setTargetResolution(Size(1920, 1080))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
 
-            imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
-                processStreamFrame(imageProxy)
-            }
-
-            camera = provider.bindToLifecycle(
-                lifecycleOwner,
-                selector,
-                preview,
-                imageAnalysis
-            )
+            imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy -> processStreamFrame(imageProxy) }
+            camera = provider.bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
             cameraControl = camera?.cameraControl
             applyNightModeIfEnabled()
             Log.i(tag, "Camera bound for streaming (facing: ${if (isFrontCamera) "FRONT" else "BACK"}; requested: 1920x1080)")
@@ -103,9 +95,6 @@ class CameraManager(private val context: Context) {
         }
     }
 
-    /**
-     * Start camera in QR Code scanner mode (for pairing on CONTROLLO).
-     */
     fun startCameraForQrScanning(
         lifecycleOwner: LifecycleOwner,
         previewView: PreviewView?,
@@ -113,38 +102,29 @@ class CameraManager(private val context: Context) {
     ) {
         val provider = cameraProvider ?: return
         this.qrListener = onQrFound
-
         try {
             provider.unbindAll()
-
-            val selector = CameraSelector.DEFAULT_BACK_CAMERA
             val preview = Preview.Builder().build()
             previewView?.let { preview.surfaceProvider = it.surfaceProvider }
-
             val imageAnalysis = ImageAnalysis.Builder()
                 .setTargetResolution(Size(1280, 720))
                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                 .build()
-
             var scanned = false
             imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
                 if (!scanned) {
                     val yBuffer = imageProxy.planes[0].buffer
                     val yBytes = ByteArray(yBuffer.remaining())
                     yBuffer.get(yBytes)
-
                     val qrText = QrCodeUtil.decodeQrFromLuminance(yBytes, imageProxy.width, imageProxy.height)
                     if (!qrText.isNullOrBlank()) {
                         scanned = true
-                        ContextCompat.getMainExecutor(context).execute {
-                            onQrFound(qrText)
-                        }
+                        ContextCompat.getMainExecutor(context).execute { onQrFound(qrText) }
                     }
                 }
                 imageProxy.close()
             }
-
-            camera = provider.bindToLifecycle(lifecycleOwner, selector, preview, imageAnalysis)
+            camera = provider.bindToLifecycle(lifecycleOwner, CameraSelector.DEFAULT_BACK_CAMERA, preview, imageAnalysis)
             cameraControl = camera?.cameraControl
         } catch (e: Exception) {
             Log.e(tag, "Failed to bind QR scanner", e)
@@ -156,28 +136,37 @@ class CameraManager(private val context: Context) {
             imageProxy.close()
             return
         }
-
         try {
-            var rawBitmap = imageProxy.toBitmap()
-            val rotationDegrees = imageProxy.imageInfo.rotationDegrees
-
-            // Rotate bitmap if needed to match upright orientation
-            if (rotationDegrees != 0) {
-                val matrix = Matrix().apply {
-                    postRotate(rotationDegrees.toFloat())
-                    if (isFrontCamera) {
-                        postScale(-1f, 1f) // Mirror front camera preview
-                    }
+            // Encode from CameraX YUV planes directly; no JPEG is sent on the H.264 path.
+            if (h264Encoder == null) {
+                val encoder = H264StreamEncoder(
+                    onFormat = { format -> h264FormatListener?.invoke(format) },
+                    onAccessUnit = { bytes, pts, key -> h264FrameListener?.invoke(bytes, pts, key) }
+                )
+                if (encoder.start(imageProxy.width, imageProxy.height, imageProxy.imageInfo.rotationDegrees)) {
+                    h264Encoder = encoder
+                } else {
+                    encoder.stop()
+                    Log.w(tag, "Hardware H.264 encoder unavailable; MJPEG fallback remains available")
                 }
-                val rotated = Bitmap.createBitmap(rawBitmap, 0, 0, rawBitmap.width, rawBitmap.height, matrix, true)
-                rawBitmap = rotated
             }
+            h264Encoder?.encode(imageProxy)
 
+            // MJPEG is produced only for clients that explicitly fell back to it.
+            if (!shouldEncodeJpeg()) return
+
+            var bitmap = imageProxy.toBitmap()
+            val rotation = imageProxy.imageInfo.rotationDegrees
+            if (rotation != 0) {
+                val matrix = Matrix().apply {
+                    postRotate(rotation.toFloat())
+                    if (isFrontCamera) postScale(-1f, 1f)
+                }
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
+            }
             val stream = ByteArrayOutputStream(256 * 1024)
-            rawBitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
-            val jpegBytes = stream.toByteArray()
-
-            frameListener?.invoke(jpegBytes, rawBitmap)
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 85, stream)
+            frameListener?.invoke(stream.toByteArray(), bitmap)
         } catch (e: Exception) {
             Log.w(tag, "Frame processing error", e)
         } finally {
@@ -185,11 +174,6 @@ class CameraManager(private val context: Context) {
         }
     }
 
-
-    /**
-     * Improves visibility in low light by raising camera exposure compensation.
-     * The supported range is device-specific.
-     */
     fun setNightMode(enabled: Boolean) {
         isNightModeEnabled = enabled
         applyNightModeIfEnabled()
@@ -200,16 +184,11 @@ class CameraManager(private val context: Context) {
         val exposureState = camera?.cameraInfo?.exposureState ?: return
         val range = exposureState.exposureCompensationRange
         if (range.lower == 0 && range.upper == 0) return
-
         if (isNightModeEnabled) {
-            if (previousExposureIndex == null) {
-                previousExposureIndex = exposureState.exposureCompensationIndex
-            }
-            val target = minOf(range.upper, maxOf(2, range.lower))
-            control.setExposureCompensationIndex(target)
+            if (previousExposureIndex == null) previousExposureIndex = exposureState.exposureCompensationIndex
+            control.setExposureCompensationIndex(minOf(range.upper, maxOf(2, range.lower)))
         } else {
-            val restore = previousExposureIndex ?: 0
-            control.setExposureCompensationIndex(restore.coerceIn(range.lower, range.upper))
+            control.setExposureCompensationIndex((previousExposureIndex ?: 0).coerceIn(range.lower, range.upper))
             previousExposureIndex = null
         }
     }
@@ -223,8 +202,16 @@ class CameraManager(private val context: Context) {
     fun switchCamera(lifecycleOwner: LifecycleOwner, previewView: PreviewView?) {
         isFrontCamera = !isFrontCamera
         isTorchEnabled = false
-        if (isStreamingActive.get() && frameListener != null) {
-            startCameraForStreaming(lifecycleOwner, previewView, frameListener!!)
+        val listener = frameListener ?: return
+        if (isStreamingActive.get()) {
+            startCameraForStreaming(
+                lifecycleOwner,
+                previewView,
+                listener,
+                h264FormatListener ?: {},
+                h264FrameListener ?: { _, _, _ -> },
+                shouldEncodeJpeg
+            )
         }
     }
 
@@ -238,10 +225,12 @@ class CameraManager(private val context: Context) {
     fun stop() {
         isStreamingActive.set(false)
         frameListener = null
+        h264FormatListener = null
+        h264FrameListener = null
+        h264Encoder?.stop()
+        h264Encoder = null
         qrListener = null
-        try {
-            cameraProvider?.unbindAll()
-        } catch (_: Exception) {}
+        try { cameraProvider?.unbindAll() } catch (_: Exception) {}
         camera = null
         cameraControl = null
     }
