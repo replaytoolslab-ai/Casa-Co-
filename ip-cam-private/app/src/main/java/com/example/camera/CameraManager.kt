@@ -43,6 +43,7 @@ class CameraManager(private val context: Context) {
     private var h264FrameListener: ((bytes: ByteArray, presentationTimeUs: Long, keyFrame: Boolean) -> Unit)? = null
     private var shouldEncodeJpeg: () -> Boolean = { true }
     private var h264Encoder: H264StreamEncoder? = null
+    private var h264EncoderAttempted = false
     private var qrListener: ((code: String) -> Unit)? = null
 
     fun initialize(onReady: () -> Unit) {
@@ -73,6 +74,7 @@ class CameraManager(private val context: Context) {
         isStreamingActive.set(true)
         h264Encoder?.stop()
         h264Encoder = null
+        h264EncoderAttempted = false
 
         try {
             provider.unbindAll()
@@ -138,7 +140,8 @@ class CameraManager(private val context: Context) {
         }
         try {
             // Encode from CameraX YUV planes directly; no JPEG is sent on the H.264 path.
-            if (h264Encoder == null) {
+            if (h264Encoder == null && !h264EncoderAttempted) {
+                h264EncoderAttempted = true
                 val encoder = H264StreamEncoder(
                     onFormat = { format -> h264FormatListener?.invoke(format) },
                     onAccessUnit = { bytes, pts, key -> h264FrameListener?.invoke(bytes, pts, key) }
@@ -229,6 +232,7 @@ class CameraManager(private val context: Context) {
         h264FrameListener = null
         h264Encoder?.stop()
         h264Encoder = null
+        h264EncoderAttempted = false
         qrListener = null
         try { cameraProvider?.unbindAll() } catch (_: Exception) {}
         camera = null
