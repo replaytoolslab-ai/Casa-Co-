@@ -41,6 +41,7 @@ class StreamClient(
     val bitrateKbps: StateFlow<Float> = _bitrateKbps.asStateFlow()
 
     private var streamJob: Job? = null
+    @Volatile private var activeConnection: HttpURLConnection? = null
     private val isRunning = AtomicBoolean(false)
 
     fun start() {
@@ -85,6 +86,7 @@ class StreamClient(
             useCaches = false
         }
         var decoder: H264StreamDecoder? = null
+        activeConnection = connection
         try {
             connection.connect()
             if (connection.responseCode != 200) return false
@@ -147,6 +149,7 @@ class StreamClient(
             return true
         } finally {
             decoder?.release()
+            if (activeConnection === connection) activeConnection = null
             connection.disconnect()
         }
     }
@@ -158,12 +161,14 @@ class StreamClient(
             requestMethod = "GET"
             useCaches = false
         }
+        activeConnection = connection
         try {
             connection.connect()
             if (connection.responseCode != 200) throw IllegalStateException("HTTP ${connection.responseCode}")
             _connectionState.value = StreamConnectionState.CONNECTED
             readMjpegStream(BufferedInputStream(connection.inputStream))
         } finally {
+            if (activeConnection === connection) activeConnection = null
             connection.disconnect()
         }
     }
@@ -221,6 +226,8 @@ class StreamClient(
 
     fun stop() {
         isRunning.set(false)
+        activeConnection?.disconnect()
+        activeConnection = null
         streamJob?.cancel()
         streamJob = null
         _connectionState.value = StreamConnectionState.IDLE
