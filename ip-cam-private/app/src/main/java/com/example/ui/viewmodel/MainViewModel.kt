@@ -663,6 +663,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         streamServer?.onH264Frame(bytes, presentationTimeUs, keyFrame)
     }
 
+    fun onH264Unavailable() {
+        streamServer?.onH264Unavailable()
+    }
+
     fun shouldEncodeJpeg(): Boolean = streamServer?.shouldEncodeJpeg() ?: true
 
     fun updateCameraDeviceName(name: String) {
