@@ -225,6 +225,10 @@ class LanDiscovery(private val context: Context) {
                 val battery = json.optInt("battery", 100)
                 val facing = json.optString("facing", device.facing)
                 val torch = json.optBoolean("torch", false)
+                val nightMode = json.optBoolean("nightMode", device.isNightMode)
+                val zoom = json.optDouble("zoom", device.zoomRatio.toDouble()).toFloat()
+                val maxZoom = json.optDouble("maxZoom", device.maxZoomRatio.toDouble()).toFloat()
+                val codec = json.optString("codec", device.codec)
 
                 device.copy(
                     name = name,
@@ -232,6 +236,10 @@ class LanDiscovery(private val context: Context) {
                     batteryPercent = battery,
                     facing = facing,
                     isTorchOn = torch,
+                    isNightMode = nightMode,
+                    zoomRatio = zoom,
+                    maxZoomRatio = maxZoom.coerceAtLeast(1.0f),
+                    codec = codec,
                     lastSeenTimestamp = System.currentTimeMillis()
                 )
             } else {
