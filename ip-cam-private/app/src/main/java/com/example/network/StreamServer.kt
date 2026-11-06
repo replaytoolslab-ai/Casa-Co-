@@ -52,6 +52,10 @@ class StreamServer(
 
     var currentFacing: String = "BACK"
     var isTorchEnabled: Boolean = false
+    var isNightMode: Boolean = false
+    var currentZoom: Float = 1.0f
+    var maxZoom: Float = 1.0f
+    var activeCodec: String = "H264"
     var batteryLevel: Int = 100
 
     fun start(): Boolean {
@@ -125,7 +129,7 @@ class StreamServer(
                         socket.close()
                     }
                     path == "/status" -> {
-                        val json = """{"status":"ONLINE","name":"$cameraName","battery":$batteryLevel,"facing":"$currentFacing","torch":$isTorchEnabled,"viewers":${connectedClientsCount.get()},"video":"H264"}"""
+                        val json = """{"status":"ONLINE","name":"$cameraName","battery":$batteryLevel,"facing":"$currentFacing","torch":$isTorchEnabled,"nightMode":$isNightMode,"zoom":$currentZoom,"maxZoom":$maxZoom,"codec":"$activeCodec","viewers":${connectedClientsCount.get()}}"""
                         out.write(("HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: ${json.toByteArray().size}\r\nConnection: close\r\n\r\n$json").toByteArray())
                         out.flush()
                         socket.close()
