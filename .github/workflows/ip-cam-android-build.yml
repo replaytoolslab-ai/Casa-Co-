@@ -1,0 +1,44 @@
+name: IP CAM PRIVATE Android build
+
+on:
+  push:
+    branches: [ip-cam-private]
+    paths:
+      - 'ip-cam-private/**'
+      - '.github/workflows/ip-cam-android-build.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  android-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ip-cam-private
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Build and run unit tests
+        working-directory: ip-cam-private
+        run: |
+          chmod +x ./gradlew
+          ./gradlew --no-daemon clean testDebugUnitTest assembleDebug
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: ip-cam-private-debug-apk
+          path: ip-cam-private/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 14
