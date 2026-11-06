@@ -215,6 +215,12 @@ class CameraManager(private val context: Context) {
         }
     }
 
+    fun setExposureCompensation(value: Int) {
+        val exposureState = camera?.cameraInfo?.exposureState ?: return
+        val range = exposureState.exposureCompensationRange
+        cameraControl?.setExposureCompensationIndex(value.coerceIn(range.lower, range.upper))
+    }
+
     fun switchCamera(lifecycleOwner: LifecycleOwner, previewView: PreviewView?) {
         isFrontCamera = !isFrontCamera
         isTorchEnabled = false
