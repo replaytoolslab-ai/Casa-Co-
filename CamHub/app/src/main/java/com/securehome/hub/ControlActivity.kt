@@ -30,6 +30,7 @@ class ControlActivity : AppCompatActivity() {
     private var host: String? = null
     @Volatile private var session = 0
     @Volatile private var lastBmp: Bitmap? = null
+    @Volatile private var lastBaseBmp: Bitmap? = null
     @Volatile private var audioOn = false
     private var res = 720
     private var detail = 1
@@ -91,7 +92,11 @@ class ControlActivity : AppCompatActivity() {
         r3.addView(btn("↻ Ruota: 0°") {
             displayRotation = (displayRotation + 90) % 360
             it.text = "↻ Ruota: ${displayRotation}°"
-            lastBmp?.let { bmp -> runOnUiThread { img.setImageBitmap(rotateBitmap(bmp, displayRotation)) } }
+            lastBaseBmp?.let { base ->
+                val rotated = rotateBitmap(base, displayRotation)
+                lastBmp = rotated
+                runOnUiThread { img.setImageBitmap(rotated) }
+            }
         })
         root.addView(top); root.addView(found)
         root.addView(img, LinearLayout.LayoutParams(-1, 0, 1f))
@@ -135,9 +140,10 @@ class ControlActivity : AppCompatActivity() {
                         if (p[0] != "F") continue
                         val n = p[1].toInt(); val rot = p[2].toInt()
                         val buf = ByteArray(n); DataInputStream(ins).readFully(buf)
-                        var bmp = BitmapFactory.decodeByteArray(buf, 0, n) ?: continue
-                        val totalRotation = (rot + displayRotation) % 360
-                        if (totalRotation != 0) bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.width, bmp.height, Matrix().apply { postRotate(totalRotation.toFloat()) }, true)
+                        var baseBmp = BitmapFactory.decodeByteArray(buf, 0, n) ?: continue
+                        if (rot != 0) baseBmp = Bitmap.createBitmap(baseBmp, 0, 0, baseBmp.width, baseBmp.height, Matrix().apply { postRotate(rot.toFloat()) }, true)
+                        lastBaseBmp = baseBmp
+                        val bmp = rotateBitmap(baseBmp, displayRotation)
                         lastBmp = bmp; val bm = bmp
                         runOnUiThread { img.setImageBitmap(bm) }
                     }
