@@ -19,6 +19,8 @@ import android.net.nsd.NsdManager
 import android.net.nsd.NsdServiceInfo
 import android.os.Build
 import android.os.IBinder
+import android.os.PowerManager
+import android.net.wifi.WifiManager
 import android.util.Size
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
@@ -62,6 +64,8 @@ class CameraForegroundService : LifecycleService() {
     private var server: ServerSocket? = null
     private var nsd: NsdManager? = null
     private var regListener: NsdManager.RegistrationListener? = null
+    private var cpuLock: PowerManager.WakeLock? = null
+    private var wifiLock: WifiManager.WifiLock? = null
     private val recFile by lazy { File(cacheDir, "rec.mp4") }
 
     @Volatile private var frame: Frame? = null
@@ -81,6 +85,7 @@ class CameraForegroundService : LifecycleService() {
         super.onCreate()
         createNotificationChannel()
         startForeground(NOTIFICATION_ID, buildNotification())
+        acquireKeepAliveLocks()
         startCameraAndServer()
     }
 
@@ -91,6 +96,24 @@ class CameraForegroundService : LifecycleService() {
             return START_NOT_STICKY
         }
         return START_STICKY
+    }
+
+    private fun acquireKeepAliveLocks() {
+        try {
+            val power = getSystemService(POWER_SERVICE) as PowerManager
+            cpuLock = power.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "CamHub::CameraCpu").apply {
+                setReferenceCounted(false)
+                acquire()
+            }
+        } catch (_: Exception) {}
+        try {
+            val wifi = applicationContext.getSystemService(WIFI_SERVICE) as WifiManager
+            @Suppress("DEPRECATION")
+            wifiLock = wifi.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "CamHub::CameraWifi").apply {
+                setReferenceCounted(false)
+                acquire()
+            }
+        } catch (_: Exception) {}
     }
 
     private fun createNotificationChannel() {
@@ -297,6 +320,8 @@ class CameraForegroundService : LifecycleService() {
         try { regListener?.let { nsd?.unregisterService(it) } } catch (_: Exception) {}
         try { provider?.unbindAll() } catch (_: Exception) {}
         exec.shutdown()
+        try { if (cpuLock?.isHeld == true) cpuLock?.release() } catch (_: Exception) {}
+        try { if (wifiLock?.isHeld == true) wifiLock?.release() } catch (_: Exception) {}
         super.onDestroy()
     }
 }
