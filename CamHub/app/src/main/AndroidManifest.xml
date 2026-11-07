@@ -6,6 +6,10 @@
     <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE"/>
     <uses-permission android:name="android.permission.CAMERA"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
     <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <application
         android:label="CamHub"
@@ -19,5 +23,10 @@
         </activity>
         <activity android:name=".CameraActivity" android:screenOrientation="portrait"/>
         <activity android:name=".ControlActivity" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <service
+            android:name=".CameraForegroundService"
+            android:exported="false"
+            android:stopWithTask="false"
+            android:foregroundServiceType="camera|microphone"/>
     </application>
 </manifest>
