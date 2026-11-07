@@ -5,6 +5,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
+import android.provider.Settings
+import android.net.Uri
 import android.view.Gravity
 import android.widget.Button
 import android.widget.LinearLayout
@@ -66,7 +69,17 @@ class CameraActivity : AppCompatActivity() {
             val intent = Intent(this, CameraForegroundService::class.java)
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) ContextCompat.startForegroundService(this, intent)
             else startService(intent)
-            info.text = "Telecamera attiva in modalità continua. Puoi tornare alla Home o bloccare lo schermo. La notifica CamHub conferma che il servizio è in esecuzione."
+            info.text = "Telecamera attiva. Per mantenerla stabile, consenti a CamHub di non essere ottimizzata dalla batteria."
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                val pm = getSystemService(POWER_SERVICE) as PowerManager
+                if (!pm.isIgnoringBatteryOptimizations(packageName)) {
+                    try {
+                        startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName")))
+                    } catch (_: Exception) {
+                        info.text = "Telecamera attiva. Apri Impostazioni > App > CamHub > Batteria e seleziona Nessuna restrizione."
+                    }
+                }
+            }
         } catch (e: Exception) {
             info.text = "Impossibile avviare la telecamera: ${e.localizedMessage ?: "controlla i permessi"}"
         }
