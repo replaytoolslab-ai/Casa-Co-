@@ -36,6 +36,7 @@ class ControlActivity : AppCompatActivity() {
     private var night = false
     private var rec = false
     private var zoom = 1f
+    private var displayRotation = 0
     private var lastZoomSend = 0L
     private val quals = intArrayOf(40, 70, 92)
     private val names = arrayOf("Basso", "Medio", "Alto")
@@ -87,9 +88,15 @@ class ControlActivity : AppCompatActivity() {
         r2.addView(btn("📸 Foto") { photo() })
         r2.addView(btn("⏺ Rec") { b -> toggleRec(b) })
         r2.addView(flashButton)
+        val r3 = LinearLayout(this)
+        r3.addView(btn("↻ Ruota: 0°") {
+            displayRotation = (displayRotation + 90) % 360
+            it.text = "↻ Ruota: ${displayRotation}°"
+            lastBmp?.let { bmp -> runOnUiThread { img.setImageBitmap(rotateBitmap(bmp, displayRotation)) } }
+        })
         root.addView(top); root.addView(found)
         root.addView(img, LinearLayout.LayoutParams(-1, 0, 1f))
-        root.addView(status); root.addView(zoomBar); root.addView(r1); root.addView(r2)
+        root.addView(status); root.addView(zoomBar); root.addView(r1); root.addView(r2); root.addView(r3)
         setContentView(root)
         discover()
     }
@@ -130,7 +137,8 @@ class ControlActivity : AppCompatActivity() {
                         val n = p[1].toInt(); val rot = p[2].toInt()
                         val buf = ByteArray(n); DataInputStream(ins).readFully(buf)
                         var bmp = BitmapFactory.decodeByteArray(buf, 0, n) ?: continue
-                        if (rot != 0) bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.width, bmp.height, Matrix().apply { postRotate(rot.toFloat()) }, true)
+                        val totalRotation = (rot + displayRotation) % 360
+                        if (totalRotation != 0) bmp = Bitmap.createBitmap(bmp, 0, 0, bmp.width, bmp.height, Matrix().apply { postRotate(totalRotation.toFloat()) }, true)
                         lastBmp = bmp; val bm = bmp
                         runOnUiThread { img.setImageBitmap(bm) }
                     }
@@ -140,6 +148,12 @@ class ControlActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private fun rotateBitmap(bitmap: Bitmap, degrees: Int): Bitmap {
+        if (degrees == 0) return bitmap
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height,
+            Matrix().apply { postRotate(degrees.toFloat()) }, true)
     }
 
     private fun readLine(i: InputStream): String {
