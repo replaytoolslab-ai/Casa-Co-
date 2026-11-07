@@ -88,7 +88,6 @@ class ControlActivity : AppCompatActivity() {
         r2.addView(btn("📸 Foto") { photo() })
         r2.addView(btn("⏺ Rec") { b -> toggleRec(b) })
         r2.addView(flashButton)
-        val r3 = LinearLayout(this)
         r3.addView(btn("↻ Ruota: 0°") {
             displayRotation = (displayRotation + 90) % 360
             it.text = "↻ Ruota: ${displayRotation}°"
