@@ -66,6 +66,7 @@ class CameraActivity : AppCompatActivity() {
     private var zoom = 1f
     private var night = false
     private var front = false
+    private var torchOn = false
 
     private val perms = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { r ->
         if (r[Manifest.permission.CAMERA] == true) startAll() else { info.text = "Permesso fotocamera negato"; }
@@ -119,6 +120,7 @@ class CameraActivity : AppCompatActivity() {
             try { p.unbindAll(); p.bindToLifecycle(this, sel, preview, an) } catch (e2: Exception) { null }
         }
         applyZoomNight()
+        applyFlash()
         showInfo()
     }
 
@@ -134,6 +136,12 @@ class CameraActivity : AppCompatActivity() {
         val st = c.cameraInfo.exposureState
         if (st.isExposureCompensationSupported)
             c.cameraControl.setExposureCompensationIndex(if (night) (st.exposureCompensationRange.upper * 0.8).toInt() else 0)
+    }
+
+    private fun applyFlash() {
+        val c = camera ?: return
+        if (c.cameraInfo.hasFlashUnit()) c.cameraControl.enableTorch(torchOn)
+        else torchOn = false
     }
 
     private fun onFrame(img: ImageProxy) {
@@ -160,6 +168,7 @@ class CameraActivity : AppCompatActivity() {
         u.getQueryParameter("detail")?.toIntOrNull()?.let { quality = it.coerceIn(20, 95) }
         u.getQueryParameter("zoom")?.toFloatOrNull()?.let { zoom = it }
         u.getQueryParameter("night")?.let { night = it == "1" }
+        u.getQueryParameter("flash")?.let { torchOn = it == "1"; applyFlash() }
         applyZoomNight()
         u.getQueryParameter("res")?.toIntOrNull()?.let { if (it != res && !isRec) { res = it; bind() } }
         u.getQueryParameter("rec")?.let { setRec(it == "1") }
@@ -204,7 +213,7 @@ class CameraActivity : AppCompatActivity() {
             when (u.path) {
                 "/status" -> {
                     val mx = camera?.cameraInfo?.zoomState?.value?.maxZoomRatio ?: 1f
-                    text("ok maxzoom=$mx rec=${if (isRec) 1 else 0} recready=${if (recReady) 1 else 0} vid=${if (videoCapture != null) 1 else 0}")
+                    text("ok maxzoom=$mx rec=${if (isRec) 1 else 0} recready=${if (recReady) 1 else 0} vid=${if (videoCapture != null) 1 else 0} flash=${if (camera?.cameraInfo?.hasFlashUnit() == true) 1 else 0}")
                 }
                 "/cmd" -> { runOnUiThread { applyCmd(u) }; text("ok") }
                 "/video" -> {
