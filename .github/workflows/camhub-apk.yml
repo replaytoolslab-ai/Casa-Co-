@@ -40,3 +40,5 @@ jobs:
           path: CamHub/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
+
+# Rebuild after making the flash control visible in the control center.
