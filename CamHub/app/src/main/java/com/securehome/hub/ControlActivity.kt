@@ -24,6 +24,9 @@ class ControlActivity : AppCompatActivity() {
     private lateinit var ipBox: EditText
     private lateinit var found: LinearLayout
     private lateinit var zoomBar: SeekBar
+    private lateinit var flashButton: Button
+    private var flashSupported = true
+    private var flashOn = false
     private var host: String? = null
     @Volatile private var session = 0
     @Volatile private var lastBmp: Bitmap? = null
@@ -65,7 +68,7 @@ class ControlActivity : AppCompatActivity() {
                 override fun onStopTrackingTouch(s: SeekBar) { send("zoom=$zoom") }
             })
         }
-        val r1 = LinearLayout(this); val r2 = LinearLayout(this)
+        val r1 = LinearLayout(this); val r2 = LinearLayout(this); val r3 = LinearLayout(this)
         r1.addView(btn("720p") { res = if (res == 720) 1080 else 720; it.text = "${res}p"; send("res=$res") })
         r1.addView(btn("Dettaglio: Medio") { detail = (detail + 1) % 3; it.text = "Dettaglio: ${names[detail]}"; send("detail=${quals[detail]}") })
         r1.addView(btn("Notte: OFF") {
@@ -77,9 +80,16 @@ class ControlActivity : AppCompatActivity() {
         r2.addView(btn("🔇 Audio") { audioOn = !audioOn; it.text = if (audioOn) "🔊 Audio" else "🔇 Audio"; if (audioOn) startAudio() })
         r2.addView(btn("📸 Foto") { photo() })
         r2.addView(btn("⏺ Rec") { b -> toggleRec(b) })
+        flashButton = btn("⚡ Flash: OFF") {
+            if (!flashSupported) { say("Flash non disponibile su questa fotocamera"); return@btn }
+            flashOn = !flashOn
+            it.text = "⚡ Flash: ${if (flashOn) "ON" else "OFF"}"
+            send("flash=${if (flashOn) 1 else 0}")
+        }
+        r3.addView(flashButton)
         root.addView(top); root.addView(found)
         root.addView(img, LinearLayout.LayoutParams(-1, 0, 1f))
-        root.addView(status); root.addView(zoomBar); root.addView(r1); root.addView(r2)
+        root.addView(status); root.addView(zoomBar); root.addView(r1); root.addView(r2); root.addView(r3)
         setContentView(root)
         discover()
     }
@@ -101,6 +111,10 @@ class ControlActivity : AppCompatActivity() {
             while (my == session) {
                 try {
                     val st = http("/status")
+                    Regex("flash=([01])").find(st)?.let { m ->
+                        flashSupported = m.groupValues[1] == "1"
+                        runOnUiThread { flashButton.isEnabled = flashSupported; if (!flashSupported) flashButton.text = "⚡ Flash non disponibile" }
+                    }
                     Regex("maxzoom=([0-9.]+)").find(st)?.let { m ->
                         val mx = m.groupValues[1].toFloat()
                         runOnUiThread { zoomBar.max = ((mx - 1f) * 10).toInt().coerceAtLeast(1) }
