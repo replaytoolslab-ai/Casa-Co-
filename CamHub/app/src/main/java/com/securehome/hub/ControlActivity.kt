@@ -77,19 +77,19 @@ class ControlActivity : AppCompatActivity() {
                 1.5f, 0f, 0f, 0f, 25f, 0f, 1.5f, 0f, 0f, 25f, 0f, 0f, 1.5f, 0f, 25f, 0f, 0f, 0f, 1f, 0f)))) else img.clearColorFilter()
             send("night=${if (night) 1 else 0}")
         })
+        flashButton = btn("⚡ Flash OFF") {
+            if (!flashSupported) { say("Flash non disponibile su questa fotocamera"); return@btn }
+            flashOn = !flashOn
+            it.text = "⚡ Flash ${if (flashOn) "ON" else "OFF"}"
+            send("flash=${if (flashOn) 1 else 0}")
+        }
         r2.addView(btn("🔇 Audio") { audioOn = !audioOn; it.text = if (audioOn) "🔊 Audio" else "🔇 Audio"; if (audioOn) startAudio() })
         r2.addView(btn("📸 Foto") { photo() })
         r2.addView(btn("⏺ Rec") { b -> toggleRec(b) })
-        flashButton = btn("⚡ Flash: OFF") {
-            if (!flashSupported) { say("Flash non disponibile su questa fotocamera"); return@btn }
-            flashOn = !flashOn
-            it.text = "⚡ Flash: ${if (flashOn) "ON" else "OFF"}"
-            send("flash=${if (flashOn) 1 else 0}")
-        }
-        r3.addView(flashButton)
+        r2.addView(flashButton)
         root.addView(top); root.addView(found)
         root.addView(img, LinearLayout.LayoutParams(-1, 0, 1f))
-        root.addView(status); root.addView(zoomBar); root.addView(r1); root.addView(r2); root.addView(r3)
+        root.addView(status); root.addView(zoomBar); root.addView(r1); root.addView(r2)
         setContentView(root)
         discover()
     }
