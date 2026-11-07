@@ -6,7 +6,7 @@ on:
     branches:
       - camhub-apk-test
     paths:
-      - "CamHub-test/**"
+      - "CamHub/**"
       - ".github/workflows/camhub-apk.yml"
 
 permissions:
@@ -30,19 +30,13 @@ jobs:
         with:
           gradle-version: "8.7"
 
-      - name: Extract CamHub project
-        run: |
-          test -f CamHub-test/CamHub.zip
-          mkdir -p "$RUNNER_TEMP/camhub"
-          unzip -q CamHub-test/CamHub.zip -d "$RUNNER_TEMP/camhub"
-
       - name: Build debug APK
-        run: gradle -p "$RUNNER_TEMP/camhub/CamHub" assembleDebug
+        run: gradle -p CamHub assembleDebug
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: CamHub-debug-apk
-          path: "$RUNNER_TEMP/camhub/CamHub/app/build/outputs/apk/debug/*.apk"
+          path: CamHub/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
           retention-days: 14
